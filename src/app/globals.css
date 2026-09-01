@@ -621,9 +621,11 @@ a.episode-tag:hover {
   padding-bottom: 96px;
 }
 
-.senryu-caption {
+.page-caption {
   max-width: 640px;
   color: var(--color-ink-soft);
+  border: 1px solid var(--color-ink);
+  padding: 16px 20px;
   margin-bottom: 40px;
 }
 

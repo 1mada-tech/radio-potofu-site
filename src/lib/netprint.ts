@@ -2,7 +2,7 @@ import { parse } from "csv-parse/sync";
 
 // 現代川柳ネットプリントの発行情報スプレッドシート(タブ名「ネプリ」)。
 // 列: 号数 / ラジオポトフ / 発行年月日 / (記号) / 半期(上・下) / (記号) / テーマ / (記号) / ファイル名
-const NETPRINT_CSV_URL =
+export const NETPRINT_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1J_fSVe7sqRQaeelc2A9ocQhAbxXqB6OHpv0BxW6CbEk/export?format=csv&gid=1900237014";
 
 export type NetprintIssue = {

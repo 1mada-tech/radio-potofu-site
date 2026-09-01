@@ -1,12 +1,23 @@
 import { Fragment } from "react";
 import type { Metadata } from "next";
-import { getEpisodes } from "@/lib/podcast";
+import { getEpisodes, EPISODE_EXTRAS_CSV_URL } from "@/lib/podcast";
 import { formatDate } from "@/lib/date";
+import { getSimpleCaption } from "@/lib/pageCaption";
 
 export const metadata: Metadata = { title: "これまでの配信" };
 export const revalidate = 60;
 
 const PER_PAGE = 30;
+
+function renderCaption(text: string) {
+  const parts = text.split("タグ");
+  return parts.map((part, i) => (
+    <Fragment key={i}>
+      {part}
+      {i < parts.length - 1 && <span className="episode-tag">タグ</span>}
+    </Fragment>
+  ));
+}
 
 export default async function EpisodesPage({
   searchParams,
@@ -21,10 +32,12 @@ export default async function EpisodesPage({
   const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
   const pageHref = (p: number) =>
     tagFilter ? `/episodes?tag=${encodeURIComponent(tagFilter)}&page=${p}` : `/episodes?page=${p}`;
+  const caption = await getSimpleCaption(EPISODE_EXTRAS_CSV_URL);
 
   return (
     <div className="container page">
       <h1>これまでの配信</h1>
+      {caption && <p className="page-caption">{renderCaption(caption)}</p>}
       {tagFilter && (
         <p className="episode-filter-notice">
           「#{tagFilter}」で絞り込み中（{totalCount}件）

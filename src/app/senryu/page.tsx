@@ -27,7 +27,7 @@ export default async function SenryuPage({
     <div className="container page">
       <h1>現代川柳</h1>
       {caption && (
-        <p className="senryu-caption">
+        <p className="page-caption">
           {caption.before}
           <span className="senryu-caption__word">{caption.word}</span>
           {caption.after}

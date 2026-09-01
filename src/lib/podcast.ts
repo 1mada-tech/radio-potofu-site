@@ -11,7 +11,7 @@ const SPOTIFY_SHOW_URL = "https://open.spotify.com/show/4R3f88m9NsYKjBUJzKhipq";
 
 // エピソードごとの補足情報用スプレッドシート。
 // 列: 配信回数 / タイトル / SpotifyURL / applePodcastsURL / コメント / タグ / おすすめ度
-const EPISODE_EXTRAS_CSV_URL =
+export const EPISODE_EXTRAS_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1J_fSVe7sqRQaeelc2A9ocQhAbxXqB6OHpv0BxW6CbEk/export?format=csv&gid=1797359134";
 
 // Apple Podcastsの公開API(認証不要)。直近200件のエピソードのtrackId(個別リンクに使う)が取れる。
@@ -93,13 +93,13 @@ async function fetchEpisodeExtrasByNumber(): Promise<Map<number, EpisodeExtras>>
     const text = await res.text();
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     for (const row of rows.slice(1)) {
-      const num = parseInt(row[0], 10);
+      const num = parseInt(row[1], 10);
       if (Number.isNaN(num)) continue;
-      const spotifyUrl = row[2]?.trim() || undefined;
-      const appleUrl = row[3]?.trim() || undefined;
-      const comment = row[4]?.trim() || undefined;
-      const tags = row[5]?.trim() ? splitTags(row[5]) : undefined;
-      const recommendation = row[6]?.trim() ? formatRecommendation(row[6].trim()) : undefined;
+      const spotifyUrl = row[3]?.trim() || undefined;
+      const appleUrl = row[4]?.trim() || undefined;
+      const comment = row[5]?.trim() || undefined;
+      const tags = row[6]?.trim() ? splitTags(row[6]) : undefined;
+      const recommendation = row[7]?.trim() ? formatRecommendation(row[7].trim()) : undefined;
       map.set(num, { spotifyUrl, appleUrl, comment, tags, recommendation });
     }
   } catch {
