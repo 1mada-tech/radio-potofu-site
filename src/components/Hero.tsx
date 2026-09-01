@@ -8,17 +8,16 @@ type HeroProps = {
 
 function PoemText({ introText }: { introText: string }) {
   const lines = introText.split("\n");
-  if (lines.length < 3) {
+  if (lines.length < 2) {
     return <p className="hero__poem-body">{introText}</p>;
   }
   const title = lines[0];
-  const date = lines[lines.length - 1];
-  const body = lines.slice(1, -1).join("\n");
+  const body = lines.slice(1).join("\n");
   return (
     <>
+      <p className="hero__poem-kicker">今月の詩</p>
       <p className="hero__poem-title">{title}</p>
       <p className="hero__poem-body">{body}</p>
-      <p className="hero__poem-date">{date}</p>
     </>
   );
 }

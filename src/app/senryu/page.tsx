@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import EssayCard from "@/components/EssayCard";
 import { getEssaysByType, ESSAY_TYPE_SENRYU } from "@/lib/microcms";
+import { getSenryuCaption } from "@/lib/caption";
 
 export const metadata: Metadata = { title: "現代川柳" };
 
@@ -20,10 +21,18 @@ export default async function SenryuPage({
     offset,
   );
   const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
+  const caption = await getSenryuCaption();
 
   return (
     <div className="container page">
       <h1>現代川柳</h1>
+      {caption && (
+        <p className="senryu-caption">
+          {caption.before}
+          <span className="senryu-caption__word">{caption.word}</span>
+          {caption.after}
+        </p>
+      )}
       {contents.length > 0 ? (
         <>
           <div className="list">

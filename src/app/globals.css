@@ -140,6 +140,7 @@ ul {
   color: #fff;
 }
 
+
 .hero-cta__label {
   font-weight: 700;
   font-size: 0.95rem;
@@ -240,6 +241,18 @@ ul {
   white-space: pre-line;
 }
 
+.hero__poem-kicker {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  letter-spacing: 0.2em;
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+p.hero__poem-kicker {
+  margin-bottom: 1.2em;
+}
+
 .hero__poem-title {
   font-size: 2.6rem;
   line-height: 2.4;
@@ -254,12 +267,6 @@ p.hero__poem-title {
   line-height: 2.6;
 }
 
-p.hero__poem-date {
-  font-size: 1.15rem;
-  line-height: 2.6;
-  margin-top: 1.5em;
-}
-
 @media (max-width: 700px) {
   .hero__image {
     aspect-ratio: 3 / 4;
@@ -271,6 +278,15 @@ p.hero__poem-date {
     padding: 20px 10px;
   }
 
+  .hero__poem-kicker {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  p.hero__poem-kicker {
+    margin-bottom: 0.9em;
+  }
+
   .hero__poem-title {
     font-size: 1.5rem;
     line-height: 1.8;
@@ -279,12 +295,6 @@ p.hero__poem-date {
   .hero__poem-body {
     font-size: 0.95rem;
     line-height: 1.9;
-  }
-
-  p.hero__poem-date {
-    font-size: 0.8rem;
-    line-height: 1.9;
-    margin-top: 1em;
   }
 }
 
@@ -609,6 +619,24 @@ a.episode-tag:hover {
 .page {
   padding-top: 56px;
   padding-bottom: 96px;
+}
+
+.senryu-caption {
+  max-width: 640px;
+  color: var(--color-ink-soft);
+  margin-bottom: 40px;
+}
+
+.senryu-caption__word {
+  background: #d4ff3f;
+  color: var(--color-ink);
+  font-weight: 700;
+  padding: 0 4px;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-decoration-color: var(--color-ink);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
 }
 
 .page--article {

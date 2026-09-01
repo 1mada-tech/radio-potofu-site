@@ -42,7 +42,7 @@ export type SiteSettings = {
 
 const fallbackSiteSettings: SiteSettings = {
   introText:
-    "猛暑詩：みこし\nすずしくなれば　こっちのもんだ\nそうおもってるやつら　全員で\n全員で　全員で　全員で　全員で\nすずしくなったら　みこしをかつごう\nでかくておもい　みこしをかつごう\nそのまま海に　ほうりなげよう\nすずしくなれば　こっちのもんだ　から\n2024年9月1日",
+    "猛暑詩：みこし\nすずしくなれば　こっちのもんだ\nそうおもってるやつら　全員で\n全員で　全員で　全員で　全員で\nすずしくなったら　みこしをかつごう\nでかくておもい　みこしをかつごう\nそのまま海に　ほうりなげよう\nすずしくなれば　こっちのもんだ　から",
   heroImage: { url: "/images/hero.jpg", width: 6570, height: 4380 },
   footerText: "© Radio Potofu",
 };
