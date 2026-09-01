@@ -19,7 +19,7 @@ export default async function NetprintPage() {
             <thead>
               <tr>
                 <th>号数</th>
-                <th>お題</th>
+                <th>テーマ</th>
                 <th>発行日</th>
                 <th>リンク</th>
               </tr>
