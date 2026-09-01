@@ -1,10 +1,9 @@
-import { readFile } from "fs/promises";
-import path from "path";
+import { parse } from "csv-parse/sync";
 
-// 現代川柳ページ用のキャプション。1行目が本文テンプレート([]が空欄)、
-// 3行目以降が空欄に入る候補の単語([単語]の形)。テキストファイルは
-// web/content/senryu-caption.txt にあり、随時単語を追加してもらう想定。
-const CAPTION_FILE = path.join(process.cwd(), "content", "senryu-caption.txt");
+// 現代川柳ページ用のキャプション。スプレッドシート「公式：現代川柳」タブ。
+// 列: キャプション(1行目だけにテンプレート文、[]が空欄) / ランダム候補(空欄に入る単語を1行1件)
+const SENRYU_CAPTION_CSV_URL =
+  "https://docs.google.com/spreadsheets/d/1J_fSVe7sqRQaeelc2A9ocQhAbxXqB6OHpv0BxW6CbEk/export?format=csv&gid=1115047140";
 
 export type SenryuCaption = {
   before: string;
@@ -14,14 +13,16 @@ export type SenryuCaption = {
 
 export async function getSenryuCaption(): Promise<SenryuCaption | null> {
   try {
-    const text = await readFile(CAPTION_FILE, "utf-8");
-    const lines = text.split(/\r?\n/);
-    const template = lines[0] ?? "";
+    const res = await fetch(SENRYU_CAPTION_CSV_URL, { cache: "no-store" });
+    const text = await res.text();
+    const rows: string[][] = parse(text, { skip_empty_lines: true });
+    const dataRows = rows.slice(1);
+
+    const template = dataRows.find((row) => row[0]?.trim())?.[0]?.trim() ?? "";
     if (!template.includes("[]")) return null;
 
-    const words = lines
-      .slice(2)
-      .map((line) => line.match(/\[(.+?)\]/)?.[1])
+    const words = dataRows
+      .map((row) => row[1]?.trim())
       .filter((word): word is string => Boolean(word));
     if (words.length === 0) return null;
 
