@@ -86,6 +86,18 @@ export default async function HomePage() {
 
   return (
     <>
+      <div className="container hero-cta">
+        <a
+          href={LISTENER_FORM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hero-cta__button"
+        >
+          <span className="hero-cta__label">おたよりはこちらから</span>
+          <span className="hero-cta__note">★Googleフォームに飛びます</span>
+        </a>
+      </div>
+
       <Hero image={siteSettings.heroImage} introText={siteSettings.introText} />
 
       {members.length > 0 && (
