@@ -11,6 +11,7 @@ import {
   type MicroCMSImage,
 } from "@/lib/microcms";
 import { getEpisodes } from "@/lib/podcast";
+import { getMembers, type Member } from "@/lib/members";
 
 export const revalidate = 60;
 
@@ -63,12 +64,32 @@ function MemberRow({ member }: { member: MemberInfo }) {
   );
 }
 
+function ProfileRow({ profile }: { profile: Member }) {
+  return (
+    <div className="member-row">
+      <div className="member-row__body">
+        <h3>
+          {profile.name}
+          {profile.title && <span className="member-row__title">{profile.title}</span>}
+        </h3>
+        {profile.bio && <p>{profile.bio}</p>}
+        {profile.link && (
+          <a href={profile.link} target="_blank" rel="noopener noreferrer">
+            {profile.link}
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default async function HomePage() {
-  const [siteSettings, episodesRes, senryuRes, noteRes] = await Promise.all([
+  const [siteSettings, episodesRes, senryuRes, noteRes, profiles] = await Promise.all([
     getSiteSettings(),
     getEpisodes(3),
     getEssaysByType(ESSAY_TYPE_SENRYU, 3),
     getEssaysByType(ESSAY_TYPE_NOTE, 3),
+    getMembers(),
   ]);
 
   const members: MemberInfo[] = [
@@ -165,9 +186,16 @@ export default async function HomePage() {
         )}
       </section>
 
-      <section className="section container">
-        <SectionHeading tag="ラジオポトフは！" title="こんなひとたち" color="red" />
-      </section>
+      {profiles.length > 0 && (
+        <section className="section container">
+          <SectionHeading tag="ラジオポトフは！" title="こんなひとたち" color="red" />
+          <div className="member-list">
+            {profiles.map((profile) => (
+              <ProfileRow profile={profile} key={profile.name} />
+            ))}
+          </div>
+        </section>
+      )}
     </>
   );
 }

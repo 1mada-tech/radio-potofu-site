@@ -733,6 +733,13 @@ a.episode-tag:hover {
   color: var(--color-ink-soft);
 }
 
+.member-row__title {
+  margin-left: 0.6em;
+  font-size: 0.75em;
+  font-weight: 400;
+  color: var(--color-ink-soft);
+}
+
 /* Pagination */
 .pagination {
   display: flex;
