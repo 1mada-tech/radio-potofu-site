@@ -9,6 +9,7 @@ export type SenryuCaption = {
   before: string;
   word: string;
   after: string;
+  version: string;
 };
 
 export async function getSenryuCaption(): Promise<SenryuCaption | null> {
@@ -21,14 +22,14 @@ export async function getSenryuCaption(): Promise<SenryuCaption | null> {
     const template = dataRows.find((row) => row[0]?.trim())?.[0]?.trim() ?? "";
     if (!template.includes("[]")) return null;
 
-    const words = dataRows
-      .map((row) => row[1]?.trim())
-      .filter((word): word is string => Boolean(word));
-    if (words.length === 0) return null;
+    const candidates = dataRows
+      .filter((row) => row[1]?.trim())
+      .map((row) => ({ word: row[1].trim(), version: row[2]?.trim() ?? "" }));
+    if (candidates.length === 0) return null;
 
-    const word = words[Math.floor(Math.random() * words.length)];
+    const { word, version } = candidates[Math.floor(Math.random() * candidates.length)];
     const [before, after] = template.split("[]");
-    return { before, word, after };
+    return { before, word, after, version };
   } catch {
     return null;
   }

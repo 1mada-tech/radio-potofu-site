@@ -32,6 +32,12 @@ export default async function SenryuPage({
           {caption.before}
           <span className="senryu-caption__word">{caption.word}</span>
           {caption.after}
+          {caption.version && (
+            <>
+              <br />
+              {`（version${caption.version}）`}
+            </>
+          )}
         </p>
       )}
       {contents.length > 0 ? (
