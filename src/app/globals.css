@@ -657,6 +657,12 @@ a.episode-tag:hover {
   text-underline-offset: 2px;
 }
 
+.senryu-caption__version {
+  display: block;
+  text-align: right;
+  font-size: 0.8em;
+}
+
 .page--article {
   max-width: 720px;
 }
