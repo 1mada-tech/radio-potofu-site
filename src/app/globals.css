@@ -589,7 +589,10 @@ p.hero__poem-title {
 
 .episode-tag {
   display: inline-block;
+  position: relative;
+  top: -3px;
   vertical-align: middle;
+  line-height: 1;
   background: var(--color-accent-soft);
   color: var(--color-accent);
   font-size: 0.75rem;
