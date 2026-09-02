@@ -166,18 +166,7 @@ export default async function HomePage() {
       </section>
 
       <section className="section container">
-        <SectionHeading
-          tag="ラジオポトフへの！"
-          title={
-            <>
-              おたよりは
-              <a href={LISTENER_FORM_URL} target="_blank" rel="noopener noreferrer">
-                こちらから
-              </a>
-            </>
-          }
-          color="red"
-        />
+        <SectionHeading tag="ラジオポトフは！" title="こんなひとたち" color="red" />
       </section>
     </>
   );
