@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getEpisodes, EPISODE_EXTRAS_CSV_URL } from "@/lib/podcast";
 import { formatDate } from "@/lib/date";
 import { getSimpleCaption } from "@/lib/pageCaption";
+import Pagination from "@/components/Pagination";
 
 export const metadata: Metadata = { title: "これまでの配信" };
 export const revalidate = 60;
@@ -46,6 +47,7 @@ export default async function EpisodesPage({
       )}
       {contents.length > 0 ? (
         <>
+          <Pagination page={page} totalPages={totalPages} hrefForPage={pageHref} />
           <div className="episode-table-wrap">
             <table className="episode-table">
               <thead>
@@ -131,23 +133,7 @@ export default async function EpisodesPage({
               </tbody>
             </table>
           </div>
-          {totalPages > 1 && (
-            <nav className="pagination">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <a
-                  key={p}
-                  href={pageHref(p)}
-                  className={
-                    p === page
-                      ? "pagination__item pagination__item--active"
-                      : "pagination__item"
-                  }
-                >
-                  {p}
-                </a>
-              ))}
-            </nav>
-          )}
+          <Pagination page={page} totalPages={totalPages} hrefForPage={pageHref} />
         </>
       ) : (
         <p className="empty-message">

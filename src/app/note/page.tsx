@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import EssayCard from "@/components/EssayCard";
 import { getEssaysByType, ESSAY_TYPE_NOTE } from "@/lib/microcms";
+import Pagination from "@/components/Pagination";
 
 export const metadata: Metadata = { title: "ひみつノート" };
 
@@ -26,28 +27,21 @@ export default async function NotePage({
       <h1>ひみつノート</h1>
       {contents.length > 0 ? (
         <>
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            hrefForPage={(p) => `/note?page=${p}`}
+          />
           <div className="list">
             {contents.map((essay) => (
               <EssayCard key={essay.id} essay={essay} basePath="/note" />
             ))}
           </div>
-          {totalPages > 1 && (
-            <nav className="pagination">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <a
-                  key={p}
-                  href={`/note?page=${p}`}
-                  className={
-                    p === page
-                      ? "pagination__item pagination__item--active"
-                      : "pagination__item"
-                  }
-                >
-                  {p}
-                </a>
-              ))}
-            </nav>
-          )}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            hrefForPage={(p) => `/note?page=${p}`}
+          />
         </>
       ) : (
         <p className="empty-message">まだ投稿がありません。</p>

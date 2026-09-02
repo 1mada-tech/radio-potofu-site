@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import EssayCard from "@/components/EssayCard";
 import { getEssaysByType, ESSAY_TYPE_SENRYU } from "@/lib/microcms";
 import { getSenryuCaption } from "@/lib/caption";
+import Pagination from "@/components/Pagination";
 
 export const metadata: Metadata = { title: "現代川柳" };
 
@@ -35,28 +36,21 @@ export default async function SenryuPage({
       )}
       {contents.length > 0 ? (
         <>
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            hrefForPage={(p) => `/senryu?page=${p}`}
+          />
           <div className="list">
             {contents.map((essay) => (
               <EssayCard key={essay.id} essay={essay} basePath="/senryu" />
             ))}
           </div>
-          {totalPages > 1 && (
-            <nav className="pagination">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <a
-                  key={p}
-                  href={`/senryu?page=${p}`}
-                  className={
-                    p === page
-                      ? "pagination__item pagination__item--active"
-                      : "pagination__item"
-                  }
-                >
-                  {p}
-                </a>
-              ))}
-            </nav>
-          )}
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            hrefForPage={(p) => `/senryu?page=${p}`}
+          />
         </>
       ) : (
         <p className="empty-message">まだ投稿がありません。</p>
