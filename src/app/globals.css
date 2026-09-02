@@ -634,6 +634,10 @@ a.episode-tag:hover {
   font-size: 0.95rem;
 }
 
+.page-caption .episode-tag {
+  font-size: inherit;
+}
+
 .senryu-caption__word {
   background: #d4ff3f;
   color: var(--color-ink);
