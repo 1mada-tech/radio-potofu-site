@@ -33,7 +33,7 @@ export default async function SenryuPage({
           <span className="senryu-caption__word">{caption.word}</span>
           {caption.after}
           {caption.version && (
-            <span className="senryu-caption__version">{`（version${caption.version}）`}</span>
+            <span className="senryu-caption__version">{`version:${caption.version}`}</span>
           )}
         </p>
       )}
