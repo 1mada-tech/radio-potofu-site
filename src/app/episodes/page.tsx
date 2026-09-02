@@ -53,8 +53,8 @@ export default async function EpisodesPage({
               <thead>
                 <tr>
                   <th>配信開始日</th>
-                  <th>タイトル</th>
-                  <th>リンク</th>
+                  <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
