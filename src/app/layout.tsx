@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, Zen_Kaku_Gothic_New, Shippori_Mincho } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -49,6 +50,7 @@ export default async function RootLayout({
         <Header />
         <main>{children}</main>
         <Footer footerText={siteSettings.footerText} />
+        <Analytics />
       </body>
     </html>
   );
