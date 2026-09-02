@@ -635,7 +635,14 @@ a.episode-tag:hover {
 }
 
 .page-caption .episode-tag {
+  display: inline;
+  position: static;
+  vertical-align: baseline;
+  line-height: inherit;
   font-size: inherit;
+  padding: 0.05em 0.35em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 .senryu-caption__word {
