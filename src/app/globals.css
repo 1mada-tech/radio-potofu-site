@@ -738,13 +738,10 @@ a.episode-tag:hover {
   align-items: center;
 }
 
-.member-row__swatch {
-  display: inline-block;
-  width: 0.7em;
-  height: 0.7em;
-  border-radius: 50%;
+.member-row__stripe {
+  width: 6px;
+  align-self: stretch;
   border: 1px solid var(--color-ink);
-  margin-right: 0.5em;
   flex-shrink: 0;
 }
 
@@ -752,12 +749,24 @@ a.episode-tag:hover {
   margin-left: 0.6em;
   font-size: 0.7em;
   font-weight: 400;
-  font-style: italic;
   color: var(--color-ink-soft);
 }
 
 .member-row__meta {
   font-size: 0.85em;
+}
+
+.member-row__badge {
+  display: inline-block;
+  background: var(--color-bg-alt);
+  color: var(--color-ink-soft);
+  font-size: 0.75em;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+
+.member-row__link {
+  color: var(--color-accent);
 }
 
 /* Pagination */

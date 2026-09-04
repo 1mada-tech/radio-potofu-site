@@ -74,25 +74,25 @@ function ProfileRow({ profile }: { profile: Member }) {
   const color = MEMBER_COLORS[profile.name];
   return (
     <div className="member-row">
+      {color && (
+        <span
+          className="member-row__stripe"
+          style={{ backgroundColor: color }}
+          aria-hidden="true"
+        />
+      )}
       <div className="member-row__body">
         {profile.participation && (
-          <p className="member-row__meta">{profile.participation}</p>
+          <p className="member-row__badge">{profile.participation}</p>
         )}
         {profile.title && <p className="member-row__meta">{profile.title}</p>}
         <h3 className="member-row__name">
-          {color && (
-            <span
-              className="member-row__swatch"
-              style={{ backgroundColor: color }}
-              aria-hidden="true"
-            />
-          )}
           {profile.name}
           {profile.romaji && <span className="member-row__romaji">{profile.romaji}</span>}
         </h3>
         {profile.bio && <p>{profile.bio}</p>}
         {profile.link && (
-          <a href={profile.link} target="_blank" rel="noopener noreferrer">
+          <a href={profile.link} target="_blank" rel="noopener noreferrer" className="member-row__link">
             {profile.link}
           </a>
         )}
