@@ -64,11 +64,25 @@ function MemberRow({ member }: { member: MemberInfo }) {
   );
 }
 
+const MEMBER_COLORS: Record<string, string> = {
+  今田健太郎: "#4cd964",
+  高澤聡美: "#e6342b",
+  鳥原弓里江: "#ffffff",
+};
+
 function ProfileRow({ profile }: { profile: Member }) {
+  const color = MEMBER_COLORS[profile.name];
   return (
     <div className="member-row">
       <div className="member-row__body">
         <h3>
+          {color && (
+            <span
+              className="member-row__swatch"
+              style={{ backgroundColor: color }}
+              aria-hidden="true"
+            />
+          )}
           {profile.name}
           {profile.title && <span className="member-row__title">{profile.title}</span>}
         </h3>

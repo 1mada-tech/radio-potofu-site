@@ -733,6 +733,16 @@ a.episode-tag:hover {
   color: var(--color-ink-soft);
 }
 
+.member-row__swatch {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  border: 1px solid var(--color-ink);
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
 .member-row__title {
   margin-left: 0.6em;
   font-size: 0.75em;
