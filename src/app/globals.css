@@ -649,9 +649,9 @@ a.episode-tag:hover {
   background: #d4ff3f;
   color: var(--color-ink);
   font-weight: 700;
-  padding: 0 4px;
+  padding: 0 8px;
   text-decoration: underline;
-  text-decoration-style: solid;
+  text-decoration-style: wavy;
   text-decoration-color: var(--color-ink);
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
