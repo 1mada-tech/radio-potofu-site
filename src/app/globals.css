@@ -477,6 +477,18 @@ p.hero__poem-title {
   width: 100%;
 }
 
+.episode-table--netprint th:nth-child(2),
+.episode-table--netprint td:nth-child(2) {
+  white-space: nowrap;
+  width: auto;
+}
+
+.episode-table--netprint th:nth-child(3),
+.episode-table--netprint td:nth-child(3) {
+  white-space: normal;
+  width: 100%;
+}
+
 .episode-table th {
   color: var(--color-ink-soft);
   font-weight: 500;

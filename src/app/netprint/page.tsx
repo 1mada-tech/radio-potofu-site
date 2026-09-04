@@ -20,11 +20,12 @@ export default async function NetprintPage() {
       <p className="page-caption">{caption ?? DEFAULT_CAPTION}</p>
       {issues.length > 0 ? (
         <div className="episode-table-wrap">
-          <table className="episode-table">
+          <table className="episode-table episode-table--netprint">
             <thead>
               <tr>
                 <th>号数</th>
                 <th>テーマ</th>
+                <th>内容</th>
                 <th>発行日</th>
                 <th>リンク</th>
               </tr>
@@ -34,6 +35,7 @@ export default async function NetprintPage() {
                 <tr key={issue.issue}>
                   <td>第{issue.issue}号</td>
                   <td>{issue.theme}</td>
+                  <td>{issue.content}</td>
                   <td>{issue.publishDate}</td>
                   <td>
                     <a href={issue.fileUrl} target="_blank" rel="noopener noreferrer">
