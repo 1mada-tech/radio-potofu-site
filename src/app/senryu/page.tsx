@@ -56,7 +56,7 @@ export default async function SenryuPage({
           />
         </>
       ) : (
-        <p className="empty-message">まだ投稿がありません。</p>
+        <p className="empty-message">近日始動</p>
       )}
     </div>
   );

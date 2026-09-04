@@ -182,7 +182,7 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <p className="empty-message">まだ投稿がありません。</p>
+          <p className="empty-message">近日始動</p>
         )}
       </section>
 
@@ -200,7 +200,7 @@ export default async function HomePage() {
             ))}
           </div>
         ) : (
-          <p className="empty-message">まだ投稿がありません。</p>
+          <p className="empty-message">近日始動</p>
         )}
       </section>
 
