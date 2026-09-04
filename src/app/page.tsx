@@ -75,7 +75,7 @@ function ProfileRow({ profile }: { profile: Member }) {
   return (
     <div className="member-row">
       <div className="member-row__body">
-        <h3>
+        <h3 className="member-row__name">
           {color && (
             <span
               className="member-row__swatch"
@@ -84,8 +84,12 @@ function ProfileRow({ profile }: { profile: Member }) {
             />
           )}
           {profile.name}
+          {profile.romaji && <span className="member-row__romaji">{profile.romaji}</span>}
           {profile.title && <span className="member-row__title">{profile.title}</span>}
         </h3>
+        {profile.participation && (
+          <p className="member-row__meta">参加度：{profile.participation}</p>
+        )}
         {profile.bio && <p>{profile.bio}</p>}
         {profile.link && (
           <a href={profile.link} target="_blank" rel="noopener noreferrer">
@@ -203,7 +207,7 @@ export default async function HomePage() {
       {profiles.length > 0 && (
         <section className="section container">
           <SectionHeading tag="ラジオポトフは！" title="こんなひとたち" color="red" />
-          <div className="member-list">
+          <div className="member-list member-list--profiles">
             {profiles.map((profile) => (
               <ProfileRow profile={profile} key={profile.name} />
             ))}
