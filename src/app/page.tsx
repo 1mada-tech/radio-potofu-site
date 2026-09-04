@@ -64,10 +64,10 @@ function MemberRow({ member }: { member: MemberInfo }) {
   );
 }
 
-const MEMBER_COLORS: Record<string, string> = {
-  今田健太郎: "#4cd964",
-  高澤聡美: "#e6342b",
-  鳥原弓里江: "#ffffff",
+const MEMBER_COLORS: Record<string, { bg: string; text: string }> = {
+  今田健太郎: { bg: "#4cd964", text: "#ffffff" },
+  高澤聡美: { bg: "#e6342b", text: "#ffffff" },
+  鳥原弓里江: { bg: "#ffffff", text: "#211a15" },
 };
 
 function ProfileRow({ profile }: { profile: Member }) {
@@ -77,14 +77,12 @@ function ProfileRow({ profile }: { profile: Member }) {
       {color && (
         <span
           className="member-row__stripe"
-          style={{ backgroundColor: color }}
-          aria-hidden="true"
-        />
+          style={{ backgroundColor: color.bg, color: color.text }}
+        >
+          {profile.participation}
+        </span>
       )}
       <div className="member-row__body">
-        {profile.participation && (
-          <p className="member-row__badge">{profile.participation}</p>
-        )}
         {profile.title && <p className="member-row__meta">{profile.title}</p>}
         <h3 className="member-row__name">
           {profile.name}
