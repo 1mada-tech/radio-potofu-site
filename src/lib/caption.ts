@@ -10,6 +10,7 @@ export type SenryuCaption = {
   word: string;
   after: string;
   version: string;
+  totalVersion: string;
 };
 
 export async function getSenryuCaption(): Promise<SenryuCaption | null> {
@@ -29,7 +30,14 @@ export async function getSenryuCaption(): Promise<SenryuCaption | null> {
 
     const { word, version } = candidates[Math.floor(Math.random() * candidates.length)];
     const [before, after] = template.split("[]");
-    return { before, word, after, version };
+
+    const totalVersion =
+      dataRows
+        .map((row) => row[3]?.trim())
+        .filter((cell): cell is string => Boolean(cell))
+        .pop() ?? "";
+
+    return { before, word, after, version, totalVersion };
   } catch {
     return null;
   }
