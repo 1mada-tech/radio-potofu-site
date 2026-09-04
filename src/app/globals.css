@@ -702,16 +702,12 @@ a.episode-tag:hover {
 .member-row {
   display: flex;
   gap: 24px;
-  padding: 24px 0;
+  padding: 20px 0;
   border-bottom: 1px solid var(--color-border);
 }
 
 .member-list > .member-row:first-child {
   padding-top: 0;
-}
-
-.member-list--profiles {
-  margin-top: 28px;
 }
 
 .member-row__photo {
@@ -750,13 +746,6 @@ a.episode-tag:hover {
   border: 1px solid var(--color-ink);
   margin-right: 0.5em;
   flex-shrink: 0;
-}
-
-.member-row__title {
-  margin-left: 0.6em;
-  font-size: 0.75em;
-  font-weight: 400;
-  color: var(--color-ink-soft);
 }
 
 .member-row__romaji {
