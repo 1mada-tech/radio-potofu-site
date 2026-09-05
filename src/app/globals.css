@@ -489,6 +489,11 @@ p.hero__poem-title {
   width: 100%;
 }
 
+.episode-table--netprint td:nth-child(3) {
+  font-size: 0.85em;
+  color: var(--color-ink-soft);
+}
+
 .episode-table th {
   color: var(--color-ink-soft);
   font-weight: 500;
