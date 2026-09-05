@@ -67,13 +67,16 @@ export async function getEssaysByType(type: string, limit = 100, offset = 0) {
   }
 }
 
-export async function getEssay(id: string) {
+export async function getEssay(id: string, draftKey?: string) {
   if (!client) return null;
   try {
     return await client.getListDetail<Essay>({
       endpoint: "essays",
       contentId: id,
-      customRequestInit: { next: { revalidate: REVALIDATE_SECONDS } },
+      queries: draftKey ? { draftKey } : undefined,
+      customRequestInit: draftKey
+        ? { cache: "no-store" }
+        : { next: { revalidate: REVALIDATE_SECONDS } },
     });
   } catch {
     return null;

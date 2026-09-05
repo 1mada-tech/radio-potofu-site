@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, Zen_Kaku_Gothic_New, Shippori_Mincho } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { draftMode } from "next/headers";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -41,12 +42,19 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const siteSettings = await getSiteSettings();
+  const { isEnabled: isDraftMode } = await draftMode();
 
   return (
     <html lang="ja">
       <body
         className={`${notoSansJP.variable} ${zenKakuGothicNew.variable} ${shipporiMincho.variable}`}
       >
+        {isDraftMode && (
+          <div className="draft-banner">
+            プレビュー中（未公開の内容です）
+            <a href="/api/disable-draft">プレビューを終了</a>
+          </div>
+        )}
         <Header />
         <main>{children}</main>
         <Footer footerText={siteSettings.footerText} />

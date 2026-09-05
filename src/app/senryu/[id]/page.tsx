@@ -4,11 +4,14 @@ import { formatDateJa } from "@/lib/date";
 
 export default async function SenryuDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ draftKey?: string }>;
 }) {
   const { id } = await params;
-  const essay = await getEssay(id);
+  const { draftKey } = await searchParams;
+  const essay = await getEssay(id, draftKey);
   if (!essay) notFound();
 
   return (
