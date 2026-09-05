@@ -92,7 +92,7 @@ function ProfileRow({ profile }: { profile: Member }) {
       <div className="member-row__body">
         {emoji && profile.title && (
           <p className="member-row__emoji">
-            {emoji.repeat(Array.from(profile.title).length)}
+            {emoji.repeat(Math.max(1, Math.round(Array.from(profile.title).length / 2)))}
           </p>
         )}
         {profile.title && <p className="member-row__meta">{profile.title}</p>}
