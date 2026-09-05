@@ -70,8 +70,15 @@ const MEMBER_COLORS: Record<string, { bg: string; text: string }> = {
   鳥原弓里江: { bg: "#ffffff", text: "#211a15" },
 };
 
+const MEMBER_EMOJI: Record<string, string> = {
+  今田健太郎: "🎙️",
+  高澤聡美: "🍚",
+  鳥原弓里江: "🧾",
+};
+
 function ProfileRow({ profile }: { profile: Member }) {
   const color = MEMBER_COLORS[profile.name];
+  const emoji = MEMBER_EMOJI[profile.name];
   return (
     <div className="member-row">
       {color && (
@@ -83,6 +90,11 @@ function ProfileRow({ profile }: { profile: Member }) {
         </span>
       )}
       <div className="member-row__body">
+        {emoji && profile.title && (
+          <p className="member-row__emoji">
+            {emoji.repeat(Array.from(profile.title).length)}
+          </p>
+        )}
         {profile.title && <p className="member-row__meta">{profile.title}</p>}
         <h3 className="member-row__name">
           {profile.name}

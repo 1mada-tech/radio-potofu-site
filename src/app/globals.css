@@ -789,6 +789,12 @@ a.episode-tag:hover {
   font-size: 0.85em;
 }
 
+.member-row__emoji {
+  font-size: 1.3em;
+  line-height: 1;
+  margin-bottom: 0.2em;
+}
+
 .member-row__link {
   color: var(--color-accent);
 }
