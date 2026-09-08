@@ -100,8 +100,9 @@ function ProfileRow({ profile }: { profile: Member }) {
             {(() => {
               const count = Math.max(1, Math.round(Array.from(profile.title).length / 2));
               if (!secondaryEmoji) return emoji.repeat(count);
-              const firstHalf = Math.ceil(count / 2);
-              return emoji.repeat(firstHalf) + secondaryEmoji.repeat(count - firstHalf);
+              return Array.from({ length: count }, (_, i) =>
+                i % 2 === 0 ? emoji : secondaryEmoji,
+              ).join("");
             })()}
           </p>
         )}
