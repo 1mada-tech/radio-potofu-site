@@ -76,9 +76,14 @@ const MEMBER_EMOJI: Record<string, string> = {
   鳥原弓里江: "🧾",
 };
 
+const MEMBER_EMOJI_SECONDARY: Record<string, string> = {
+  鳥原弓里江: "🐧",
+};
+
 function ProfileRow({ profile }: { profile: Member }) {
   const color = MEMBER_COLORS[profile.name];
   const emoji = MEMBER_EMOJI[profile.name];
+  const secondaryEmoji = MEMBER_EMOJI_SECONDARY[profile.name];
   return (
     <div className="member-row">
       {color && (
@@ -92,7 +97,12 @@ function ProfileRow({ profile }: { profile: Member }) {
       <div className="member-row__body">
         {emoji && profile.title && (
           <p className="member-row__emoji">
-            {emoji.repeat(Math.max(1, Math.round(Array.from(profile.title).length / 2)))}
+            {(() => {
+              const count = Math.max(1, Math.round(Array.from(profile.title).length / 2));
+              if (!secondaryEmoji) return emoji.repeat(count);
+              const firstHalf = Math.ceil(count / 2);
+              return emoji.repeat(firstHalf) + secondaryEmoji.repeat(count - firstHalf);
+            })()}
           </p>
         )}
         {profile.title && <p className="member-row__meta">{profile.title}</p>}
