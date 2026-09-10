@@ -197,9 +197,9 @@ ul {
 
 .site-footer__inner {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 16px;
 }
 
 /* Hero */
