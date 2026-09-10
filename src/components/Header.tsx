@@ -16,6 +16,9 @@ export default function Header() {
             ラジオポトフ
           </Link>
           <span className="site-header__tagline">公式サイト</span>
+          <Link href="/history" className="site-header__history">
+            年表
+          </Link>
         </div>
         <nav className="site-header__nav">
           <ul>
