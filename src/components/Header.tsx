@@ -5,6 +5,7 @@ const navItems = [
   { href: "/senryu", label: "現代川柳" },
   { href: "/netprint", label: "ネットプリント" },
   { href: "/note", label: "ひみつノート" },
+  { href: "/omikuji", label: "ランダムおすすめ回" },
 ];
 
 export default function Header() {
