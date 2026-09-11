@@ -494,17 +494,20 @@ p.hero__poem-title {
 .history-item__dotcol::after {
   content: "";
   position: absolute;
+  z-index: 0;
   left: 50%;
   top: 0;
   bottom: 0;
   width: 1px;
   background: var(--color-ink);
+  opacity: 0.5;
   transform: translateX(-50%);
 }
 
 .history-item__dotcol::before {
   content: "";
   position: absolute;
+  z-index: 1;
   left: 50%;
   top: calc((1.6em - 12px) / 2);
   width: 12px;

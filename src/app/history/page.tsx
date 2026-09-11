@@ -15,7 +15,10 @@ export default async function HistoryPage() {
         <div className="history-list">
           {entries.map((entry, i) => {
             const showYear = i === 0 || entries[i - 1].year !== entry.year;
-            const lines = entry.body.split("\n");
+            const normalizedBody = entry.body
+              .replace(/([^\n])(★)/g, "$1\n$2")
+              .replace(/(★[^\n]*?[。！？])(?!\n)(?=\S)/g, "$1\n");
+            const lines = normalizedBody.split("\n");
             return (
               <Fragment key={i}>
                 {showYear && (
@@ -29,17 +32,17 @@ export default async function HistoryPage() {
                   <span className="history-item__dotcol" aria-hidden="true" />
                   <div className="history-item__content">
                     <p className="history-item__body">
-                      {lines.map((line, li) => (
-                        <span
-                          key={li}
-                          className={
-                            line.trim().startsWith("★") ? "history-item__star-line" : undefined
-                          }
-                        >
-                          {line}
-                          {li < lines.length - 1 && <br />}
-                        </span>
-                      ))}
+                      {lines.map((line, li) => {
+                        const isStarLine = line.trim().startsWith("★");
+                        return (
+                          <Fragment key={li}>
+                            <span className={isStarLine ? "history-item__star-line" : undefined}>
+                              {isStarLine ? line.trim().slice(1) : line}
+                            </span>
+                            {li < lines.length - 1 && <br />}
+                          </Fragment>
+                        );
+                      })}
                     </p>
                     {entry.linkUrl && (
                       <a
