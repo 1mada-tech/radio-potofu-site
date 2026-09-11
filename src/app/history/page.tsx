@@ -15,20 +15,32 @@ export default async function HistoryPage() {
         <div className="history-list">
           {entries.map((entry, i) => {
             const showYear = i === 0 || entries[i - 1].year !== entry.year;
+            const lines = entry.body.split("\n");
             return (
               <Fragment key={i}>
                 {showYear && (
                   <div className={`history-year-row${i === 0 ? " history-year-row--first" : ""}`}>
-                    <span className="history-item__date" aria-hidden="true" />
+                    <p className="history-item__date history-year">{entry.year}</p>
                     <span className="history-item__dotcol history-item__dotcol--plain" aria-hidden="true" />
-                    <p className="history-year">{entry.year}</p>
                   </div>
                 )}
                 <div className="history-item">
                   <p className="history-item__date">{entry.monthDay}</p>
                   <span className="history-item__dotcol" aria-hidden="true" />
                   <div className="history-item__content">
-                    <p className="history-item__body">{entry.body}</p>
+                    <p className="history-item__body">
+                      {lines.map((line, li) => (
+                        <span
+                          key={li}
+                          className={
+                            line.trim().startsWith("★") ? "history-item__star-line" : undefined
+                          }
+                        >
+                          {line}
+                          {li < lines.length - 1 && <br />}
+                        </span>
+                      ))}
+                    </p>
                     {entry.linkUrl && (
                       <a
                         href={entry.linkUrl}
