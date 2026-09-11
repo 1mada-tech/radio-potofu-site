@@ -457,7 +457,7 @@ p.hero__poem-title {
 }
 
 .history-year {
-  width: 64px;
+  width: 80px;
   flex-shrink: 0;
   text-align: right;
   margin: 0;
@@ -477,7 +477,7 @@ p.hero__poem-title {
 }
 
 .history-item__date {
-  width: 64px;
+  width: 80px;
   flex-shrink: 0;
   text-align: right;
   padding-bottom: 14px;
@@ -499,9 +499,8 @@ p.hero__poem-title {
   top: 0;
   bottom: 0;
   width: 1px;
-  background: var(--color-ink);
-  opacity: 0.5;
-  transform: translateX(-50%);
+  background: #000;
+  transform: translateX(-50%) scaleX(0.4);
 }
 
 .history-item__dotcol::before {
