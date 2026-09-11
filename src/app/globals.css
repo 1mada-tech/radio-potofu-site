@@ -450,20 +450,28 @@ p.hero__poem-title {
 }
 
 /* History timeline */
-.history-year {
-  margin: 24px 0 4px;
-  font-weight: 700;
-  color: var(--color-accent);
+.history-year-row {
+  display: flex;
+  gap: 8px;
+  padding: 20px 0 4px;
+  line-height: 1.6;
 }
 
-.history-list > .history-year:first-child {
-  margin-top: 0;
+.history-year-row--first {
+  padding-top: 0;
+}
+
+.history-year {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-accent);
 }
 
 .history-item {
   display: flex;
   gap: 8px;
   padding: 6px 0;
+  line-height: 1.6;
 }
 
 .history-item__date {
@@ -471,7 +479,6 @@ p.hero__poem-title {
   flex-shrink: 0;
   text-align: right;
   color: var(--color-ink-soft);
-  padding-top: 2px;
 }
 
 .history-item__dotcol {
@@ -486,17 +493,20 @@ p.hero__poem-title {
   content: "";
   position: absolute;
   left: -7px;
-  top: 6px;
+  top: calc((1.6em - 12px) / 2);
   width: 12px;
   height: 12px;
   border-radius: 50%;
   background: var(--color-accent);
 }
 
+.history-item__dotcol--plain::before {
+  content: none;
+}
+
 .history-item__content {
   flex: 1;
   min-width: 0;
-  padding-top: 2px;
 }
 
 .history-item__body {

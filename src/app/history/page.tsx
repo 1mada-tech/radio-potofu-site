@@ -17,7 +17,13 @@ export default async function HistoryPage() {
             const showYear = i === 0 || entries[i - 1].year !== entry.year;
             return (
               <Fragment key={i}>
-                {showYear && <p className="history-year">{entry.year}</p>}
+                {showYear && (
+                  <div className={`history-year-row${i === 0 ? " history-year-row--first" : ""}`}>
+                    <span className="history-item__date" aria-hidden="true" />
+                    <span className="history-item__dotcol history-item__dotcol--plain" aria-hidden="true" />
+                    <p className="history-year">{entry.year}</p>
+                  </div>
+                )}
                 <div className="history-item">
                   <p className="history-item__date">{entry.monthDay}</p>
                   <span className="history-item__dotcol" aria-hidden="true" />
