@@ -20,7 +20,7 @@ export default async function HistoryPage() {
                 {showYear && <p className="history-year">{entry.year}</p>}
                 <div className="history-item">
                   <p className="history-item__date">{entry.monthDay}</p>
-                  <span className="history-item__dot" aria-hidden="true" />
+                  <span className="history-item__dotcol" aria-hidden="true" />
                   <div className="history-item__content">
                     <p className="history-item__body">{entry.body}</p>
                     {entry.linkUrl && (

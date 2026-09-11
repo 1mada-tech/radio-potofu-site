@@ -462,7 +462,6 @@ p.hero__poem-title {
 
 .history-item {
   display: flex;
-  align-items: baseline;
   gap: 8px;
   padding: 6px 0;
 }
@@ -471,21 +470,33 @@ p.hero__poem-title {
   width: 64px;
   flex-shrink: 0;
   text-align: right;
-  font-size: 0.85rem;
   color: var(--color-ink-soft);
+  padding-top: 2px;
 }
 
-.history-item__dot {
-  width: 10px;
-  height: 10px;
+.history-item__dotcol {
+  position: relative;
+  width: 6px;
+  flex-shrink: 0;
+  align-self: stretch;
+  border-left: 2px solid var(--color-border);
+}
+
+.history-item__dotcol::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: var(--color-accent);
-  flex-shrink: 0;
 }
 
 .history-item__content {
   flex: 1;
   min-width: 0;
+  padding-top: 2px;
 }
 
 .history-item__body {
