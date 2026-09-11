@@ -6,15 +6,16 @@ const HISTORY_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1J_fSVe7sqRQaeelc2A9ocQhAbxXqB6OHpv0BxW6CbEk/export?format=csv&gid=1488414072";
 
 export type HistoryEntry = {
-  date: string;
+  year: string;
+  monthDay: string;
   body: string;
   linkText?: string;
   linkUrl?: string;
 };
 
-function formatDate(year: string, month: string, day: string): string {
-  if (day) return `${year}年${month}月${day}日`;
-  return `${year}年${month}月`;
+function formatMonthDay(month: string, day: string): string {
+  if (day) return `${month}月${day}日`;
+  return `${month}月`;
 }
 
 export async function getHistoryEntries(): Promise<HistoryEntry[]> {
@@ -30,7 +31,8 @@ export async function getHistoryEntries(): Promise<HistoryEntry[]> {
         const linkUrl = row[6]?.trim() || undefined;
         const hasValidUrl = linkUrl?.startsWith("http");
         return {
-          date: formatDate(row[1].trim(), row[2]?.trim() ?? "", row[3]?.trim() ?? ""),
+          year: row[1].trim(),
+          monthDay: formatMonthDay(row[2]?.trim() ?? "", row[3]?.trim() ?? ""),
           body: row[4].trim(),
           linkText: hasValidUrl ? linkText : undefined,
           linkUrl: hasValidUrl ? linkUrl : undefined,
