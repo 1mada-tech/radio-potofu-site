@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { Metadata } from "next";
 import { getHistoryEntries } from "@/lib/history";
 
@@ -11,30 +12,33 @@ export default async function HistoryPage() {
     <div className="container page">
       <h1>年表</h1>
       {entries.length > 0 ? (
-        <ol className="history-list">
+        <div className="history-list">
           {entries.map((entry, i) => {
             const showYear = i === 0 || entries[i - 1].year !== entry.year;
             return (
-              <li className="history-item" key={i}>
-                <div className="history-item__year">{showYear && entry.year}</div>
-                <div className="history-item__line">
+              <Fragment key={i}>
+                {showYear && <p className="history-year">{entry.year}</p>}
+                <div className="history-item">
                   <p className="history-item__date">{entry.monthDay}</p>
-                  <p className="history-item__body">{entry.body}</p>
-                  {entry.linkUrl && (
-                    <a
-                      href={entry.linkUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="history-item__link"
-                    >
-                      {entry.linkText || entry.linkUrl}
-                    </a>
-                  )}
+                  <span className="history-item__dot" aria-hidden="true" />
+                  <div className="history-item__content">
+                    <p className="history-item__body">{entry.body}</p>
+                    {entry.linkUrl && (
+                      <a
+                        href={entry.linkUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="history-item__link"
+                      >
+                        {entry.linkText || entry.linkUrl}
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </li>
+              </Fragment>
             );
           })}
-        </ol>
+        </div>
       ) : (
         <p className="empty-message">近日始動</p>
       )}
