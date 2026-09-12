@@ -251,10 +251,22 @@ ul {
 }
 
 .site-header__omikuji {
+  display: inline-block;
   background: var(--color-accent);
   color: #fff !important;
   padding: 4px 10px;
   font-weight: 700;
+  animation: omikuji-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes omikuji-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
 }
 
 .site-header__omikuji::after {
@@ -880,7 +892,7 @@ a.episode-tag:hover {
 .senryu-caption__version {
   display: inline-block;
   margin-left: 0.6em;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 400;
   color: var(--color-ink-soft);
   white-space: nowrap;
