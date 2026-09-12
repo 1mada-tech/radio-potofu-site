@@ -26,17 +26,19 @@ export default async function SenryuPage({
 
   return (
     <div className="container page">
-      <h1>現代川柳</h1>
+      <h1>
+        現代川柳
+        {caption?.version && (
+          <span className="senryu-caption__version">
+            {`version:${caption.version}${caption.totalVersion ? `/${caption.totalVersion}` : ""}`}
+          </span>
+        )}
+      </h1>
       {caption && (
         <p className="page-caption">
           {caption.before}
           <span className="senryu-caption__word">{caption.word}</span>
           {caption.after}
-          {caption.version && (
-            <span className="senryu-caption__version">
-              {`version:${caption.version}${caption.totalVersion ? `/${caption.totalVersion}` : ""}`}
-            </span>
-          )}
         </p>
       )}
       {contents.length > 0 ? (

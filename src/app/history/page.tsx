@@ -44,15 +44,20 @@ export default async function HistoryPage() {
                         );
                       })}
                     </p>
-                    {entry.linkUrl && (
-                      <a
-                        href={entry.linkUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="history-item__link"
-                      >
-                        {entry.linkText || entry.linkUrl}
-                      </a>
+                    {entry.links.length > 0 && (
+                      <div className="history-item__links">
+                        {entry.links.map((link, li) => (
+                          <a
+                            key={li}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="history-item__link"
+                          >
+                            {link.text}
+                          </a>
+                        ))}
+                      </div>
                     )}
                   </div>
                 </div>
