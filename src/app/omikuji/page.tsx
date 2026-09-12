@@ -1,20 +1,22 @@
 import type { Metadata } from "next";
 import { getEpisodes } from "@/lib/podcast";
+import { getOmikujiConfig } from "@/lib/omikujiConfig";
 import OmikujiDraw from "@/components/OmikujiDraw";
 
 export const metadata: Metadata = { title: "きょうはこの回聴いてみて" };
 export const revalidate = 60;
 
 export default async function OmikujiPage() {
-  const { contents } = await getEpisodes(9999);
+  const [{ contents }, config] = await Promise.all([
+    getEpisodes(9999),
+    getOmikujiConfig(),
+  ]);
 
   return (
     <div className="container page">
-      <h1>きょうはこの回聴いてみて</h1>
-      <p className="page-caption">
-        ボタンを押すと、これまでの配信からランダムに1回選ばれます。思いもよらない一本と出会ってみてください。
-      </p>
-      <OmikujiDraw episodes={contents} />
+      <h1>{config.title}</h1>
+      <p className="page-caption">{config.caption}</p>
+      <OmikujiDraw episodes={contents} buttonLabel={config.buttonLabel} />
     </div>
   );
 }

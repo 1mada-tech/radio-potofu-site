@@ -1,11 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Episode } from "@/lib/podcast";
 import { formatDate } from "@/lib/date";
 
-export default function OmikujiDraw({ episodes }: { episodes: Episode[] }) {
+const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+
+function formatNow(date: Date): string {
+  const y = date.getFullYear();
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+  const w = WEEKDAYS[date.getDay()];
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+  const ss = String(date.getSeconds()).padStart(2, "0");
+  return `${y}年${m}月${d}日(${w}) ${hh}:${mm}:${ss}`;
+}
+
+export default function OmikujiDraw({
+  episodes,
+  buttonLabel,
+}: {
+  episodes: Episode[];
+  buttonLabel: string;
+}) {
   const [picked, setPicked] = useState<Episode | null>(null);
+  const [now, setNow] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setNow(new Date());
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const draw = () => {
     if (episodes.length === 0) return;
@@ -15,8 +41,9 @@ export default function OmikujiDraw({ episodes }: { episodes: Episode[] }) {
 
   return (
     <div className="omikuji">
+      {now && <p className="omikuji__clock">{formatNow(now)}</p>}
       <button type="button" className="omikuji__button" onClick={draw}>
-        {picked ? "もう一度引く" : "引く"}
+        {buttonLabel}
       </button>
 
       {picked && (
