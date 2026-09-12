@@ -138,6 +138,25 @@ ul {
   color: var(--color-ink-soft);
 }
 
+.site-header__toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.site-header__toggle span {
+  display: block;
+  height: 2px;
+  background: var(--color-ink);
+}
+
 .hero-cta {
   display: flex;
   justify-content: center;
@@ -1039,8 +1058,31 @@ a.episode-tag:hover {
 
 @media (max-width: 600px) {
   .site-header__inner {
+    align-items: center;
+  }
+
+  .site-header__toggle {
+    display: flex;
+  }
+
+  .site-header__nav {
+    display: none;
+    width: 100%;
+    order: 3;
+    margin-top: 12px;
+  }
+
+  .site-header__nav--open {
+    display: block;
+  }
+
+  .site-header__nav ul {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .site-header__nav a.site-header__omikuji {
+    display: inline-block;
   }
 
   .section {
