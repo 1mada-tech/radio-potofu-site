@@ -250,22 +250,34 @@ ul {
   transform: scaleX(1);
 }
 
-.site-header__omikuji {
+.site-header__nav a.site-header__omikuji {
   display: inline-block;
+  position: fixed;
+  z-index: 100;
   background: var(--color-accent);
   color: #fff !important;
   padding: 4px 10px;
   font-weight: 700;
-  animation: omikuji-breathe 2.4s ease-in-out infinite;
+  animation: omikuji-wander 9.6s ease-in-out infinite;
 }
 
-@keyframes omikuji-breathe {
+@keyframes omikuji-wander {
   0%,
   100% {
-    transform: scale(1);
+    top: 80px;
+    left: 20px;
+  }
+  25% {
+    top: 40vh;
+    left: 65vw;
   }
   50% {
-    transform: scale(1.08);
+    top: 75vh;
+    left: 15vw;
+  }
+  75% {
+    top: 20vh;
+    left: 55vw;
   }
 }
 
@@ -892,11 +904,11 @@ a.episode-tag:hover {
 .senryu-caption__version {
   display: inline-block;
   margin-left: 0.6em;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 400;
   color: var(--color-ink-soft);
   white-space: nowrap;
-  vertical-align: middle;
+  vertical-align: baseline;
 }
 
 .page--article {
