@@ -130,7 +130,7 @@ ul {
 
 .site-header__logo:hover,
 .site-header__logo:active {
-  transform: rotate(-4deg) scale(1.05);
+  transform: scale(1.05);
 }
 
 .site-header__tagline {
