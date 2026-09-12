@@ -140,21 +140,48 @@ ul {
 
 .site-header__toggle {
   display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  width: 32px;
-  height: 32px;
-  padding: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 2px;
   background: transparent;
   border: none;
   cursor: pointer;
 }
 
-.site-header__toggle span {
+.site-header__toggle-bars {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 24px;
+  height: 18px;
+}
+
+.site-header__toggle-bars span {
   display: block;
   height: 2px;
   background: var(--color-ink);
+  transform-origin: center;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.site-header__toggle[aria-expanded="true"] .site-header__toggle-bars span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.site-header__toggle[aria-expanded="true"] .site-header__toggle-bars span:nth-child(2) {
+  opacity: 0;
+}
+
+.site-header__toggle[aria-expanded="true"] .site-header__toggle-bars span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.site-header__toggle-label {
+  font-size: 0.85rem;
+  color: var(--color-ink);
 }
 
 .hero-cta {
@@ -1066,19 +1093,23 @@ a.episode-tag:hover {
   }
 
   .site-header__nav {
-    display: none;
+    display: grid;
+    grid-template-rows: 0fr;
     width: 100%;
     order: 3;
-    margin-top: 12px;
+    transition: grid-template-rows 0.25s ease;
   }
 
   .site-header__nav--open {
-    display: block;
+    grid-template-rows: 1fr;
+    margin-top: 12px;
   }
 
   .site-header__nav ul {
     flex-direction: column;
     gap: 16px;
+    overflow: hidden;
+    min-height: 0;
   }
 
   .site-header__nav a.site-header__omikuji {

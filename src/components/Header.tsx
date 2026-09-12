@@ -28,12 +28,15 @@ export default function Header() {
           type="button"
           className="site-header__toggle"
           aria-expanded={isOpen}
-          aria-label="メニューを開く"
+          aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
           onClick={() => setIsOpen((v) => !v)}
         >
-          <span />
-          <span />
-          <span />
+          <span className="site-header__toggle-bars">
+            <span />
+            <span />
+            <span />
+          </span>
+          <span className="site-header__toggle-label">メニュー</span>
         </button>
 
         <nav className={`site-header__nav${isOpen ? " site-header__nav--open" : ""}`}>
