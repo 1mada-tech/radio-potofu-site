@@ -138,11 +138,6 @@ ul {
   color: var(--color-ink-soft);
 }
 
-.site-header__history {
-  font-size: 0.85rem;
-  color: var(--color-accent);
-}
-
 .hero-cta {
   display: flex;
   justify-content: center;
@@ -253,6 +248,23 @@ ul {
 .site-header__nav a:hover::after,
 .site-header__nav a:active::after {
   transform: scaleX(1);
+}
+
+.site-header__omikuji {
+  background: var(--color-accent);
+  color: #fff !important;
+  padding: 4px 10px;
+  font-weight: 700;
+}
+
+.site-header__omikuji::after {
+  content: none;
+}
+
+.site-header__omikuji:hover,
+.site-header__omikuji:active {
+  color: #fff !important;
+  opacity: 0.85;
 }
 
 /* Footer */
@@ -854,9 +866,9 @@ a.episode-tag:hover {
   font-weight: 700;
   padding: 0 8px;
   text-decoration: underline;
-  text-decoration-style: wavy;
+  text-decoration-style: solid;
   text-decoration-color: var(--color-ink);
-  text-decoration-thickness: 2px;
+  text-decoration-thickness: 1px;
   text-underline-offset: 2px;
 }
 
@@ -988,21 +1000,31 @@ a.episode-tag:hover {
 /* Pagination */
 .pagination {
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
+  align-items: center;
   justify-content: center;
-  margin-top: 56px;
+  gap: 16px;
+  margin: 32px 0;
   font-size: 0.9rem;
 }
 
-.pagination__item {
-  color: var(--color-ink-soft);
+.pagination__arrow {
+  color: var(--color-accent);
+  white-space: nowrap;
 }
 
-.pagination__item--active {
-  color: var(--color-accent);
-  font-weight: 700;
-  text-decoration: underline;
+.pagination__arrow--disabled {
+  color: var(--color-ink-soft);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.pagination__select {
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--color-ink);
+  background: var(--color-bg);
+  border: 1px solid var(--color-ink);
+  padding: 4px 8px;
 }
 
 @media (max-width: 600px) {

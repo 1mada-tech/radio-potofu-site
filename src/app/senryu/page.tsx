@@ -44,7 +44,7 @@ export default async function SenryuPage({
           <Pagination
             page={page}
             totalPages={totalPages}
-            hrefForPage={(p) => `/senryu?page=${p}`}
+            hrefTemplate="/senryu?page={page}"
           />
           <div className="list">
             {contents.map((essay) => (
@@ -54,7 +54,7 @@ export default async function SenryuPage({
           <Pagination
             page={page}
             totalPages={totalPages}
-            hrefForPage={(p) => `/senryu?page=${p}`}
+            hrefTemplate="/senryu?page={page}"
           />
         </>
       ) : (

@@ -30,7 +30,7 @@ export default async function NotePage({
           <Pagination
             page={page}
             totalPages={totalPages}
-            hrefForPage={(p) => `/note?page=${p}`}
+            hrefTemplate="/note?page={page}"
           />
           <div className="list">
             {contents.map((essay) => (
@@ -40,7 +40,7 @@ export default async function NotePage({
           <Pagination
             page={page}
             totalPages={totalPages}
-            hrefForPage={(p) => `/note?page=${p}`}
+            hrefTemplate="/note?page={page}"
           />
         </>
       ) : (

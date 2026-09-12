@@ -31,8 +31,9 @@ export default async function EpisodesPage({
   const offset = (page - 1) * PER_PAGE;
   const { contents, totalCount } = await getEpisodes(PER_PAGE, offset, tagFilter);
   const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
-  const pageHref = (p: number) =>
-    tagFilter ? `/episodes?tag=${encodeURIComponent(tagFilter)}&page=${p}` : `/episodes?page=${p}`;
+  const pageHrefTemplate = tagFilter
+    ? `/episodes?tag=${encodeURIComponent(tagFilter)}&page={page}`
+    : `/episodes?page={page}`;
   const caption = await getSimpleCaption(EPISODE_EXTRAS_CSV_URL);
 
   return (
@@ -47,7 +48,7 @@ export default async function EpisodesPage({
       )}
       {contents.length > 0 ? (
         <>
-          <Pagination page={page} totalPages={totalPages} hrefForPage={pageHref} />
+          <Pagination page={page} totalPages={totalPages} hrefTemplate={pageHrefTemplate} />
           <div className="episode-table-wrap">
             <table className="episode-table">
               <thead>
@@ -133,7 +134,7 @@ export default async function EpisodesPage({
               </tbody>
             </table>
           </div>
-          <Pagination page={page} totalPages={totalPages} hrefForPage={pageHref} />
+          <Pagination page={page} totalPages={totalPages} hrefTemplate={pageHrefTemplate} />
         </>
       ) : (
         <p className="empty-message">

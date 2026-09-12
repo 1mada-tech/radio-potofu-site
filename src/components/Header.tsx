@@ -5,7 +5,7 @@ const navItems = [
   { href: "/senryu", label: "現代川柳" },
   { href: "/netprint", label: "ネットプリント" },
   { href: "/note", label: "ひみつノート" },
-  { href: "/omikuji", label: "きょうはこの回聴こう" },
+  { href: "/history", label: "年表" },
 ];
 
 export default function Header() {
@@ -17,9 +17,6 @@ export default function Header() {
             ラジオポトフ
           </Link>
           <span className="site-header__tagline">公式サイト</span>
-          <Link href="/history" className="site-header__history">
-            年表
-          </Link>
         </div>
         <nav className="site-header__nav">
           <ul>
@@ -28,6 +25,11 @@ export default function Header() {
                 <Link href={item.href}>{item.label}</Link>
               </li>
             ))}
+            <li>
+              <Link href="/omikuji" className="site-header__omikuji">
+                きょうはこの回聴いてみて
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>
