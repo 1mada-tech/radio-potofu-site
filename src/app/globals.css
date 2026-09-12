@@ -500,7 +500,7 @@ p.hero__poem-title {
   bottom: 0;
   width: 1px;
   background: #000;
-  transform: translateX(-50%) scaleX(0.4);
+  transform: translateX(-50%) scaleX(0.15);
 }
 
 .history-item__dotcol::before {
