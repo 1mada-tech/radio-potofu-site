@@ -54,7 +54,7 @@ export default function Header() {
                 className="site-header__omikuji"
                 onClick={() => setIsOpen(false)}
               >
-                きょうはこの回聴いてみて
+                今日はこの回聞いて
               </Link>
             </li>
           </ul>

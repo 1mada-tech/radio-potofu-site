@@ -230,13 +230,13 @@ ul {
 
 .omikuji__clock {
   display: inline-block;
-  font-family: "Courier New", Courier, monospace;
+  font-family: var(--font-digital), "Courier New", monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 1.8rem;
-  letter-spacing: 0.04em;
+  font-size: 2.6rem;
+  letter-spacing: 0.06em;
   background: #000;
   color: #2cff5e;
-  padding: 10px 20px;
+  padding: 8px 24px;
   margin-bottom: 16px;
 }
 

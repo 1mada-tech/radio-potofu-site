@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Noto_Sans_JP, Zen_Kaku_Gothic_New, Shippori_Mincho } from "next/font/google";
+import { Noto_Sans_JP, Zen_Kaku_Gothic_New, Shippori_Mincho, VT323 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { draftMode } from "next/headers";
 import "./globals.css";
@@ -28,6 +28,13 @@ const shipporiMincho = Shippori_Mincho({
   display: "swap",
 });
 
+const vt323 = VT323({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-digital",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "ラジオポトフ",
@@ -47,7 +54,7 @@ export default async function RootLayout({
   return (
     <html lang="ja">
       <body
-        className={`${notoSansJP.variable} ${zenKakuGothicNew.variable} ${shipporiMincho.variable}`}
+        className={`${notoSansJP.variable} ${zenKakuGothicNew.variable} ${shipporiMincho.variable} ${vt323.variable}`}
       >
         {isDraftMode && (
           <div className="draft-banner">
