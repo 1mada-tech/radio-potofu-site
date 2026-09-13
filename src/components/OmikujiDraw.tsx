@@ -67,6 +67,23 @@ export default function OmikujiDraw({
 
   useEffect(() => {
     setNow(new Date());
+
+    // ページ到達直後の自動再生。ブラウザの自動再生制限により
+    // 鳴らない場合もあるが、その場合は黙って何もしない。
+    try {
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
+      const ctx = new AudioContextClass();
+      audioCtxRef.current = ctx;
+      if (ctx.state === "running") {
+        playTone(ctx, 1200, 0.03);
+      }
+    } catch {
+      // 何もしない
+    }
+
     const timer = setInterval(() => {
       setNow(new Date());
       if (audioCtxRef.current) {
@@ -84,7 +101,12 @@ export default function OmikujiDraw({
           .webkitAudioContext;
       audioCtxRef.current = new AudioContextClass();
     }
-    playDrawSound(audioCtxRef.current);
+    const ctx = audioCtxRef.current;
+    if (ctx.state === "suspended") {
+      ctx.resume().then(() => playDrawSound(ctx));
+    } else {
+      playDrawSound(ctx);
+    }
 
     if (episodes.length === 0) return;
     const next = episodes[Math.floor(Math.random() * episodes.length)];
@@ -130,9 +152,13 @@ export default function OmikujiDraw({
           {picked.tags && picked.tags.length > 0 && (
             <div className="episode-table__tags">
               {picked.tags.map((tag) => (
-                <span key={tag} className="episode-tag">
+                <a
+                  key={tag}
+                  href={`/episodes?tag=${encodeURIComponent(tag)}`}
+                  className="episode-tag"
+                >
                   #{tag}
-                </span>
+                </a>
               ))}
             </div>
           )}
