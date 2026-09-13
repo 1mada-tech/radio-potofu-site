@@ -1,20 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Episode } from "@/lib/podcast";
 import { formatDate } from "@/lib/date";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 
-function formatNow(date: Date): string {
-  const y = date.getFullYear();
-  const m = date.getMonth() + 1;
-  const d = date.getDate();
-  const w = WEEKDAYS[date.getDay()];
-  const hh = String(date.getHours()).padStart(2, "0");
-  const mm = String(date.getMinutes()).padStart(2, "0");
-  const ss = String(date.getSeconds()).padStart(2, "0");
-  return `${y}年${m}月${d}日(${w}) ${hh}:${mm}:${ss}`;
+function playTone(ctx: AudioContext, freq: number, duration: number) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "square";
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.06, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + duration);
 }
 
 export default function OmikujiDraw({
@@ -26,14 +28,29 @@ export default function OmikujiDraw({
 }) {
   const [picked, setPicked] = useState<Episode | null>(null);
   const [now, setNow] = useState<Date | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   useEffect(() => {
     setNow(new Date());
-    const timer = setInterval(() => setNow(new Date()), 1000);
+    const timer = setInterval(() => {
+      setNow(new Date());
+      if (audioCtxRef.current) {
+        playTone(audioCtxRef.current, 1200, 0.03);
+      }
+    }, 1000);
     return () => clearInterval(timer);
   }, []);
 
   const draw = () => {
+    if (!audioCtxRef.current) {
+      const AudioContextClass =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
+      audioCtxRef.current = new AudioContextClass();
+    }
+    playTone(audioCtxRef.current, 440, 0.12);
+
     if (episodes.length === 0) return;
     const next = episodes[Math.floor(Math.random() * episodes.length)];
     setPicked(next);
@@ -41,7 +58,25 @@ export default function OmikujiDraw({
 
   return (
     <div className="omikuji">
-      {now && <p className="omikuji__clock">{formatNow(now)}</p>}
+      {now && (
+        <p className="omikuji__clock">
+          <span className="omikuji__clock-line">
+            {now.getFullYear()}
+            <span className="omikuji__clock-kanji">年</span>
+            {now.getMonth() + 1}
+            <span className="omikuji__clock-kanji">月</span>
+            {now.getDate()}
+            <span className="omikuji__clock-kanji">
+              日({WEEKDAYS[now.getDay()]})
+            </span>
+          </span>
+          <span className="omikuji__clock-line">
+            {String(now.getHours()).padStart(2, "0")}:
+            {String(now.getMinutes()).padStart(2, "0")}:
+            {String(now.getSeconds()).padStart(2, "0")}
+          </span>
+        </p>
+      )}
       <button type="button" className="omikuji__button" onClick={draw}>
         {buttonLabel}
       </button>
