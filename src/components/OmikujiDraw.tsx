@@ -19,6 +19,41 @@ function playTone(ctx: AudioContext, freq: number, duration: number) {
   osc.stop(ctx.currentTime + duration);
 }
 
+// 「ズキューン」的な派手なドロー音。ノイズの立ち上がり + 周波数スイープ。
+function playDrawSound(ctx: AudioContext) {
+  const t0 = ctx.currentTime;
+
+  const bufferSize = Math.floor(ctx.sampleRate * 0.05);
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+  }
+  const noise = ctx.createBufferSource();
+  noise.buffer = buffer;
+  const noiseGain = ctx.createGain();
+  noiseGain.gain.setValueAtTime(0.18, t0);
+  noise.connect(noiseGain);
+  noiseGain.connect(ctx.destination);
+  noise.start(t0);
+
+  const osc = ctx.createOscillator();
+  osc.type = "sawtooth";
+  osc.frequency.setValueAtTime(180, t0);
+  osc.frequency.exponentialRampToValueAtTime(1800, t0 + 0.09);
+  osc.frequency.exponentialRampToValueAtTime(60, t0 + 0.42);
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(0.16, t0 + 0.05);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.45);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t0);
+  osc.stop(t0 + 0.45);
+}
+
 export default function OmikujiDraw({
   episodes,
   buttonLabel,
@@ -49,7 +84,7 @@ export default function OmikujiDraw({
           .webkitAudioContext;
       audioCtxRef.current = new AudioContextClass();
     }
-    playTone(audioCtxRef.current, 440, 0.12);
+    playDrawSound(audioCtxRef.current);
 
     if (episodes.length === 0) return;
     const next = episodes[Math.floor(Math.random() * episodes.length)];
