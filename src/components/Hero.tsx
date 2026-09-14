@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import type { MicroCMSImage } from "@/lib/microcms";
 
@@ -23,8 +26,19 @@ function PoemText({ introText }: { introText: string }) {
 }
 
 export default function Hero({ image, introText }: HeroProps) {
+  const [showPoem, setShowPoem] = useState(true);
+
   return (
-    <section className="hero">
+    <section
+      className="hero"
+      onClick={() => image && setShowPoem((v) => !v)}
+      role={image ? "button" : undefined}
+      tabIndex={image ? 0 : undefined}
+      aria-label={image ? (showPoem ? "詩を隠す" : "詩を表示する") : undefined}
+      onKeyDown={(e) => {
+        if (image && (e.key === "Enter" || e.key === " ")) setShowPoem((v) => !v);
+      }}
+    >
       {image ? (
         <>
           <div className="hero__image">
@@ -38,7 +52,7 @@ export default function Hero({ image, introText }: HeroProps) {
             />
             <span className="hero__credit">2021年撮影</span>
           </div>
-          <div className="hero__poem">
+          <div className={`hero__poem${showPoem ? "" : " hero__poem--hidden"}`}>
             <PoemText introText={introText} />
           </div>
         </>

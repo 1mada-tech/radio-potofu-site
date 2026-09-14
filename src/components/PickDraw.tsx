@@ -64,6 +64,15 @@ export default function PickDraw({
   const [picked, setPicked] = useState<Episode | null>(null);
   const [now, setNow] = useState<Date | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const tickMutedRef = useRef(false);
+
+  useEffect(() => {
+    const stopTick = () => {
+      tickMutedRef.current = true;
+    };
+    document.addEventListener("click", stopTick, { once: true });
+    return () => document.removeEventListener("click", stopTick);
+  }, []);
 
   useEffect(() => {
     setNow(new Date());
@@ -86,7 +95,7 @@ export default function PickDraw({
 
     const timer = setInterval(() => {
       setNow(new Date());
-      if (audioCtxRef.current) {
+      if (audioCtxRef.current && !tickMutedRef.current) {
         playTone(audioCtxRef.current, 1200, 0.03);
       }
     }, 1000);

@@ -23,13 +23,26 @@ function renderCaption(text: string) {
 export default async function EpisodesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; tag?: string }>;
+  searchParams: Promise<{ page?: string; tag?: string; q?: string }>;
 }) {
   const params = await searchParams;
   const page = Math.max(1, Number(params.page) || 1);
   const tagFilter = params.tag || undefined;
+  const query = params.q?.trim() || undefined;
   const offset = (page - 1) * PER_PAGE;
-  const { contents, totalCount } = await getEpisodes(PER_PAGE, offset, tagFilter);
+
+  let contents;
+  let totalCount;
+  if (query) {
+    const all = await getEpisodes(9999, 0, tagFilter);
+    contents = all.contents.filter((e) =>
+      e.title.toLowerCase().includes(query.toLowerCase()),
+    );
+    totalCount = contents.length;
+  } else {
+    ({ contents, totalCount } = await getEpisodes(PER_PAGE, offset, tagFilter));
+  }
+
   const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
   const pageHrefTemplate = tagFilter
     ? `/episodes?tag=${encodeURIComponent(tagFilter)}&page={page}`
@@ -40,15 +53,33 @@ export default async function EpisodesPage({
     <div className="container page">
       <h1>これまでの配信</h1>
       {caption && <p className="page-caption">{renderCaption(caption)}</p>}
+      <form action="/episodes" method="get" className="episode-search">
+        <input
+          type="text"
+          name="q"
+          defaultValue={query ?? ""}
+          placeholder="タイトルで検索"
+          className="episode-search__input"
+        />
+        <button type="submit" className="episode-search__button">
+          検索
+        </button>
+      </form>
       {tagFilter && (
         <p className="episode-filter-notice">
           「#{tagFilter}」で絞り込み中（{totalCount}件）
           <a href="/episodes">絞り込みを解除</a>
         </p>
       )}
+      {query && (
+        <p className="episode-filter-notice">
+          「{query}」の検索結果（{totalCount}件）
+          <a href="/episodes">検索を解除</a>
+        </p>
+      )}
       {contents.length > 0 ? (
         <>
-          <Pagination page={page} totalPages={totalPages} hrefTemplate={pageHrefTemplate} />
+          {!query && <Pagination page={page} totalPages={totalPages} hrefTemplate={pageHrefTemplate} />}
           <div className="episode-table-wrap">
             <table className="episode-table">
               <thead>
@@ -134,11 +165,15 @@ export default async function EpisodesPage({
               </tbody>
             </table>
           </div>
-          <Pagination page={page} totalPages={totalPages} hrefTemplate={pageHrefTemplate} />
+          {!query && <Pagination page={page} totalPages={totalPages} hrefTemplate={pageHrefTemplate} />}
         </>
       ) : (
         <p className="empty-message">
-          {tagFilter ? "このタグの回はありません。" : "まだエピソードが登録されていません。"}
+          {query
+            ? "該当する回が見つかりませんでした。"
+            : tagFilter
+              ? "このタグの回はありません。"
+              : "まだエピソードが登録されていません。"}
         </p>
       )}
     </div>

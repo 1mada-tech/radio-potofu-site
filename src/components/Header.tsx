@@ -54,7 +54,7 @@ export default function Header() {
                 className="site-header__pick"
                 onClick={() => setIsOpen(false)}
               >
-                今日はこの回聞いて
+                きょうはこの回聴いてボタン
               </Link>
             </li>
           </ul>
