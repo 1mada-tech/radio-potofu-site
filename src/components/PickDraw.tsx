@@ -67,10 +67,13 @@ export default function PickDraw({
   const tickMutedRef = useRef(false);
 
   useEffect(() => {
-    const stopTick = () => {
+    const stopTick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(".pick__button")) return;
       tickMutedRef.current = true;
+      document.removeEventListener("click", stopTick);
     };
-    document.addEventListener("click", stopTick, { once: true });
+    document.addEventListener("click", stopTick);
     return () => document.removeEventListener("click", stopTick);
   }, []);
 

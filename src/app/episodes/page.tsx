@@ -61,8 +61,8 @@ export default async function EpisodesPage({
           placeholder="タイトルで検索"
           className="episode-search__input"
         />
-        <button type="submit" className="episode-search__button">
-          検索
+        <button type="submit" className="episode-search__button" aria-label="検索">
+          🔍
         </button>
       </form>
       {tagFilter && (
