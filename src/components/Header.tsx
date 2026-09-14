@@ -50,8 +50,8 @@ export default function Header() {
             ))}
             <li>
               <Link
-                href="/omikuji"
-                className="site-header__omikuji"
+                href="/pick"
+                className="site-header__pick"
                 onClick={() => setIsOpen(false)}
               >
                 今日はこの回聞いて

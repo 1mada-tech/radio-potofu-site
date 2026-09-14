@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 import { getEpisodes } from "@/lib/podcast";
-import { getOmikujiConfig } from "@/lib/omikujiConfig";
-import OmikujiDraw from "@/components/OmikujiDraw";
+import { getPickConfig } from "@/lib/pickConfig";
+import PickDraw from "@/components/PickDraw";
 
 export const metadata: Metadata = { title: "きょうはこの回聴いてみて" };
 export const revalidate = 60;
 
-export default async function OmikujiPage() {
+export default async function PickPage() {
   const [{ contents }, config] = await Promise.all([
     getEpisodes(9999),
-    getOmikujiConfig(),
+    getPickConfig(),
   ]);
 
   return (
     <div className="container page">
       <h1>{config.title}</h1>
       <p className="page-caption">{config.caption}</p>
-      <OmikujiDraw episodes={contents} buttonLabel={config.buttonLabel} />
+      <PickDraw episodes={contents} buttonLabel={config.buttonLabel} />
     </div>
   );
 }

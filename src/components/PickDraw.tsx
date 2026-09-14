@@ -54,7 +54,7 @@ function playDrawSound(ctx: AudioContext) {
   osc.stop(t0 + 0.45);
 }
 
-export default function OmikujiDraw({
+export default function PickDraw({
   episodes,
   buttonLabel,
 }: {
@@ -114,36 +114,36 @@ export default function OmikujiDraw({
   };
 
   return (
-    <div className="omikuji">
+    <div className="pick">
       {now && (
-        <p className="omikuji__clock">
-          <span className="omikuji__clock-line">
+        <p className="pick__clock">
+          <span className="pick__clock-line">
             {now.getFullYear()}
-            <span className="omikuji__clock-kanji">年</span>
+            <span className="pick__clock-kanji">年</span>
             {now.getMonth() + 1}
-            <span className="omikuji__clock-kanji">月</span>
+            <span className="pick__clock-kanji">月</span>
             {now.getDate()}
-            <span className="omikuji__clock-kanji">
+            <span className="pick__clock-kanji">
               日({WEEKDAYS[now.getDay()]})
             </span>
           </span>
-          <span className="omikuji__clock-line">
+          <span className="pick__clock-line">
             {String(now.getHours()).padStart(2, "0")}:
             {String(now.getMinutes()).padStart(2, "0")}:
             {String(now.getSeconds()).padStart(2, "0")}
           </span>
         </p>
       )}
-      <button type="button" className="omikuji__button" onClick={draw}>
+      <button type="button" className="pick__button" onClick={draw}>
         {buttonLabel}
       </button>
 
       {picked && (
-        <div className="omikuji__result">
+        <div className="pick__result">
           <p className="card__date">{formatDate(picked.publishDate)}</p>
           <h3 className="card__title">{picked.title}</h3>
           {(picked.comment || picked.recommendation) && (
-            <p className="omikuji__comment">
+            <p className="pick__comment">
               {picked.comment}
               {picked.comment && picked.recommendation ? " / " : ""}
               {picked.recommendation}

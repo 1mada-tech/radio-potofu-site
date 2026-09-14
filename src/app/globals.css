@@ -223,13 +223,13 @@ ul {
   margin-top: 2px;
 }
 
-/* Omikuji */
-.omikuji {
+/* ランダム抽選 */
+.pick {
   margin-top: 24px;
   text-align: center;
 }
 
-.omikuji__clock {
+.pick__clock {
   position: relative;
   display: inline-flex;
   flex-direction: column;
@@ -255,19 +255,19 @@ ul {
     inset 0 0 30px rgba(255, 46, 230, 0.15);
 }
 
-.omikuji__clock-line {
+.pick__clock-line {
   display: block;
   line-height: 1.2;
 }
 
-.omikuji__clock-kanji {
+.pick__clock-kanji {
   font-family: var(--font-body), sans-serif;
   font-size: 0.5em;
   letter-spacing: 0;
   vertical-align: 0.08em;
 }
 
-.omikuji__clock::before {
+.pick__clock::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -281,7 +281,7 @@ ul {
   );
 }
 
-.omikuji__button {
+.pick__button {
   display: inline-block;
   background: var(--color-ink);
   color: #fff;
@@ -299,24 +299,24 @@ ul {
     box-shadow 0.1s ease;
 }
 
-.omikuji__button:hover {
+.pick__button:hover {
   background: var(--color-accent);
   border-color: var(--color-accent);
 }
 
-.omikuji__button:active {
+.pick__button:active {
   transform: translateY(4px);
   box-shadow: none;
 }
 
 
-.omikuji__result {
+.pick__result {
   margin-top: 32px;
   padding: 24px;
   border: 1px solid var(--color-border);
 }
 
-.omikuji__comment {
+.pick__comment {
   color: var(--color-ink-soft);
   font-size: 0.9rem;
   margin: 8px 0;
@@ -359,7 +359,7 @@ ul {
   transform: scaleX(1);
 }
 
-.site-header__nav a.site-header__omikuji {
+.site-header__nav a.site-header__pick {
   display: inline-block;
   background: var(--color-accent);
   color: #fff !important;
@@ -367,12 +367,12 @@ ul {
   font-weight: 700;
 }
 
-.site-header__omikuji::after {
+.site-header__pick::after {
   content: none;
 }
 
-.site-header__omikuji:hover,
-.site-header__omikuji:active {
+.site-header__pick:hover,
+.site-header__pick:active {
   color: #fff !important;
   opacity: 0.85;
 }
@@ -1175,7 +1175,7 @@ a.episode-tag:hover {
     min-height: 0;
   }
 
-  .site-header__nav a.site-header__omikuji {
+  .site-header__nav a.site-header__pick {
     display: inline-block;
   }
 
