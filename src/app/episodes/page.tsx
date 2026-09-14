@@ -62,7 +62,18 @@ export default async function EpisodesPage({
           className="episode-search__input"
         />
         <button type="submit" className="episode-search__button" aria-label="検索">
-          🔍
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+          >
+            <circle cx="7" cy="7" r="5.2" />
+            <line x1="11" y1="11" x2="14.5" y2="14.5" />
+          </svg>
         </button>
       </form>
       {tagFilter && (
