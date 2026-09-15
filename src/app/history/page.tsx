@@ -10,8 +10,10 @@ export default async function HistoryPage() {
 
   return (
     <div className="container page">
-      <h1>年表</h1>
-      <p className="page-subtitle">History</p>
+      <div className="page-heading">
+        <h1>年表</h1>
+        <p className="page-subtitle">History</p>
+      </div>
       {caption && <p className="page-caption">{caption}</p>}
       {entries.length > 0 ? (
         <div className="history-list">

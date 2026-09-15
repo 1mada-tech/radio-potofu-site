@@ -46,18 +46,22 @@ h1 {
   font-size: clamp(2.2rem, 7vw, 4rem);
 }
 
-h1:has(+ .page-subtitle) {
-  margin-bottom: 0;
-  margin-left: -0.06em;
+.page-heading {
+  display: inline-grid;
+  margin-bottom: 1.6em;
+}
+
+.page-heading h1 {
+  grid-row: 1;
+  margin: 0;
 }
 
 .page-subtitle {
+  grid-row: 2;
   position: relative;
-  width: fit-content;
-  margin: 0 0 1.6em;
+  margin: 0;
   padding-top: 0.2em;
-  padding-left: 0;
-  text-align: left;
+  text-align: right;
   font-size: 1.05rem;
   letter-spacing: 0.08em;
   color: var(--color-ink-soft);
@@ -67,7 +71,7 @@ h1:has(+ .page-subtitle) {
   content: "";
   position: absolute;
   top: 0;
-  left: 0;
+  right: 0;
   width: 28px;
   height: 1px;
   background: var(--color-border);
