@@ -48,6 +48,7 @@ h1 {
 
 h1:has(+ .page-subtitle) {
   margin-bottom: 0;
+  margin-left: -0.06em;
 }
 
 .page-subtitle {
