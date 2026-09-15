@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const navRow1 = [
   { href: "/episodes", label: "これまでの配信" },
-  { href: "/pick", label: "きょうはこの回聴いてボタン", special: true },
+  { href: "/pick", label: "きょうのあなたへ", special: true },
   { href: "/themes", label: "テーマ募集" },
 ];
 

@@ -76,3 +76,8 @@ export async function updateThemeStatus(
     id,
   ]);
 }
+
+// 返信もON DELETE CASCADEで一緒に削除される。
+export async function deleteThemePost(id: number): Promise<void> {
+  await pool.query("DELETE FROM theme_posts WHERE id = $1", [id]);
+}

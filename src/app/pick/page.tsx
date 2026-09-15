@@ -3,7 +3,7 @@ import { getEpisodes } from "@/lib/podcast";
 import { getPickConfig } from "@/lib/pickConfig";
 import PickDraw from "@/components/PickDraw";
 
-export const metadata: Metadata = { title: "きょうはこの回聴いてみて" };
+export const metadata: Metadata = { title: "きょうのあなたへ" };
 export const revalidate = 60;
 
 export default async function PickPage() {
@@ -18,7 +18,7 @@ export default async function PickPage() {
         <h1>{config.title}</h1>
         <p className="page-subtitle">Today&apos;s Ptf</p>
       </div>
-      <p className="page-caption">{config.caption}</p>
+      <p className="page-caption page-caption--center">{config.caption}</p>
       <PickDraw episodes={contents} buttonLabel={config.buttonLabel} />
     </div>
   );

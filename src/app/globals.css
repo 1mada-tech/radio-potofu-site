@@ -708,10 +708,18 @@ p.hero__poem-title {
 }
 
 /* History timeline */
+.history-year-group {
+  position: relative;
+}
+
 .history-year-row {
   display: flex;
   gap: 12px;
   line-height: 1.6;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--color-bg);
 }
 
 .history-year {
@@ -720,6 +728,7 @@ p.hero__poem-title {
   text-align: right;
   margin: 0;
   padding-top: 20px;
+  padding-bottom: 4px;
   font-weight: 700;
   color: var(--color-accent);
 }
@@ -1272,6 +1281,27 @@ a.episode-tag:hover {
   padding: 0;
 }
 
+.theme-post__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.theme-post__delete {
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.theme-post__delete:hover {
+  color: var(--color-red);
+}
+
 .theme-post__replies {
   margin-top: 16px;
   padding-left: 20px;
@@ -1298,6 +1328,11 @@ a.episode-tag:hover {
   padding: 14px 32px;
   margin: 0 0 40px;
   font-size: 0.95rem;
+}
+
+.page-caption--center {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .page-caption .episode-tag {
@@ -1335,6 +1370,87 @@ a.episode-tag:hover {
 
 .page--article {
   max-width: 720px;
+}
+
+.note-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 720px) 260px;
+  align-items: start;
+  gap: 56px;
+}
+
+.note-detail-layout .page--article {
+  max-width: none;
+}
+
+.note-sidebar {
+  position: sticky;
+  top: 32px;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  border-left: 1px solid var(--color-ink-soft);
+  padding-left: 20px;
+}
+
+.note-sidebar__heading {
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+  letter-spacing: 0.08em;
+  margin: 0 0 16px;
+}
+
+.note-sidebar__list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.note-sidebar__link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--color-ink);
+  text-decoration: none;
+  line-height: 1.5;
+}
+
+.note-sidebar__date {
+  font-size: 0.75rem;
+  color: var(--color-ink-soft);
+}
+
+.note-sidebar__title {
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.note-sidebar__link--current .note-sidebar__title {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.note-sidebar__link:hover .note-sidebar__title {
+  text-decoration: underline;
+}
+
+@media (max-width: 860px) {
+  .note-detail-layout {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .note-sidebar {
+    position: static;
+    max-height: none;
+    border-left: none;
+    border-top: 1px solid var(--color-ink-soft);
+    padding-left: 0;
+    padding-top: 20px;
+  }
 }
 
 .article__image {

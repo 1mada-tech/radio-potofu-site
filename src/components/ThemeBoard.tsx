@@ -110,6 +110,32 @@ function StatusSelect({ post, onDone }: { post: ThemePost; onDone: () => void })
   );
 }
 
+function DeleteButton({ id, onDone }: { id: number; onDone: () => void }) {
+  const [deleting, setDeleting] = useState(false);
+
+  const handleClick = async () => {
+    if (!window.confirm("削除しますか？(返信も一緒に消えます)")) return;
+    setDeleting(true);
+    try {
+      await postJson("/api/themes/delete", { id });
+      onDone();
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  return (
+    <button
+      type="button"
+      className="theme-post__delete"
+      onClick={handleClick}
+      disabled={deleting}
+    >
+      削除
+    </button>
+  );
+}
+
 function ThemePostItem({ post, onDone }: { post: ThemePost; onDone: () => void }) {
   const [replying, setReplying] = useState(false);
 
@@ -121,13 +147,16 @@ function ThemePostItem({ post, onDone }: { post: ThemePost; onDone: () => void }
         <StatusSelect post={post} onDone={onDone} />
       </div>
       <p className="theme-post__body">{post.body}</p>
-      <button
-        type="button"
-        className="theme-post__reply-toggle"
-        onClick={() => setReplying((v) => !v)}
-      >
-        {replying ? "閉じる" : "返信する"}
-      </button>
+      <div className="theme-post__actions">
+        <button
+          type="button"
+          className="theme-post__reply-toggle"
+          onClick={() => setReplying((v) => !v)}
+        >
+          {replying ? "閉じる" : "返信する"}
+        </button>
+        <DeleteButton id={post.id} onDone={onDone} />
+      </div>
       {replying && (
         <NewPostForm
           parentId={post.id}
@@ -146,6 +175,9 @@ function ThemePostItem({ post, onDone }: { post: ThemePost; onDone: () => void }
                 <span className="theme-post__date">{formatDate(reply.createdAt)}</span>
               </div>
               <p className="theme-post__body">{reply.body}</p>
+              <div className="theme-post__actions">
+                <DeleteButton id={reply.id} onDone={onDone} />
+              </div>
             </li>
           ))}
         </ul>

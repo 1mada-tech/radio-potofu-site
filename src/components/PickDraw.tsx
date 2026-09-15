@@ -92,7 +92,6 @@ export default function PickDraw({
     sleepiness: 50,
   });
   const audioCtxRef = useRef<AudioContext | null>(null);
-  const tickMutedRef = useRef(false);
   const lastDecileRef = useRef<Record<SliderKey, number>>({
     fatigue: 5,
     fullness: 5,
@@ -100,39 +99,8 @@ export default function PickDraw({
   });
 
   useEffect(() => {
-    const stopTick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.closest(".pick__button")) return;
-      tickMutedRef.current = true;
-      document.removeEventListener("click", stopTick);
-    };
-    document.addEventListener("click", stopTick);
-    return () => document.removeEventListener("click", stopTick);
-  }, []);
-
-  useEffect(() => {
     setNow(new Date());
-
-    try {
-      const AudioContextClass =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext })
-          .webkitAudioContext;
-      const ctx = new AudioContextClass();
-      audioCtxRef.current = ctx;
-      if (ctx.state === "running") {
-        playTone(ctx, 1200, 0.03);
-      }
-    } catch {
-      // 何もしない
-    }
-
-    const timer = setInterval(() => {
-      setNow(new Date());
-      if (audioCtxRef.current && !tickMutedRef.current) {
-        playTone(audioCtxRef.current, 1200, 0.03);
-      }
-    }, 1000);
+    const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
