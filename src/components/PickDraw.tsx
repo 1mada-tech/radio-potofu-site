@@ -1,44 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Episode } from "@/lib/podcast";
 import { formatDate } from "@/lib/date";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
-const ITEM_WIDTH = 220;
-const SPEED_PX_PER_SEC = 500;
-
-function shuffle<T>(arr: T[]): T[] {
-  const copy = [...arr];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
-
-type ReelEntry = { episode: Episode; bonus: boolean };
-
-function buildReel(episodes: Episode[]): ReelEntry[] {
-  const shuffled = shuffle(episodes);
-  return shuffled.map((episode) => ({
-    episode,
-    bonus: Math.random() < 1 / 12,
-  }));
-}
-
-type Judgement = "PERFECT" | "GOOD" | "MISS";
-
-function judge(deviation: number): Judgement {
-  const abs = Math.abs(deviation);
-  if (abs < ITEM_WIDTH * 0.08) return "PERFECT";
-  if (abs < ITEM_WIDTH * 0.25) return "GOOD";
-  return "MISS";
-}
-
-function truncateTitle(title: string, max = 16): string {
-  return title.length > max ? title.slice(0, max) + "…" : title;
-}
 
 function playTone(ctx: AudioContext, freq: number, duration: number) {
   const osc = ctx.createOscillator();
@@ -53,25 +19,14 @@ function playTone(ctx: AudioContext, freq: number, duration: number) {
   osc.stop(ctx.currentTime + duration);
 }
 
-// 回転スタート音。上昇スイープ。
-function playSpinStart(ctx: AudioContext) {
-  const t0 = ctx.currentTime;
-  const osc = ctx.createOscillator();
-  osc.type = "square";
-  osc.frequency.setValueAtTime(200, t0);
-  osc.frequency.exponentialRampToValueAtTime(700, t0 + 0.15);
-  const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(0.08, t0 + 0.03);
-  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(t0);
-  osc.stop(t0 + 0.18);
+// スライダーの目盛りを跨いだ時の軽いティック音。値に応じて音程が変わる。
+function playSliderTick(ctx: AudioContext, value: number) {
+  const freq = 300 + value * 6;
+  playTone(ctx, freq, 0.04);
 }
 
-// 「ズキューン」的な派手な停止音。ノイズの立ち上がり + 周波数スイープ。
-function playStopSound(ctx: AudioContext) {
+// 「ズキューン」的な派手な診断音。ノイズの立ち上がり + 周波数スイープ。
+function playDrawSound(ctx: AudioContext) {
   const t0 = ctx.currentTime;
 
   const bufferSize = Math.floor(ctx.sampleRate * 0.05);
@@ -105,29 +60,22 @@ function playStopSound(ctx: AudioContext) {
   osc.stop(t0 + 0.45);
 }
 
-function playJudgementSound(ctx: AudioContext, judgement: Judgement) {
-  if (judgement === "PERFECT") {
-    playTone(ctx, 1046, 0.1);
-    setTimeout(() => {
-      if (ctx.state !== "closed") playTone(ctx, 1568, 0.15);
-    }, 90);
-  } else if (judgement === "GOOD") {
-    playTone(ctx, 880, 0.12);
-  } else {
-    playTone(ctx, 220, 0.15);
+function hashPick<T>(list: T[], values: number[]): T {
+  let h = 0;
+  for (const v of values) {
+    h = (h * 31 + Math.round(v)) % 100000;
   }
+  const index = ((h % list.length) + list.length) % list.length;
+  return list[index];
 }
 
-function playBonusFanfare(ctx: AudioContext) {
-  const notes = [523, 659, 784, 1046];
-  notes.forEach((freq, i) => {
-    setTimeout(() => {
-      if (ctx.state !== "closed") playTone(ctx, freq, 0.18);
-    }, i * 90);
-  });
-}
+type SliderKey = "fatigue" | "fullness" | "sleepiness";
 
-type Phase = "idle" | "spinning" | "result";
+const SLIDERS: { key: SliderKey; label: string }[] = [
+  { key: "fatigue", label: "疲労度" },
+  { key: "fullness", label: "満腹度" },
+  { key: "sleepiness", label: "眠気度" },
+];
 
 export default function PickDraw({
   episodes,
@@ -136,20 +84,20 @@ export default function PickDraw({
   episodes: Episode[];
   buttonLabel: string;
 }) {
-  const [phase, setPhase] = useState<Phase>("idle");
   const [picked, setPicked] = useState<Episode | null>(null);
-  const [judgement, setJudgement] = useState<Judgement | null>(null);
-  const [isBonus, setIsBonus] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
+  const [values, setValues] = useState<Record<SliderKey, number>>({
+    fatigue: 50,
+    fullness: 50,
+    sleepiness: 50,
+  });
   const audioCtxRef = useRef<AudioContext | null>(null);
   const tickMutedRef = useRef(false);
-
-  const reel = useMemo(() => buildReel(episodes), [episodes]);
-  const stripRef = useRef<HTMLDivElement>(null);
-  const viewportRef = useRef<HTMLDivElement>(null);
-  const offsetRef = useRef(0);
-  const lastTsRef = useRef<number | null>(null);
-  const rafRef = useRef<number | null>(null);
+  const lastDecileRef = useRef<Record<SliderKey, number>>({
+    fatigue: 5,
+    fullness: 5,
+    sleepiness: 5,
+  });
 
   useEffect(() => {
     const stopTick = (e: MouseEvent) => {
@@ -199,83 +147,29 @@ export default function PickDraw({
     return audioCtxRef.current;
   };
 
-  const applyTransform = () => {
-    if (!stripRef.current || !viewportRef.current || reel.length === 0) return;
-    const viewportWidth = viewportRef.current.clientWidth;
-    const x = viewportWidth / 2 - ITEM_WIDTH / 2 - offsetRef.current;
-    stripRef.current.style.transform = `translateX(${x}px)`;
+  const handleSliderChange = (key: SliderKey, value: number) => {
+    setValues((prev) => ({ ...prev, [key]: value }));
+    const decile = Math.floor(value / 10);
+    if (decile !== lastDecileRef.current[key]) {
+      lastDecileRef.current[key] = decile;
+      const ctx = getCtx();
+      if (ctx.state !== "suspended") {
+        playSliderTick(ctx, value);
+      }
+    }
   };
 
-  const tick = (ts: number) => {
-    if (lastTsRef.current === null) lastTsRef.current = ts;
-    const dt = (ts - lastTsRef.current) / 1000;
-    lastTsRef.current = ts;
-    offsetRef.current += SPEED_PX_PER_SEC * dt;
-    applyTransform();
-    rafRef.current = requestAnimationFrame(tick);
-  };
-
-  const startSpin = () => {
-    if (reel.length === 0) return;
+  const draw = () => {
     const ctx = getCtx();
     if (ctx.state === "suspended") {
-      ctx.resume().then(() => playSpinStart(ctx));
+      ctx.resume().then(() => playDrawSound(ctx));
     } else {
-      playSpinStart(ctx);
-    }
-    setPicked(null);
-    setJudgement(null);
-    setIsBonus(false);
-    setPhase("spinning");
-    lastTsRef.current = null;
-    rafRef.current = requestAnimationFrame(tick);
-  };
-
-  const stopSpin = () => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    rafRef.current = null;
-
-    const rawIndex = Math.floor(offsetRef.current / ITEM_WIDTH);
-    const index = ((rawIndex % reel.length) + reel.length) % reel.length;
-    const entry = reel[index];
-    const deviation = offsetRef.current - (rawIndex * ITEM_WIDTH + ITEM_WIDTH / 2);
-    const result = judge(deviation);
-
-    const ctx = getCtx();
-    const playFeedback = () => {
-      playStopSound(ctx);
-      setTimeout(() => {
-        if (entry.bonus) {
-          playBonusFanfare(ctx);
-        } else {
-          playJudgementSound(ctx, result);
-        }
-      }, 300);
-    };
-    if (ctx.state === "suspended") {
-      ctx.resume().then(playFeedback);
-    } else {
-      playFeedback();
+      playDrawSound(ctx);
     }
 
-    setPicked(entry.episode);
-    setJudgement(result);
-    setIsBonus(entry.bonus);
-    setPhase("result");
-  };
-
-  useEffect(() => {
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
-  }, []);
-
-  const handleButtonClick = () => {
-    if (phase === "spinning") {
-      stopSpin();
-    } else {
-      startSpin();
-    }
+    if (episodes.length === 0) return;
+    const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
+    setPicked(result);
   };
 
   return (
@@ -300,38 +194,35 @@ export default function PickDraw({
         </p>
       )}
 
-      {phase !== "idle" && (
-        <div className="pick__reel" ref={viewportRef}>
-          <div className="pick__reel-strip" ref={stripRef}>
-            {[...reel, ...reel].map((entry, i) => (
-              <div
-                key={i}
-                className={`pick__reel-item${entry.bonus ? " pick__reel-item--bonus" : ""}`}
-              >
-                {entry.bonus && "★ "}
-                {truncateTitle(entry.episode.title)}
-              </div>
-            ))}
-          </div>
-          <span className="pick__reel-marker pick__reel-marker--top" aria-hidden="true" />
-          <span className="pick__reel-marker pick__reel-marker--bottom" aria-hidden="true" />
-        </div>
-      )}
+      <div className="pick__sliders">
+        {SLIDERS.map(({ key, label }) => (
+          <label key={key} className="pick__slider">
+            <span className="pick__slider-label">
+              {label}
+              <span className="pick__slider-value">{values[key]}</span>
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={values[key]}
+              onChange={(e) => handleSliderChange(key, Number(e.target.value))}
+              className="pick__slider-input"
+            />
+          </label>
+        ))}
+      </div>
 
-      <button type="button" className="pick__button" onClick={handleButtonClick}>
-        {phase === "spinning" ? "ここで止める！" : buttonLabel}
+      <button type="button" className="pick__button" onClick={draw}>
+        {buttonLabel}
       </button>
 
-      {phase === "result" && judgement && (
-        <p
-          className={`pick__judgement pick__judgement--${isBonus ? "bonus" : judgement.toLowerCase()}`}
-        >
-          {isBonus ? "★ BONUS! ★" : judgement}
-        </p>
-      )}
-
-      {phase === "result" && picked && (
-        <div className={`pick__result${isBonus ? " pick__result--bonus" : ""}`}>
+      {picked && (
+        <div className="pick__result">
+          <p className="pick__diagnosis">
+            疲労{values.fatigue}・満腹{values.fullness}・眠気{values.sleepiness}の
+            あなたにぴったりなのはこちら
+          </p>
           <p className="card__date">{formatDate(picked.publishDate)}</p>
           <h3 className="card__title">{picked.title}</h3>
           {(picked.comment || picked.recommendation) && (
