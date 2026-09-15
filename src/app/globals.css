@@ -47,15 +47,17 @@ h1 {
 }
 
 h1:has(+ .page-subtitle) {
-  margin-bottom: 0.15em;
+  margin-bottom: 0;
 }
 
 .page-subtitle {
   position: relative;
   width: fit-content;
   margin: 0 0 1.6em;
-  padding-top: 0.35em;
-  font-size: 0.85rem;
+  padding-top: 0.2em;
+  padding-left: 0;
+  text-align: left;
+  font-size: 1.05rem;
   letter-spacing: 0.08em;
   color: var(--color-ink-soft);
 }
