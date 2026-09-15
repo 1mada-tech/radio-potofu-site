@@ -1,16 +1,17 @@
 import { Fragment } from "react";
 import type { Metadata } from "next";
-import { getHistoryEntries } from "@/lib/history";
+import { getHistoryEntries, getHistoryCaption } from "@/lib/history";
 
 export const metadata: Metadata = { title: "年表" };
 export const revalidate = 60;
 
 export default async function HistoryPage() {
-  const entries = await getHistoryEntries();
+  const [entries, caption] = await Promise.all([getHistoryEntries(), getHistoryCaption()]);
 
   return (
     <div className="container page">
       <h1>年表</h1>
+      {caption && <p className="page-caption">{caption}</p>}
       {entries.length > 0 ? (
         <div className="history-list">
           {entries.map((entry, i) => {

@@ -37,6 +37,18 @@ function parseLinks(linkTextCell: string, linkUrlCell: string): HistoryLink[] {
   return links;
 }
 
+export async function getHistoryCaption(): Promise<string | null> {
+  try {
+    const res = await fetch(HISTORY_CSV_URL, { cache: "no-store" });
+    const text = await res.text();
+    const rows: string[][] = parse(text, { skip_empty_lines: true });
+    const found = rows.slice(1).find((row) => row[0]?.trim());
+    return found?.[0]?.trim() ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getHistoryEntries(): Promise<HistoryEntry[]> {
   try {
     const res = await fetch(HISTORY_CSV_URL, { cache: "no-store" });
