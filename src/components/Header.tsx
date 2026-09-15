@@ -3,13 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 
-const navItems = [
+const navRow1 = [
   { href: "/episodes", label: "これまでの配信" },
+  { href: "/pick", label: "きょうはこの回聴いてボタン", special: true },
+  { href: "/themes", label: "テーマ募集" },
+];
+
+const navRow2 = [
   { href: "/senryu", label: "現代川柳" },
   { href: "/netprint", label: "ネットプリント" },
   { href: "/note", label: "ひみつノート" },
   { href: "/history", label: "年表" },
-  { href: "/themes", label: "テーマ募集" },
 ];
 
 export default function Header() {
@@ -41,24 +45,30 @@ export default function Header() {
         </button>
 
         <nav className={`site-header__nav${isOpen ? " site-header__nav--open" : ""}`}>
-          <ul>
-            {navItems.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} onClick={() => setIsOpen(false)}>
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-            <li>
-              <Link
-                href="/pick"
-                className="site-header__pick"
-                onClick={() => setIsOpen(false)}
-              >
-                きょうはこの回聴いてボタン
-              </Link>
-            </li>
-          </ul>
+          <div className="site-header__nav-inner">
+            <ul className="site-header__nav-row">
+              {navRow1.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={item.special ? "site-header__pick" : undefined}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <ul className="site-header__nav-row">
+              {navRow2.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} onClick={() => setIsOpen(false)}>
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </nav>
       </div>
     </header>

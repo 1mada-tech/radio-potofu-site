@@ -305,7 +305,13 @@ ul {
   margin: 8px 0;
 }
 
-.site-header__nav ul {
+.site-header__nav-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.site-header__nav-row {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 24px;
@@ -1349,11 +1355,15 @@ a.episode-tag:hover {
     margin-top: 12px;
   }
 
-  .site-header__nav ul {
-    flex-direction: column;
-    gap: 16px;
+  .site-header__nav-inner {
     overflow: hidden;
     min-height: 0;
+    gap: 16px;
+  }
+
+  .site-header__nav-row {
+    flex-direction: column;
+    gap: 16px;
   }
 
   .site-header__nav a.site-header__pick {
