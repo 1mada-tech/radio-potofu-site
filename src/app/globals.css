@@ -58,10 +58,10 @@ h1 {
 
 .page-subtitle {
   grid-row: 2;
-  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
   margin: 0;
-  padding-top: 0.2em;
-  text-align: right;
   font-size: 1.05rem;
   letter-spacing: 0.08em;
   color: var(--color-ink-soft);
@@ -69,12 +69,15 @@ h1 {
 
 .page-subtitle::before {
   content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 28px;
+  flex: 1;
   height: 1px;
-  background: var(--color-border);
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-ink-soft) 0,
+    var(--color-ink-soft) 5px,
+    transparent 5px,
+    transparent 10px
+  );
 }
 
 h2 {
@@ -803,6 +806,44 @@ p.hero__poem-title {
   font-size: 0.9rem;
 }
 
+.episode-table__links a,
+.card__links a,
+.episode-filter-notice a,
+.pagination__arrow,
+.history-item__link,
+.member-row__link {
+  position: relative;
+  display: inline-block;
+  transition: color 0.15s ease;
+}
+
+.episode-table__links a::after,
+.card__links a::after,
+.episode-filter-notice a::after,
+.pagination__arrow::after,
+.history-item__link::after,
+.member-row__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.episode-table__links a:hover::after,
+.card__links a:hover::after,
+.episode-filter-notice a:hover::after,
+.pagination__arrow:hover::after,
+.history-item__link:hover::after,
+.member-row__link:hover::after {
+  transform: scaleX(1);
+}
+
 /* List (episodes / essays) */
 .list {
   display: flex;
@@ -1097,7 +1138,6 @@ a.episode-tag:hover {
 
 .episode-filter-notice a {
   color: var(--color-accent);
-  text-decoration: underline;
 }
 
 /* Theme board */

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { Episode } from "@/lib/podcast";
-import { formatDate } from "@/lib/date";
+import EpisodeTableRow from "@/components/EpisodeTableRow";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 
@@ -223,42 +223,13 @@ export default function PickDraw({
             疲労{values.fatigue}・満腹{values.fullness}・眠気{values.sleepiness}の
             あなたにぴったりなのはこちら
           </p>
-          <p className="card__date">{formatDate(picked.publishDate)}</p>
-          <h3 className="card__title">{picked.title}</h3>
-          {(picked.comment || picked.recommendation) && (
-            <p className="pick__comment">
-              {picked.comment}
-              {picked.comment && picked.recommendation ? " / " : ""}
-              {picked.recommendation}
-            </p>
-          )}
-          {picked.tags && picked.tags.length > 0 && (
-            <div className="episode-table__tags">
-              {picked.tags.map((tag) => (
-                <a
-                  key={tag}
-                  href={`/episodes?tag=${encodeURIComponent(tag)}`}
-                  className="episode-tag"
-                >
-                  #{tag}
-                </a>
-              ))}
-            </div>
-          )}
-          {(picked.appleUrl || picked.spotifyUrl) && (
-            <div className="card__links">
-              {picked.spotifyUrl && (
-                <a href={picked.spotifyUrl} target="_blank" rel="noopener noreferrer">
-                  Spotify
-                </a>
-              )}
-              {picked.appleUrl && (
-                <a href={picked.appleUrl} target="_blank" rel="noopener noreferrer">
-                  Apple Podcast
-                </a>
-              )}
-            </div>
-          )}
+          <div className="episode-table-wrap">
+            <table className="episode-table">
+              <tbody>
+                <EpisodeTableRow episode={picked} />
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
