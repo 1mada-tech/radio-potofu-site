@@ -46,13 +46,28 @@ h1 {
   font-size: clamp(2.2rem, 7vw, 4rem);
 }
 
+h1:has(+ .page-subtitle) {
+  margin-bottom: 0.15em;
+}
+
 .page-subtitle {
+  position: relative;
+  width: fit-content;
   margin: 0 0 1.6em;
-  padding-top: 0.5em;
-  border-top: 1px solid var(--color-border);
+  padding-top: 0.35em;
   font-size: 0.85rem;
   letter-spacing: 0.08em;
   color: var(--color-ink-soft);
+}
+
+.page-subtitle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 1px;
+  background: var(--color-border);
 }
 
 h2 {
