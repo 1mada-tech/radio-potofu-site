@@ -1,10 +1,25 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Episode } from "@/lib/podcast";
 import { formatDate } from "@/lib/date";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+const ITEM_WIDTH = 220;
+const SPEED_PX_PER_SEC = 500;
+
+function shuffle<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function truncateTitle(title: string, max = 16): string {
+  return title.length > max ? title.slice(0, max) + "…" : title;
+}
 
 function playTone(ctx: AudioContext, freq: number, duration: number) {
   const osc = ctx.createOscillator();
@@ -19,8 +34,25 @@ function playTone(ctx: AudioContext, freq: number, duration: number) {
   osc.stop(ctx.currentTime + duration);
 }
 
-// 「ズキューン」的な派手なドロー音。ノイズの立ち上がり + 周波数スイープ。
-function playDrawSound(ctx: AudioContext) {
+// 回転スタート音。上昇スイープ。
+function playSpinStart(ctx: AudioContext) {
+  const t0 = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  osc.type = "square";
+  osc.frequency.setValueAtTime(200, t0);
+  osc.frequency.exponentialRampToValueAtTime(700, t0 + 0.15);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(0.08, t0 + 0.03);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.18);
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t0);
+  osc.stop(t0 + 0.18);
+}
+
+// 「ズキューン」的な派手な停止音。ノイズの立ち上がり + 周波数スイープ。
+function playStopSound(ctx: AudioContext) {
   const t0 = ctx.currentTime;
 
   const bufferSize = Math.floor(ctx.sampleRate * 0.05);
@@ -54,6 +86,8 @@ function playDrawSound(ctx: AudioContext) {
   osc.stop(t0 + 0.45);
 }
 
+type Phase = "idle" | "spinning" | "result";
+
 export default function PickDraw({
   episodes,
   buttonLabel,
@@ -61,10 +95,18 @@ export default function PickDraw({
   episodes: Episode[];
   buttonLabel: string;
 }) {
+  const [phase, setPhase] = useState<Phase>("idle");
   const [picked, setPicked] = useState<Episode | null>(null);
   const [now, setNow] = useState<Date | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const tickMutedRef = useRef(false);
+
+  const reel = useMemo(() => shuffle(episodes), [episodes]);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0);
+  const lastTsRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const stopTick = (e: MouseEvent) => {
@@ -80,8 +122,6 @@ export default function PickDraw({
   useEffect(() => {
     setNow(new Date());
 
-    // ページ到達直後の自動再生。ブラウザの自動再生制限により
-    // 鳴らない場合もあるが、その場合は黙って何もしない。
     try {
       const AudioContextClass =
         window.AudioContext ||
@@ -105,7 +145,7 @@ export default function PickDraw({
     return () => clearInterval(timer);
   }, []);
 
-  const draw = () => {
+  const getCtx = () => {
     if (!audioCtxRef.current) {
       const AudioContextClass =
         window.AudioContext ||
@@ -113,16 +153,69 @@ export default function PickDraw({
           .webkitAudioContext;
       audioCtxRef.current = new AudioContextClass();
     }
-    const ctx = audioCtxRef.current;
+    return audioCtxRef.current;
+  };
+
+  const applyTransform = () => {
+    if (!stripRef.current || !viewportRef.current || reel.length === 0) return;
+    const viewportWidth = viewportRef.current.clientWidth;
+    const x = viewportWidth / 2 - ITEM_WIDTH / 2 - offsetRef.current;
+    stripRef.current.style.transform = `translateX(${x}px)`;
+  };
+
+  const tick = (ts: number) => {
+    if (lastTsRef.current === null) lastTsRef.current = ts;
+    const dt = (ts - lastTsRef.current) / 1000;
+    lastTsRef.current = ts;
+    offsetRef.current += SPEED_PX_PER_SEC * dt;
+    applyTransform();
+    rafRef.current = requestAnimationFrame(tick);
+  };
+
+  const startSpin = () => {
+    if (reel.length === 0) return;
+    const ctx = getCtx();
     if (ctx.state === "suspended") {
-      ctx.resume().then(() => playDrawSound(ctx));
+      ctx.resume().then(() => playSpinStart(ctx));
     } else {
-      playDrawSound(ctx);
+      playSpinStart(ctx);
+    }
+    setPicked(null);
+    setPhase("spinning");
+    lastTsRef.current = null;
+    rafRef.current = requestAnimationFrame(tick);
+  };
+
+  const stopSpin = () => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
+
+    const index = Math.floor(offsetRef.current / ITEM_WIDTH) % reel.length;
+    const result = reel[((index % reel.length) + reel.length) % reel.length];
+
+    const ctx = getCtx();
+    if (ctx.state === "suspended") {
+      ctx.resume().then(() => playStopSound(ctx));
+    } else {
+      playStopSound(ctx);
     }
 
-    if (episodes.length === 0) return;
-    const next = episodes[Math.floor(Math.random() * episodes.length)];
-    setPicked(next);
+    setPicked(result);
+    setPhase("result");
+  };
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
+
+  const handleButtonClick = () => {
+    if (phase === "spinning") {
+      stopSpin();
+    } else {
+      startSpin();
+    }
   };
 
   return (
@@ -146,11 +239,26 @@ export default function PickDraw({
           </span>
         </p>
       )}
-      <button type="button" className="pick__button" onClick={draw}>
-        {buttonLabel}
+
+      {phase !== "idle" && (
+        <div className="pick__reel" ref={viewportRef}>
+          <div className="pick__reel-strip" ref={stripRef}>
+            {[...reel, ...reel].map((ep, i) => (
+              <div key={i} className="pick__reel-item">
+                {truncateTitle(ep.title)}
+              </div>
+            ))}
+          </div>
+          <span className="pick__reel-marker pick__reel-marker--top" aria-hidden="true" />
+          <span className="pick__reel-marker pick__reel-marker--bottom" aria-hidden="true" />
+        </div>
+      )}
+
+      <button type="button" className="pick__button" onClick={handleButtonClick}>
+        {phase === "spinning" ? "ここで止める！" : buttonLabel}
       </button>
 
-      {picked && (
+      {phase === "result" && picked && (
         <div className="pick__result">
           <p className="card__date">{formatDate(picked.publishDate)}</p>
           <h3 className="card__title">{picked.title}</h3>
