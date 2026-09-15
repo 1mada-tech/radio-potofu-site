@@ -982,6 +982,151 @@ a.episode-tag:hover {
   text-decoration: underline;
 }
 
+/* Theme board */
+.theme-board {
+  margin-top: 8px;
+}
+
+.theme-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 32px;
+  padding: 16px;
+  background: var(--color-bg-alt);
+}
+
+.theme-form__name {
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  max-width: 240px;
+}
+
+.theme-form__body {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  resize: vertical;
+}
+
+.theme-form__honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.theme-form__submit {
+  align-self: flex-start;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 8px 24px;
+  background: var(--color-ink);
+  color: #fff;
+  border: 1px solid var(--color-ink);
+  cursor: pointer;
+}
+
+.theme-form__submit:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.theme-form__submit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.theme-board__list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.theme-post {
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.theme-post__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+}
+
+.theme-post__author {
+  font-weight: 700;
+}
+
+.theme-post__date {
+  color: var(--color-ink-soft);
+}
+
+.theme-post__status {
+  margin-left: auto;
+  font-family: inherit;
+  font-size: 0.8rem;
+  padding: 2px 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-ink-soft);
+}
+
+.theme-post__status--considering {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.theme-post__status--adopted {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.theme-post__status--recorded {
+  background: var(--color-ink);
+  color: #fff;
+  border-color: var(--color-ink);
+}
+
+.theme-post__body {
+  margin: 0 0 8px;
+  white-space: pre-line;
+}
+
+.theme-post__reply-toggle {
+  font-family: inherit;
+  font-size: 0.8rem;
+  color: var(--color-accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.theme-post__replies {
+  margin-top: 16px;
+  padding-left: 20px;
+  border-left: 2px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.theme-reply .theme-post__body {
+  margin-bottom: 0;
+}
+
 /* Pages */
 .page {
   padding-top: 56px;

@@ -9,6 +9,7 @@ const navItems = [
   { href: "/netprint", label: "ネットプリント" },
   { href: "/note", label: "ひみつノート" },
   { href: "/history", label: "年表" },
+  { href: "/themes", label: "テーマ募集" },
 ];
 
 export default function Header() {
