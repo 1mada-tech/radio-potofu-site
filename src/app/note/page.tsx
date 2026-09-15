@@ -28,6 +28,7 @@ export default async function NotePage({
   return (
     <div className="container page">
       <h1>ひみつノート</h1>
+      <p className="page-subtitle">Notes</p>
       {caption && <p className="page-caption">{caption}</p>}
       {contents.length > 0 ? (
         <>

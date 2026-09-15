@@ -34,6 +34,7 @@ export default async function SenryuPage({
           </span>
         )}
       </h1>
+      <p className="page-subtitle">Senryu</p>
       {caption && (
         <p className="page-caption">
           {caption.before}

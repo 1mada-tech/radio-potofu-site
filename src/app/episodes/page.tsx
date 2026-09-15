@@ -52,6 +52,7 @@ export default async function EpisodesPage({
   return (
     <div className="container page">
       <h1>これまでの配信</h1>
+      <p className="page-subtitle">Archive Ptf</p>
       {caption && <p className="page-caption">{renderCaption(caption)}</p>}
       <form action="/episodes" method="get" className="episode-search">
         <input

@@ -46,6 +46,13 @@ h1 {
   font-size: clamp(2.2rem, 7vw, 4rem);
 }
 
+.page-subtitle {
+  margin: -0.6em 0 1.6em;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-soft);
+}
+
 h2 {
   font-size: clamp(1.3rem, 3vw, 1.7rem);
 }

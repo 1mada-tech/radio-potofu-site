@@ -21,6 +21,7 @@ export default async function ThemesPage() {
   return (
     <div className="container page">
       <h1>テーマ募集</h1>
+      <p className="page-subtitle">Request Board</p>
       <p className="page-caption">{caption ?? DEFAULT_CAPTION}</p>
       <ThemeBoard initialPosts={posts} />
     </div>

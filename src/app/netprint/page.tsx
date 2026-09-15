@@ -17,6 +17,7 @@ export default async function NetprintPage() {
   return (
     <div className="container page">
       <h1>ネットプリント</h1>
+      <p className="page-subtitle">Convenience Store Zine</p>
       <p className="page-caption">{caption ?? DEFAULT_CAPTION}</p>
       {issues.length > 0 ? (
         <div className="episode-table-wrap">
