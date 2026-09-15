@@ -17,6 +17,25 @@ function shuffle<T>(arr: T[]): T[] {
   return copy;
 }
 
+type ReelEntry = { episode: Episode; bonus: boolean };
+
+function buildReel(episodes: Episode[]): ReelEntry[] {
+  const shuffled = shuffle(episodes);
+  return shuffled.map((episode) => ({
+    episode,
+    bonus: Math.random() < 1 / 12,
+  }));
+}
+
+type Judgement = "PERFECT" | "GOOD" | "MISS";
+
+function judge(deviation: number): Judgement {
+  const abs = Math.abs(deviation);
+  if (abs < ITEM_WIDTH * 0.08) return "PERFECT";
+  if (abs < ITEM_WIDTH * 0.25) return "GOOD";
+  return "MISS";
+}
+
 function truncateTitle(title: string, max = 16): string {
   return title.length > max ? title.slice(0, max) + "…" : title;
 }
@@ -86,6 +105,28 @@ function playStopSound(ctx: AudioContext) {
   osc.stop(t0 + 0.45);
 }
 
+function playJudgementSound(ctx: AudioContext, judgement: Judgement) {
+  if (judgement === "PERFECT") {
+    playTone(ctx, 1046, 0.1);
+    setTimeout(() => {
+      if (ctx.state !== "closed") playTone(ctx, 1568, 0.15);
+    }, 90);
+  } else if (judgement === "GOOD") {
+    playTone(ctx, 880, 0.12);
+  } else {
+    playTone(ctx, 220, 0.15);
+  }
+}
+
+function playBonusFanfare(ctx: AudioContext) {
+  const notes = [523, 659, 784, 1046];
+  notes.forEach((freq, i) => {
+    setTimeout(() => {
+      if (ctx.state !== "closed") playTone(ctx, freq, 0.18);
+    }, i * 90);
+  });
+}
+
 type Phase = "idle" | "spinning" | "result";
 
 export default function PickDraw({
@@ -97,11 +138,13 @@ export default function PickDraw({
 }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [picked, setPicked] = useState<Episode | null>(null);
+  const [judgement, setJudgement] = useState<Judgement | null>(null);
+  const [isBonus, setIsBonus] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const tickMutedRef = useRef(false);
 
-  const reel = useMemo(() => shuffle(episodes), [episodes]);
+  const reel = useMemo(() => buildReel(episodes), [episodes]);
   const stripRef = useRef<HTMLDivElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const offsetRef = useRef(0);
@@ -181,6 +224,8 @@ export default function PickDraw({
       playSpinStart(ctx);
     }
     setPicked(null);
+    setJudgement(null);
+    setIsBonus(false);
     setPhase("spinning");
     lastTsRef.current = null;
     rafRef.current = requestAnimationFrame(tick);
@@ -190,17 +235,32 @@ export default function PickDraw({
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
 
-    const index = Math.floor(offsetRef.current / ITEM_WIDTH) % reel.length;
-    const result = reel[((index % reel.length) + reel.length) % reel.length];
+    const rawIndex = Math.floor(offsetRef.current / ITEM_WIDTH);
+    const index = ((rawIndex % reel.length) + reel.length) % reel.length;
+    const entry = reel[index];
+    const deviation = offsetRef.current - (rawIndex * ITEM_WIDTH + ITEM_WIDTH / 2);
+    const result = judge(deviation);
 
     const ctx = getCtx();
-    if (ctx.state === "suspended") {
-      ctx.resume().then(() => playStopSound(ctx));
-    } else {
+    const playFeedback = () => {
       playStopSound(ctx);
+      setTimeout(() => {
+        if (entry.bonus) {
+          playBonusFanfare(ctx);
+        } else {
+          playJudgementSound(ctx, result);
+        }
+      }, 300);
+    };
+    if (ctx.state === "suspended") {
+      ctx.resume().then(playFeedback);
+    } else {
+      playFeedback();
     }
 
-    setPicked(result);
+    setPicked(entry.episode);
+    setJudgement(result);
+    setIsBonus(entry.bonus);
     setPhase("result");
   };
 
@@ -243,9 +303,13 @@ export default function PickDraw({
       {phase !== "idle" && (
         <div className="pick__reel" ref={viewportRef}>
           <div className="pick__reel-strip" ref={stripRef}>
-            {[...reel, ...reel].map((ep, i) => (
-              <div key={i} className="pick__reel-item">
-                {truncateTitle(ep.title)}
+            {[...reel, ...reel].map((entry, i) => (
+              <div
+                key={i}
+                className={`pick__reel-item${entry.bonus ? " pick__reel-item--bonus" : ""}`}
+              >
+                {entry.bonus && "★ "}
+                {truncateTitle(entry.episode.title)}
               </div>
             ))}
           </div>
@@ -258,8 +322,16 @@ export default function PickDraw({
         {phase === "spinning" ? "ここで止める！" : buttonLabel}
       </button>
 
+      {phase === "result" && judgement && (
+        <p
+          className={`pick__judgement pick__judgement--${isBonus ? "bonus" : judgement.toLowerCase()}`}
+        >
+          {isBonus ? "★ BONUS! ★" : judgement}
+        </p>
+      )}
+
       {phase === "result" && picked && (
-        <div className="pick__result">
+        <div className={`pick__result${isBonus ? " pick__result--bonus" : ""}`}>
           <p className="card__date">{formatDate(picked.publishDate)}</p>
           <h3 className="card__title">{picked.title}</h3>
           {(picked.comment || picked.recommendation) && (

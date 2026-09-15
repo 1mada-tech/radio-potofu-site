@@ -377,10 +377,54 @@ ul {
   bottom: 0;
 }
 
+.pick__reel-item--bonus {
+  color: #ffd23f;
+  font-weight: 700;
+}
+
+.pick__judgement {
+  margin: 8px 0 0;
+  font-family: var(--font-digital), monospace;
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+}
+
+.pick__judgement--perfect {
+  color: #ffd23f;
+  text-shadow: 0 0 8px rgba(255, 210, 63, 0.6);
+}
+
+.pick__judgement--good {
+  color: var(--color-teal);
+}
+
+.pick__judgement--miss {
+  color: var(--color-ink-soft);
+}
+
+.pick__judgement--bonus {
+  color: #ff2ee6;
+  animation: bonus-flash 0.6s ease infinite alternate;
+}
+
+@keyframes bonus-flash {
+  from {
+    color: #ff2ee6;
+  }
+  to {
+    color: #ffd23f;
+  }
+}
+
 .pick__result {
   margin-top: 32px;
   padding: 24px;
   border: 1px solid var(--color-border);
+}
+
+.pick__result--bonus {
+  border: 2px solid #ffd23f;
+  box-shadow: 0 0 20px rgba(255, 210, 63, 0.4);
 }
 
 .pick__comment {
