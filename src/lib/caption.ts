@@ -8,6 +8,7 @@ const SENRYU_CAPTION_CSV_URL =
 export type SenryuCaption = {
   before: string;
   word: string;
+  words: string[];
   after: string;
   version: string;
   totalVersion: string;
@@ -30,6 +31,7 @@ export async function getSenryuCaption(): Promise<SenryuCaption | null> {
 
     const { word, version } = candidates[Math.floor(Math.random() * candidates.length)];
     const [before, after] = template.split("[]");
+    const words = candidates.map((c) => c.word);
 
     const totalVersion =
       dataRows
@@ -37,7 +39,7 @@ export async function getSenryuCaption(): Promise<SenryuCaption | null> {
         .filter((cell): cell is string => Boolean(cell))
         .pop() ?? "";
 
-    return { before, word, after, version, totalVersion };
+    return { before, word, words, after, version, totalVersion };
   } catch {
     return null;
   }

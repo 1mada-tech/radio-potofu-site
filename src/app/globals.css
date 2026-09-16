@@ -326,6 +326,58 @@ ul {
   box-shadow: none;
 }
 
+.pick__button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.pick__button:disabled:hover {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+.pick__diagnosing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0 0;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
+.pick__diagnosing-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.pick__diagnosing-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  animation: pick-diagnosing-bounce 1s ease-in-out infinite;
+}
+
+.pick__diagnosing-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.pick__diagnosing-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes pick-diagnosing-bounce {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
 
 .pick__sliders {
   display: flex;
@@ -1347,6 +1399,7 @@ a.episode-tag:hover {
 }
 
 .senryu-caption__word {
+  display: inline-block;
   background: #d4ff3f;
   color: var(--color-ink);
   font-weight: 700;
@@ -1356,6 +1409,12 @@ a.episode-tag:hover {
   text-decoration-color: var(--color-ink);
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
+  opacity: 1;
+  transition: opacity 1.4s ease;
+}
+
+.senryu-caption__word--fading {
+  opacity: 0;
 }
 
 .senryu-caption__version {

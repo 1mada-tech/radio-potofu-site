@@ -3,6 +3,7 @@ import EssayCard from "@/components/EssayCard";
 import { getEssaysByType, ESSAY_TYPE_SENRYU } from "@/lib/microcms";
 import { getSenryuCaption } from "@/lib/caption";
 import Pagination from "@/components/Pagination";
+import SenryuCaptionWord from "@/components/SenryuCaptionWord";
 
 export const metadata: Metadata = { title: "現代川柳" };
 
@@ -40,7 +41,7 @@ export default async function SenryuPage({
       {caption && (
         <p className="page-caption">
           {caption.before}
-          <span className="senryu-caption__word">{caption.word}</span>
+          <SenryuCaptionWord initialWord={caption.word} words={caption.words} />
           {caption.after}
         </p>
       )}

@@ -77,6 +77,8 @@ const SLIDERS: { key: SliderKey; label: string }[] = [
   { key: "sleepiness", label: "眠気度" },
 ];
 
+const DIAGNOSING_MESSAGES = ["集計中", "照合中", "波長を確認中"];
+
 export default function PickDraw({
   episodes,
   buttonLabel,
@@ -86,6 +88,8 @@ export default function PickDraw({
 }) {
   const [picked, setPicked] = useState<Episode | null>(null);
   const [now, setNow] = useState<Date | null>(null);
+  const [diagnosing, setDiagnosing] = useState(false);
+  const [diagnosingIndex, setDiagnosingIndex] = useState(0);
   const [values, setValues] = useState<Record<SliderKey, number>>({
     fatigue: 50,
     fullness: 50,
@@ -103,6 +107,17 @@ export default function PickDraw({
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (!diagnosing) {
+      setDiagnosingIndex(0);
+      return;
+    }
+    const timer = setInterval(() => {
+      setDiagnosingIndex((i) => (i + 1) % DIAGNOSING_MESSAGES.length);
+    }, 550);
+    return () => clearInterval(timer);
+  }, [diagnosing]);
 
   const getCtx = () => {
     if (!audioCtxRef.current) {
@@ -128,16 +143,22 @@ export default function PickDraw({
   };
 
   const draw = () => {
+    if (episodes.length === 0 || diagnosing) return;
+
     const ctx = getCtx();
     if (ctx.state === "suspended") {
-      ctx.resume().then(() => playDrawSound(ctx));
-    } else {
-      playDrawSound(ctx);
+      ctx.resume();
     }
 
-    if (episodes.length === 0) return;
-    const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
-    setPicked(result);
+    setPicked(null);
+    setDiagnosing(true);
+
+    window.setTimeout(() => {
+      const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
+      playDrawSound(getCtx());
+      setPicked(result);
+      setDiagnosing(false);
+    }, 1900);
   };
 
   return (
@@ -181,11 +202,27 @@ export default function PickDraw({
         ))}
       </div>
 
-      <button type="button" className="pick__button" onClick={draw}>
-        {buttonLabel}
+      <button
+        type="button"
+        className="pick__button"
+        onClick={draw}
+        disabled={diagnosing}
+      >
+        {diagnosing ? "診断中…" : buttonLabel}
       </button>
 
-      {picked && (
+      {diagnosing && (
+        <p className="pick__diagnosing">
+          <span className="pick__diagnosing-dots" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </span>
+          {DIAGNOSING_MESSAGES[diagnosingIndex]}
+        </p>
+      )}
+
+      {picked && !diagnosing && (
         <div className="pick__result">
           <p className="pick__diagnosis">
             疲労{values.fatigue}・満腹{values.fullness}・眠気{values.sleepiness}の
