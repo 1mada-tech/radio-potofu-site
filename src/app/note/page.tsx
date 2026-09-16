@@ -31,7 +31,7 @@ export default async function NotePage({
         <h1>ひみつノート</h1>
         <p className="page-subtitle">Notes</p>
       </div>
-      {caption && <p className="page-caption">{caption}</p>}
+      {caption && <p className="page-caption page-caption--soft">{caption}</p>}
       {contents.length > 0 ? (
         <>
           <Pagination

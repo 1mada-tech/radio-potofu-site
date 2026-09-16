@@ -1387,6 +1387,13 @@ a.episode-tag:hover {
   margin-right: auto;
 }
 
+.page-caption--soft {
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 0 20px;
+  max-width: none;
+}
+
 .page-caption .episode-tag {
   display: inline;
   position: static;
@@ -1442,12 +1449,20 @@ a.episode-tag:hover {
   max-width: none;
 }
 
+.note-detail-layout .article__body {
+  line-height: 2;
+}
+
+.note-detail-layout .article__body p {
+  margin-bottom: 1.7em;
+}
+
 .note-sidebar {
   position: sticky;
   top: 32px;
   max-height: calc(100vh - 64px);
   overflow-y: auto;
-  border-left: 1px solid var(--color-ink-soft);
+  border-left: 1px solid var(--color-border);
   padding-left: 20px;
 }
 
@@ -1506,7 +1521,7 @@ a.episode-tag:hover {
     position: static;
     max-height: none;
     border-left: none;
-    border-top: 1px solid var(--color-ink-soft);
+    border-top: 1px solid var(--color-border);
     padding-left: 0;
     padding-top: 20px;
   }
