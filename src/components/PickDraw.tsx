@@ -77,7 +77,7 @@ const SLIDERS: { key: SliderKey; label: string }[] = [
   { key: "sleepiness", label: "眠気度" },
 ];
 
-const DIAGNOSING_MESSAGES = ["集計中", "照合中", "波長を確認中"];
+const DIAGNOSE_DURATION = 1900;
 
 export default function PickDraw({
   episodes,
@@ -89,7 +89,7 @@ export default function PickDraw({
   const [picked, setPicked] = useState<Episode | null>(null);
   const [now, setNow] = useState<Date | null>(null);
   const [diagnosing, setDiagnosing] = useState(false);
-  const [diagnosingIndex, setDiagnosingIndex] = useState(0);
+  const [progress, setProgress] = useState(0);
   const [values, setValues] = useState<Record<SliderKey, number>>({
     fatigue: 50,
     fullness: 50,
@@ -101,6 +101,7 @@ export default function PickDraw({
     fullness: 5,
     sleepiness: 5,
   });
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     setNow(new Date());
@@ -109,15 +110,10 @@ export default function PickDraw({
   }, []);
 
   useEffect(() => {
-    if (!diagnosing) {
-      setDiagnosingIndex(0);
-      return;
-    }
-    const timer = setInterval(() => {
-      setDiagnosingIndex((i) => (i + 1) % DIAGNOSING_MESSAGES.length);
-    }, 550);
-    return () => clearInterval(timer);
-  }, [diagnosing]);
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, []);
 
   const getCtx = () => {
     if (!audioCtxRef.current) {
@@ -152,35 +148,58 @@ export default function PickDraw({
 
     setPicked(null);
     setDiagnosing(true);
+    setProgress(0);
+
+    const startedAt = performance.now();
+    const tick = (t: number) => {
+      const elapsed = t - startedAt;
+      setProgress(Math.min(99, Math.floor((elapsed / DIAGNOSE_DURATION) * 100)));
+      if (elapsed < DIAGNOSE_DURATION) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
 
     window.setTimeout(() => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
       const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
       playDrawSound(getCtx());
+      setProgress(100);
       setPicked(result);
       setDiagnosing(false);
-    }, 1900);
+    }, DIAGNOSE_DURATION);
   };
 
   return (
     <div className="pick">
-      {now && (
-        <p className="pick__clock">
+      {diagnosing ? (
+        <p className="pick__clock pick__clock--diagnosing">
+          <span className="pick__clock-line pick__clock-label">診断中</span>
           <span className="pick__clock-line">
-            {now.getFullYear()}
-            <span className="pick__clock-kanji">年</span>
-            {now.getMonth() + 1}
-            <span className="pick__clock-kanji">月</span>
-            {now.getDate()}
-            <span className="pick__clock-kanji">
-              日({WEEKDAYS[now.getDay()]})
-            </span>
-          </span>
-          <span className="pick__clock-line">
-            {String(now.getHours()).padStart(2, "0")}:
-            {String(now.getMinutes()).padStart(2, "0")}:
-            {String(now.getSeconds()).padStart(2, "0")}
+            {String(progress).padStart(3, "0")}
+            <span className="pick__clock-kanji">%</span>
           </span>
         </p>
+      ) : (
+        now && (
+          <p className="pick__clock">
+            <span className="pick__clock-line">
+              {now.getFullYear()}
+              <span className="pick__clock-kanji">年</span>
+              {now.getMonth() + 1}
+              <span className="pick__clock-kanji">月</span>
+              {now.getDate()}
+              <span className="pick__clock-kanji">
+                日({WEEKDAYS[now.getDay()]})
+              </span>
+            </span>
+            <span className="pick__clock-line">
+              {String(now.getHours()).padStart(2, "0")}:
+              {String(now.getMinutes()).padStart(2, "0")}:
+              {String(now.getSeconds()).padStart(2, "0")}
+            </span>
+          </p>
+        )
       )}
 
       <div className="pick__sliders">
@@ -210,17 +229,6 @@ export default function PickDraw({
       >
         {diagnosing ? "診断中…" : buttonLabel}
       </button>
-
-      {diagnosing && (
-        <p className="pick__diagnosing">
-          <span className="pick__diagnosing-dots" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
-          {DIAGNOSING_MESSAGES[diagnosingIndex]}
-        </p>
-      )}
 
       {picked && !diagnosing && (
         <div className="pick__result">

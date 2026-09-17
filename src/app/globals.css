@@ -336,46 +336,31 @@ ul {
   border-color: var(--color-ink);
 }
 
-.pick__diagnosing {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 20px 0 0;
-  font-size: 0.85rem;
-  color: var(--color-ink-soft);
+.pick__clock-label {
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.45em;
+  letter-spacing: 0.3em;
+  color: var(--color-accent);
 }
 
-.pick__diagnosing-dots {
-  display: inline-flex;
-  gap: 4px;
+.pick__clock--diagnosing {
+  animation: pick-clock-flicker 2.4s steps(1, end) infinite;
 }
 
-.pick__diagnosing-dots span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  animation: pick-diagnosing-bounce 1s ease-in-out infinite;
-}
-
-.pick__diagnosing-dots span:nth-child(2) {
-  animation-delay: 0.15s;
-}
-
-.pick__diagnosing-dots span:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-@keyframes pick-diagnosing-bounce {
+@keyframes pick-clock-flicker {
   0%,
-  80%,
+  92%,
   100% {
-    opacity: 0.25;
-    transform: translateY(0);
-  }
-  40% {
     opacity: 1;
-    transform: translateY(-3px);
+  }
+  94% {
+    opacity: 0.72;
+  }
+  96% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 0.85;
   }
 }
 
@@ -870,7 +855,6 @@ p.hero__poem-title {
 .episode-table__links a,
 .card__links a,
 .episode-filter-notice a,
-.pagination__arrow,
 .history-item__link,
 .member-row__link {
   position: relative;
@@ -881,7 +865,6 @@ p.hero__poem-title {
 .episode-table__links a::after,
 .card__links a::after,
 .episode-filter-notice a::after,
-.pagination__arrow::after,
 .history-item__link::after,
 .member-row__link::after {
   content: "";
@@ -899,7 +882,6 @@ p.hero__poem-title {
 .episode-table__links a:hover::after,
 .card__links a:hover::after,
 .episode-filter-notice a:hover::after,
-.pagination__arrow:hover::after,
 .history-item__link:hover::after,
 .member-row__link:hover::after {
   transform: scaleX(1);
@@ -1653,8 +1635,18 @@ a.episode-tag:hover {
 }
 
 .pagination__arrow {
+  display: inline-block;
   color: var(--color-accent);
   white-space: nowrap;
+  transition: transform 0.15s ease;
+}
+
+.pagination__arrow:first-child:hover {
+  transform: translateX(-4px);
+}
+
+.pagination__arrow:last-child:hover {
+  transform: translateX(4px);
 }
 
 .pagination__arrow--disabled {
