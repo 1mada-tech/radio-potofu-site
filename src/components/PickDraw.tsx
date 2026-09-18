@@ -43,8 +43,8 @@ function playMonitorBeep(ctx: AudioContext, durationMs: number) {
   osc.frequency.value = 880;
 
   const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.025, t0);
-  gain.gain.setValueAtTime(0.025, t0 + durationSec - releaseSec);
+  gain.gain.setValueAtTime(0.0125, t0);
+  gain.gain.setValueAtTime(0.0125, t0 + durationSec - releaseSec);
   gain.gain.linearRampToValueAtTime(0.0001, t0 + durationSec);
 
   osc.connect(gain);
@@ -116,10 +116,12 @@ const PHRASES = [
 
 // 後半ほど間隔が詰まっていく、固定のステージ長(ミリ秒)。
 const STAGE_DURATIONS = [1300, 1000, 780, 610, 480];
+const PRE_MONITOR_GAP = 500; // 最後の短いピと長いピーの間の間隔
 const MONITOR_BEEP_DURATION = 1100;
 const FINAL_PAUSE = 550;
 const TOTAL_STAGE_TIME = STAGE_DURATIONS.reduce((a, b) => a + b, 0);
-const TOTAL_DURATION = TOTAL_STAGE_TIME + MONITOR_BEEP_DURATION + FINAL_PAUSE;
+const TOTAL_DURATION =
+  TOTAL_STAGE_TIME + PRE_MONITOR_GAP + MONITOR_BEEP_DURATION + FINAL_PAUSE;
 
 export default function PickDraw({
   episodes,
@@ -198,10 +200,12 @@ export default function PickDraw({
       if (i < STAGE_DURATIONS.length - 1) {
         runStage(i + 1);
       } else {
-        playMonitorBeep(getCtx(), MONITOR_BEEP_DURATION);
         timeoutRef.current = window.setTimeout(() => {
-          timeoutRef.current = window.setTimeout(finish, FINAL_PAUSE);
-        }, MONITOR_BEEP_DURATION);
+          playMonitorBeep(getCtx(), MONITOR_BEEP_DURATION);
+          timeoutRef.current = window.setTimeout(() => {
+            timeoutRef.current = window.setTimeout(finish, FINAL_PAUSE);
+          }, MONITOR_BEEP_DURATION);
+        }, PRE_MONITOR_GAP);
       }
     }, STAGE_DURATIONS[i]);
   };

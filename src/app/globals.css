@@ -71,13 +71,7 @@ h1 {
   content: "";
   flex: 1;
   height: 1px;
-  background-image: repeating-linear-gradient(
-    to right,
-    var(--color-ink-soft) 0,
-    var(--color-ink-soft) 5px,
-    transparent 5px,
-    transparent 10px
-  );
+  background: var(--color-ink-soft);
 }
 
 h2 {
