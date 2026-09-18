@@ -77,6 +77,16 @@ const SLIDERS: { key: SliderKey; label: string }[] = [
   { key: "sleepiness", label: "眠気度" },
 ];
 
+// 診断中に順番に見せるステージ。durationはミリ秒。
+// key を持つステージはそのスライダー値まで、持たないステージは100までカウントアップする。
+const DIAGNOSE_STAGES: { key: SliderKey | null; label: string; duration: number }[] = [
+  { key: "fatigue", label: "疲労度を分析中", duration: 500 },
+  { key: "fullness", label: "満腹度を照合中", duration: 500 },
+  { key: "sleepiness", label: "眠気度を確認中", duration: 500 },
+  { key: null, label: "総合診断中", duration: 600 },
+];
+const STAGE_GAP = 60; // ステージ間の小さな間
+
 export default function PickDraw({
   episodes,
   buttonLabel,
@@ -86,6 +96,9 @@ export default function PickDraw({
 }) {
   const [picked, setPicked] = useState<Episode | null>(null);
   const [now, setNow] = useState<Date | null>(null);
+  const [diagnosing, setDiagnosing] = useState(false);
+  const [stageIndex, setStageIndex] = useState(0);
+  const [stageValue, setStageValue] = useState(0);
   const [values, setValues] = useState<Record<SliderKey, number>>({
     fatigue: 50,
     fullness: 50,
@@ -97,11 +110,20 @@ export default function PickDraw({
     fullness: 5,
     sleepiness: 5,
   });
+  const rafRef = useRef<number | null>(null);
+  const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     setNow(new Date());
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+      if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);
+    };
   }, []);
 
   const getCtx = () => {
@@ -127,39 +149,82 @@ export default function PickDraw({
     }
   };
 
+  const finish = () => {
+    const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
+    playDrawSound(getCtx());
+    setPicked(result);
+    setDiagnosing(false);
+  };
+
+  const runStage = (i: number) => {
+    setStageIndex(i);
+    const stage = DIAGNOSE_STAGES[i];
+    const target = stage.key ? values[stage.key] : 100;
+    const startedAt = performance.now();
+
+    const tick = (t: number) => {
+      const elapsed = t - startedAt;
+      const ratio = Math.min(1, elapsed / stage.duration);
+      setStageValue(Math.floor(target * ratio));
+      if (ratio < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
+      }
+      if (i < DIAGNOSE_STAGES.length - 1) {
+        timeoutRef.current = window.setTimeout(() => runStage(i + 1), STAGE_GAP);
+      } else {
+        finish();
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
+  };
+
   const draw = () => {
+    if (episodes.length === 0 || diagnosing) return;
+
     const ctx = getCtx();
     if (ctx.state === "suspended") {
-      ctx.resume().then(() => playDrawSound(ctx));
-    } else {
-      playDrawSound(ctx);
+      ctx.resume();
     }
 
-    if (episodes.length === 0) return;
-    const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
-    setPicked(result);
+    setPicked(null);
+    setDiagnosing(true);
+    setStageValue(0);
+    runStage(0);
   };
 
   return (
     <div className="pick">
-      {now && (
-        <p className="pick__clock">
-          <span className="pick__clock-line">
-            {now.getFullYear()}
-            <span className="pick__clock-kanji">年</span>
-            {now.getMonth() + 1}
-            <span className="pick__clock-kanji">月</span>
-            {now.getDate()}
-            <span className="pick__clock-kanji">
-              日({WEEKDAYS[now.getDay()]})
-            </span>
+      {diagnosing ? (
+        <p className="pick__clock pick__clock--diagnosing">
+          <span className="pick__clock-line pick__clock-label">
+            {DIAGNOSE_STAGES[stageIndex].label}
           </span>
           <span className="pick__clock-line">
-            {String(now.getHours()).padStart(2, "0")}:
-            {String(now.getMinutes()).padStart(2, "0")}:
-            {String(now.getSeconds()).padStart(2, "0")}
+            {String(stageValue).padStart(3, "0")}
+            <span className="pick__clock-kanji">%</span>
           </span>
         </p>
+      ) : (
+        now && (
+          <p className="pick__clock">
+            <span className="pick__clock-line">
+              {now.getFullYear()}
+              <span className="pick__clock-kanji">年</span>
+              {now.getMonth() + 1}
+              <span className="pick__clock-kanji">月</span>
+              {now.getDate()}
+              <span className="pick__clock-kanji">
+                日({WEEKDAYS[now.getDay()]})
+              </span>
+            </span>
+            <span className="pick__clock-line">
+              {String(now.getHours()).padStart(2, "0")}:
+              {String(now.getMinutes()).padStart(2, "0")}:
+              {String(now.getSeconds()).padStart(2, "0")}
+            </span>
+          </p>
+        )
       )}
 
       <div className="pick__sliders">
@@ -181,11 +246,16 @@ export default function PickDraw({
         ))}
       </div>
 
-      <button type="button" className="pick__button" onClick={draw}>
-        {buttonLabel}
+      <button
+        type="button"
+        className="pick__button"
+        onClick={draw}
+        disabled={diagnosing}
+      >
+        {diagnosing ? "診断中…" : buttonLabel}
       </button>
 
-      {picked && (
+      {picked && !diagnosing && (
         <div className="pick__result">
           <p className="pick__diagnosis">
             疲労{values.fatigue}・満腹{values.fullness}・眠気{values.sleepiness}の

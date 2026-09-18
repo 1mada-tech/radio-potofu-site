@@ -21,21 +21,6 @@ type MemberInfo = {
   photo?: MicroCMSImage;
 };
 
-const LINK_LABELS: Record<string, string> = {
-  "x.com": "X",
-  "twitter.com": "X",
-  "instagram.com": "Instagram",
-};
-
-function labelForLink(url: string): string {
-  try {
-    const hostname = new URL(url).hostname.replace(/^www\./, "");
-    return LINK_LABELS[hostname] ?? hostname;
-  } catch {
-    return url;
-  }
-}
-
 const LISTENER_FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSeOhplhZTIclDQfUUbQTYbWwDkKVQOOTCOZPXOSwTTCXSo6rw/viewform";
 
@@ -136,7 +121,7 @@ function ProfileRow({ profile }: { profile: Member }) {
                 rel="noopener noreferrer"
                 className="member-row__link"
               >
-                {labelForLink(link)}
+                {link}
               </a>
             ))}
           </div>

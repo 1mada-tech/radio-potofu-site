@@ -21,15 +21,15 @@ export default async function ZatsubunDetailPage({
   return (
     <div className="container page note-detail-layout">
       <article className="page--article">
-        <p className="article__date">
-          {formatDateJa(essay.publishDate)}
-          {essay.author ? ` / ${essay.author}` : ""}
-        </p>
         <h1>{essay.title}</h1>
         <div
           className="article__body"
           dangerouslySetInnerHTML={{ __html: essay.body }}
         />
+        <p className="article__date article__date--footer">
+          {formatDateJa(essay.publishDate)}
+          {essay.author ? ` / ${essay.author}` : ""}
+        </p>
       </article>
       <NoteSidebar essays={allEssays} currentId={id} />
     </div>

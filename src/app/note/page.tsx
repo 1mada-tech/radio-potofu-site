@@ -46,10 +46,6 @@ export default async function NotePage({
           {featured && (
             <section className="note-featured">
               <p className="note-featured__label">最新記事</p>
-              <p className="article__date">
-                {formatDate(featured.publishDate)}
-                {featured.author ? ` / ${featured.author}` : ""}
-              </p>
               <h2 className="note-featured__title">
                 <Link href={`/note/${featured.id}`}>{featured.title}</Link>
               </h2>
@@ -57,6 +53,10 @@ export default async function NotePage({
                 className="article__body"
                 dangerouslySetInnerHTML={{ __html: featured.body }}
               />
+              <p className="article__date article__date--footer">
+                {formatDate(featured.publishDate)}
+                {featured.author ? ` / ${featured.author}` : ""}
+              </p>
             </section>
           )}
           {rest.length > 0 && (

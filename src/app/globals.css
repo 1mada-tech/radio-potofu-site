@@ -326,6 +326,44 @@ ul {
   box-shadow: none;
 }
 
+.pick__button:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.pick__button:disabled:hover {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+.pick__clock-label {
+  font-family: var(--font-body), sans-serif;
+  font-size: 0.45em;
+  letter-spacing: 0.2em;
+  color: var(--color-accent);
+}
+
+.pick__clock--diagnosing {
+  animation: pick-clock-flicker 2.4s steps(1, end) infinite;
+}
+
+@keyframes pick-clock-flicker {
+  0%,
+  92%,
+  100% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 0.72;
+  }
+  96% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 0.85;
+  }
+}
+
 .pick__sliders {
   display: flex;
   flex-direction: column;
@@ -1517,6 +1555,10 @@ a.episode-tag:hover {
   font-size: 0.85rem;
   color: var(--color-ink-soft);
   margin-bottom: 4px;
+}
+
+.article__date--footer {
+  margin: 24px 0 0;
 }
 
 .article__body {
