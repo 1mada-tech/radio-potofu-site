@@ -39,7 +39,7 @@ function playMonitorBeep(ctx: AudioContext, durationMs: number) {
   const t0 = ctx.currentTime;
 
   const osc = ctx.createOscillator();
-  osc.type = "sine";
+  osc.type = "square";
   osc.frequency.value = 880;
 
   const gain = ctx.createGain();
@@ -301,8 +301,8 @@ export default function PickDraw({
 
       {diagnosing && (
         <p className="pick__status">
-          {PHRASES[phraseIndex]}
-          {".".repeat(dotCount)}
+          <span className="pick__status-phrase">{PHRASES[phraseIndex]}</span>
+          <span className="pick__status-dots">{".".repeat(dotCount)}</span>
         </p>
       )}
 

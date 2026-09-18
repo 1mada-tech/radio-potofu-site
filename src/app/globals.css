@@ -354,11 +354,18 @@ ul {
 }
 
 .pick__status {
+  display: inline-flex;
   min-height: 3em;
   margin: 14px 0 0;
   font-size: 0.85rem;
   line-height: 1.5;
   color: var(--color-ink-soft);
+}
+
+.pick__status-dots {
+  display: inline-block;
+  width: 1.4em;
+  text-align: left;
 }
 
 .pick__sliders {
