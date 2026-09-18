@@ -463,6 +463,7 @@ ul {
 .site-header__nav-row {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 .site-header__nav-row + .site-header__nav-row {
@@ -1745,6 +1746,7 @@ a.episode-tag:hover {
 
   .site-header__nav-row {
     flex-direction: column;
+    justify-content: flex-start;
     gap: 16px;
   }
 
