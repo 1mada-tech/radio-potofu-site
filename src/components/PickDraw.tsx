@@ -43,8 +43,8 @@ function playMonitorBeep(ctx: AudioContext, durationMs: number) {
   osc.frequency.value = 880;
 
   const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.05, t0);
-  gain.gain.setValueAtTime(0.05, t0 + durationSec - releaseSec);
+  gain.gain.setValueAtTime(0.028, t0);
+  gain.gain.setValueAtTime(0.028, t0 + durationSec - releaseSec);
   gain.gain.linearRampToValueAtTime(0.0001, t0 + durationSec);
 
   osc.connect(gain);
@@ -114,22 +114,12 @@ const PHRASES = [
   "総合診断中",
 ];
 
-const DOT_INTERVAL = 200; // 末尾のピリオドが増えていく間隔
-
-function randRange(min: number, max: number) {
-  return min + Math.random() * (max - min);
-}
-
-// 毎回すこしバラつきつつ、後半ほど間隔が詰まっていくステージ長の配列を作る。
-function buildStageDurations() {
-  const decay = randRange(0.68, 0.82);
-  let d = randRange(1100, 1500);
-  return PHRASES.map(() => {
-    const duration = Math.max(300, Math.round(d * randRange(0.85, 1.15)));
-    d *= decay;
-    return duration;
-  });
-}
+// 後半ほど間隔が詰まっていく、固定のステージ長(ミリ秒)。
+const STAGE_DURATIONS = [1300, 1000, 780, 610, 480];
+const MONITOR_BEEP_DURATION = 1100;
+const FINAL_PAUSE = 550;
+const TOTAL_STAGE_TIME = STAGE_DURATIONS.reduce((a, b) => a + b, 0);
+const TOTAL_DURATION = TOTAL_STAGE_TIME + MONITOR_BEEP_DURATION + FINAL_PAUSE;
 
 export default function PickDraw({
   episodes,
@@ -142,7 +132,7 @@ export default function PickDraw({
   const [now, setNow] = useState<Date | null>(null);
   const [diagnosing, setDiagnosing] = useState(false);
   const [phraseIndex, setPhraseIndex] = useState(0);
-  const [dotCount, setDotCount] = useState(0);
+  const [progress, setProgress] = useState(0);
   const [values, setValues] = useState<Record<SliderKey, number>>({
     fatigue: 50,
     fullness: 50,
@@ -155,7 +145,7 @@ export default function PickDraw({
     sleepiness: 5,
   });
   const timeoutRef = useRef<number | null>(null);
-  const dotTimerRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     setNow(new Date());
@@ -166,21 +156,9 @@ export default function PickDraw({
   useEffect(() => {
     return () => {
       if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);
-      if (dotTimerRef.current !== null) window.clearInterval(dotTimerRef.current);
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     };
   }, []);
-
-  // フレーズが切り替わるたびに末尾のピリオドを0からカウントし直す。
-  useEffect(() => {
-    if (!diagnosing) return;
-    setDotCount(0);
-    dotTimerRef.current = window.setInterval(() => {
-      setDotCount((d) => (d + 1) % 4);
-    }, DOT_INTERVAL);
-    return () => {
-      if (dotTimerRef.current !== null) window.clearInterval(dotTimerRef.current);
-    };
-  }, [diagnosing, phraseIndex]);
 
   const getCtx = () => {
     if (!audioCtxRef.current) {
@@ -206,26 +184,26 @@ export default function PickDraw({
   };
 
   const finish = () => {
+    if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
     playPashun(getCtx());
     setPicked(result);
     setDiagnosing(false);
   };
 
-  const runStage = (i: number, durations: number[]) => {
+  const runStage = (i: number) => {
     setPhraseIndex(i);
     playBeep(getCtx());
     timeoutRef.current = window.setTimeout(() => {
-      if (i < durations.length - 1) {
-        runStage(i + 1, durations);
+      if (i < STAGE_DURATIONS.length - 1) {
+        runStage(i + 1);
       } else {
-        const monitorBeepDuration = randRange(900, 1300);
-        playMonitorBeep(getCtx(), monitorBeepDuration);
+        playMonitorBeep(getCtx(), MONITOR_BEEP_DURATION);
         timeoutRef.current = window.setTimeout(() => {
-          timeoutRef.current = window.setTimeout(finish, randRange(440, 700));
-        }, monitorBeepDuration);
+          timeoutRef.current = window.setTimeout(finish, FINAL_PAUSE);
+        }, MONITOR_BEEP_DURATION);
       }
-    }, durations[i]);
+    }, STAGE_DURATIONS[i]);
   };
 
   const draw = () => {
@@ -238,7 +216,18 @@ export default function PickDraw({
 
     setPicked(null);
     setDiagnosing(true);
-    runStage(0, buildStageDurations());
+    setProgress(0);
+    runStage(0);
+
+    const startedAt = performance.now();
+    const tick = (t: number) => {
+      const elapsed = t - startedAt;
+      setProgress(Math.min(100, (elapsed / TOTAL_DURATION) * 100));
+      if (elapsed < TOTAL_DURATION) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
   };
 
   return (
@@ -297,14 +286,12 @@ export default function PickDraw({
         <span className="pick__button-label">
           {diagnosing ? DIAGNOSING_LABEL : buttonLabel}
         </span>
+        {diagnosing && (
+          <span className="pick__button-progress" style={{ width: `${progress}%` }} />
+        )}
       </button>
 
-      {diagnosing && (
-        <p className="pick__status">
-          <span className="pick__status-phrase">{PHRASES[phraseIndex]}</span>
-          <span className="pick__status-dots">{".".repeat(dotCount)}</span>
-        </p>
-      )}
+      {diagnosing && <p className="pick__status">{PHRASES[phraseIndex]}</p>}
 
       {picked && !diagnosing && (
         <div className="pick__result">
