@@ -6,15 +6,15 @@ import EpisodeTableRow from "@/components/EpisodeTableRow";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
 
-function playTone(ctx: AudioContext, freq: number, duration: number) {
+function playTone(ctx: AudioContext, freq: number, duration: number, gain = 0.06) {
   const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
+  const gainNode = ctx.createGain();
   osc.type = "square";
   osc.frequency.value = freq;
-  gain.gain.setValueAtTime(0.06, ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-  osc.connect(gain);
-  gain.connect(ctx.destination);
+  gainNode.gain.setValueAtTime(gain, ctx.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+  osc.connect(gainNode);
+  gainNode.connect(ctx.destination);
   osc.start();
   osc.stop(ctx.currentTime + duration);
 }
@@ -25,11 +25,21 @@ function playSliderTick(ctx: AudioContext, value: number) {
   playTone(ctx, freq, 0.04);
 }
 
-// 「ズキューン」的な派手な診断音。ノイズの立ち上がり + 周波数スイープ。
-function playDrawSound(ctx: AudioContext) {
+// 処理中の等間隔ビープ「ピ」。
+function playBeep(ctx: AudioContext) {
+  playTone(ctx, 880, 0.08, 0.05);
+}
+
+// 最後の間に鳴らす長めのビープ「ピー」。
+function playLongBeep(ctx: AudioContext) {
+  playTone(ctx, 880, 0.45, 0.05);
+}
+
+// 結果表示と同時に鳴らす「パシュン！」。ノイズの立ち上がり + 短い下降チャープ。
+function playPashun(ctx: AudioContext) {
   const t0 = ctx.currentTime;
 
-  const bufferSize = Math.floor(ctx.sampleRate * 0.05);
+  const bufferSize = Math.floor(ctx.sampleRate * 0.04);
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
   for (let i = 0; i < bufferSize; i++) {
@@ -38,26 +48,26 @@ function playDrawSound(ctx: AudioContext) {
   const noise = ctx.createBufferSource();
   noise.buffer = buffer;
   const noiseGain = ctx.createGain();
-  noiseGain.gain.setValueAtTime(0.18, t0);
+  noiseGain.gain.setValueAtTime(0.22, t0);
+  noiseGain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.15);
   noise.connect(noiseGain);
   noiseGain.connect(ctx.destination);
   noise.start(t0);
 
   const osc = ctx.createOscillator();
   osc.type = "sawtooth";
-  osc.frequency.setValueAtTime(180, t0);
-  osc.frequency.exponentialRampToValueAtTime(1800, t0 + 0.09);
-  osc.frequency.exponentialRampToValueAtTime(60, t0 + 0.42);
+  osc.frequency.setValueAtTime(1200, t0);
+  osc.frequency.exponentialRampToValueAtTime(220, t0 + 0.15);
 
   const gain = ctx.createGain();
   gain.gain.setValueAtTime(0.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(0.16, t0 + 0.05);
-  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.45);
+  gain.gain.exponentialRampToValueAtTime(0.18, t0 + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.16);
 
   osc.connect(gain);
   gain.connect(ctx.destination);
   osc.start(t0);
-  osc.stop(t0 + 0.45);
+  osc.stop(t0 + 0.18);
 }
 
 function hashPick<T>(list: T[], values: number[]): T {
@@ -77,15 +87,14 @@ const SLIDERS: { key: SliderKey; label: string }[] = [
   { key: "sleepiness", label: "眠気度" },
 ];
 
-// 診断中に順番に見せるステージ。durationはミリ秒。
-// key を持つステージはそのスライダー値まで、持たないステージは100までカウントアップする。
+// 診断中に順番に見せるステージ。durationはミリ秒、各ステージの開始時に「ピ」を鳴らす。
 const DIAGNOSE_STAGES: { key: SliderKey | null; label: string; duration: number }[] = [
-  { key: "fatigue", label: "疲労度を分析中", duration: 500 },
-  { key: "fullness", label: "満腹度を照合中", duration: 500 },
-  { key: "sleepiness", label: "眠気度を確認中", duration: 500 },
-  { key: null, label: "総合診断中", duration: 600 },
+  { key: "fatigue", label: "疲労度を分析中", duration: 450 },
+  { key: "fullness", label: "満腹度を照合中", duration: 450 },
+  { key: "sleepiness", label: "眠気度を確認中", duration: 450 },
+  { key: null, label: "総合診断中", duration: 450 },
 ];
-const STAGE_GAP = 60; // ステージ間の小さな間
+const FINAL_PAUSE = 550; // 最後の「間」。ここで長めのビープを鳴らす。
 
 export default function PickDraw({
   episodes,
@@ -98,7 +107,8 @@ export default function PickDraw({
   const [now, setNow] = useState<Date | null>(null);
   const [diagnosing, setDiagnosing] = useState(false);
   const [stageIndex, setStageIndex] = useState(0);
-  const [stageValue, setStageValue] = useState(0);
+  const [stageProgress, setStageProgress] = useState(0);
+  const [finalizing, setFinalizing] = useState(false);
   const [values, setValues] = useState<Record<SliderKey, number>>({
     fatigue: 50,
     fullness: 50,
@@ -151,29 +161,34 @@ export default function PickDraw({
 
   const finish = () => {
     const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
-    playDrawSound(getCtx());
+    playPashun(getCtx());
     setPicked(result);
     setDiagnosing(false);
+    setFinalizing(false);
   };
 
   const runStage = (i: number) => {
     setStageIndex(i);
+    setStageProgress(0);
+    playBeep(getCtx());
+
     const stage = DIAGNOSE_STAGES[i];
-    const target = stage.key ? values[stage.key] : 100;
     const startedAt = performance.now();
 
     const tick = (t: number) => {
       const elapsed = t - startedAt;
       const ratio = Math.min(1, elapsed / stage.duration);
-      setStageValue(Math.floor(target * ratio));
+      setStageProgress(Math.floor(ratio * 100));
       if (ratio < 1) {
         rafRef.current = requestAnimationFrame(tick);
         return;
       }
       if (i < DIAGNOSE_STAGES.length - 1) {
-        timeoutRef.current = window.setTimeout(() => runStage(i + 1), STAGE_GAP);
+        runStage(i + 1);
       } else {
-        finish();
+        setFinalizing(true);
+        playLongBeep(getCtx());
+        timeoutRef.current = window.setTimeout(finish, FINAL_PAUSE);
       }
     };
     rafRef.current = requestAnimationFrame(tick);
@@ -188,43 +203,31 @@ export default function PickDraw({
     }
 
     setPicked(null);
+    setFinalizing(false);
     setDiagnosing(true);
-    setStageValue(0);
     runStage(0);
   };
 
   return (
     <div className="pick">
-      {diagnosing ? (
-        <p className="pick__clock pick__clock--diagnosing">
-          <span className="pick__clock-line pick__clock-label">
-            {DIAGNOSE_STAGES[stageIndex].label}
+      {now && (
+        <p className="pick__clock">
+          <span className="pick__clock-line">
+            {now.getFullYear()}
+            <span className="pick__clock-kanji">年</span>
+            {now.getMonth() + 1}
+            <span className="pick__clock-kanji">月</span>
+            {now.getDate()}
+            <span className="pick__clock-kanji">
+              日({WEEKDAYS[now.getDay()]})
+            </span>
           </span>
           <span className="pick__clock-line">
-            {String(stageValue).padStart(3, "0")}
-            <span className="pick__clock-kanji">%</span>
+            {String(now.getHours()).padStart(2, "0")}:
+            {String(now.getMinutes()).padStart(2, "0")}:
+            {String(now.getSeconds()).padStart(2, "0")}
           </span>
         </p>
-      ) : (
-        now && (
-          <p className="pick__clock">
-            <span className="pick__clock-line">
-              {now.getFullYear()}
-              <span className="pick__clock-kanji">年</span>
-              {now.getMonth() + 1}
-              <span className="pick__clock-kanji">月</span>
-              {now.getDate()}
-              <span className="pick__clock-kanji">
-                日({WEEKDAYS[now.getDay()]})
-              </span>
-            </span>
-            <span className="pick__clock-line">
-              {String(now.getHours()).padStart(2, "0")}:
-              {String(now.getMinutes()).padStart(2, "0")}:
-              {String(now.getSeconds()).padStart(2, "0")}
-            </span>
-          </p>
-        )
       )}
 
       <div className="pick__sliders">
@@ -254,6 +257,30 @@ export default function PickDraw({
       >
         {diagnosing ? "診断中…" : buttonLabel}
       </button>
+
+      {diagnosing && (
+        <div className="pick__diagnostics">
+          {DIAGNOSE_STAGES.map((stage, i) => {
+            const state = i < stageIndex ? "done" : i === stageIndex ? "active" : "pending";
+            const fill = i < stageIndex ? 100 : i === stageIndex ? stageProgress : 0;
+            return (
+              <div
+                key={stage.label}
+                className={`pick__diagnostics-step pick__diagnostics-step--${state}`}
+              >
+                <span className="pick__diagnostics-label">{stage.label}</span>
+                <span className="pick__diagnostics-bar">
+                  <span
+                    className="pick__diagnostics-bar-fill"
+                    style={{ width: `${fill}%` }}
+                  />
+                </span>
+              </div>
+            );
+          })}
+          {finalizing && <p className="pick__diagnostics-final">回答を確定中…</p>}
+        </div>
+      )}
 
       {picked && !diagnosing && (
         <div className="pick__result">
