@@ -1667,8 +1667,8 @@ a.episode-tag:hover {
 
 .member-row__links {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px 14px;
+  flex-direction: column;
+  gap: 4px;
   margin-top: 4px;
 }
 
