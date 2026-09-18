@@ -43,8 +43,8 @@ function playMonitorBeep(ctx: AudioContext, durationMs: number) {
   osc.frequency.value = 880;
 
   const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.028, t0);
-  gain.gain.setValueAtTime(0.028, t0 + durationSec - releaseSec);
+  gain.gain.setValueAtTime(0.025, t0);
+  gain.gain.setValueAtTime(0.025, t0 + durationSec - releaseSec);
   gain.gain.linearRampToValueAtTime(0.0001, t0 + durationSec);
 
   osc.connect(gain);
