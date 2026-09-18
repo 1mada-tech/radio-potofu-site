@@ -41,13 +41,15 @@ export default function Header() {
         <nav className={`site-header__nav${isOpen ? " site-header__nav--open" : ""}`}>
           <div className="site-header__nav-inner">
             <ul className="site-header__nav-row">
-              <li className="site-header__nav-group">
+              <li>
                 <Link href="/episodes" onClick={() => setIsOpen(false)}>
                   これまでの配信
                 </Link>
-                <span className="site-header__nav-arrow" aria-hidden="true">
-                  →
-                </span>
+              </li>
+              <li aria-hidden="true">
+                <span className="site-header__nav-triangle">▶</span>
+              </li>
+              <li>
                 <Link
                   href="/pick"
                   className="site-header__pick"

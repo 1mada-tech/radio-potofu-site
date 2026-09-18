@@ -466,16 +466,21 @@ ul {
   gap: 4px 24px;
 }
 
-.site-header__nav-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+.site-header__nav-triangle {
+  display: inline-block;
+  color: var(--color-accent);
+  font-size: 0.7rem;
+  animation: nav-triangle-blink 2.2s ease-in-out infinite;
 }
 
-.site-header__nav-arrow {
-  color: var(--color-ink-soft);
-  font-size: 0.85rem;
+@keyframes nav-triangle-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
 }
 
 .site-header__nav a {
