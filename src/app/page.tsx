@@ -115,13 +115,13 @@ function ProfileRow({ profile }: { profile: Member }) {
           <div className="member-row__links">
             {profile.links.map((link) => (
               <a
-                key={link}
-                href={link}
+                key={link.url}
+                href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="member-row__link"
               >
-                {link}
+                {link.label}
               </a>
             ))}
           </div>

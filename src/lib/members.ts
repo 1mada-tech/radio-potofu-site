@@ -1,9 +1,16 @@
 import { parse } from "csv-parse/sync";
 
 // トップページ「こんなひとたち」用のメンバー一覧。スプレッドシート「公式：こんなひとたち」タブ。
-// 列がメンバー1人ずつ、行が属性（参加度／肩書き／メンバー名／ローマ字読み／紹介文／リンク）という転置形式。
+// 列がメンバー1人ずつ、行が属性（参加度／肩書き／メンバー名／ローマ字読み／紹介文／リンク／リンク文字列）という転置形式。
+// リンク・リンク文字列は、1つのセル内で改行区切りにすると複数リンクを順番に並べられる
+// (URLと表示文言は行番号で対応させる。文言が足りない場合はURLをそのまま表示)。
 const MEMBERS_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1J_fSVe7sqRQaeelc2A9ocQhAbxXqB6OHpv0BxW6CbEk/export?format=csv&gid=11136023";
+
+export type MemberLink = {
+  url: string;
+  label: string;
+};
 
 export type Member = {
   name: string;
@@ -11,7 +18,7 @@ export type Member = {
   romaji?: string;
   participation?: string;
   bio?: string;
-  links: string[];
+  links: MemberLink[];
 };
 
 export async function getMembers(): Promise<Member[]> {
@@ -28,6 +35,7 @@ export async function getMembers(): Promise<Member[]> {
     const romajiRow = rowFor("ローマ字読み");
     const bioRow = rowFor("紹介文");
     const linkRow = rowFor("リンク");
+    const linkLabelRow = rowFor("リンク文字列");
     if (!nameRow) return [];
 
     const memberCount = nameRow.length - 1;
@@ -35,10 +43,14 @@ export async function getMembers(): Promise<Member[]> {
     for (let i = 1; i <= memberCount; i++) {
       const name = nameRow[i]?.trim();
       if (!name) continue;
-      const links = (linkRow?.[i] ?? "")
-        .split("\n")
-        .map((s) => s.trim())
-        .filter((s) => s.startsWith("http"));
+      const urls = (linkRow?.[i] ?? "").split("\n").map((s) => s.trim());
+      const labels = (linkLabelRow?.[i] ?? "").split("\n").map((s) => s.trim());
+      const links: MemberLink[] = [];
+      urls.forEach((url, idx) => {
+        if (url.startsWith("http")) {
+          links.push({ url, label: labels[idx] || url });
+        }
+      });
       members.push({
         name,
         title: titleRow?.[i]?.trim() || undefined,
