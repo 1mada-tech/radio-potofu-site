@@ -5,12 +5,16 @@ import { parse } from "csv-parse/sync";
 const SENRYU_CAPTION_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1J_fSVe7sqRQaeelc2A9ocQhAbxXqB6OHpv0BxW6CbEk/export?format=csv&gid=1115047140";
 
+export type SenryuCandidate = {
+  word: string;
+  version: string;
+};
+
 export type SenryuCaption = {
   before: string;
-  word: string;
-  words: string[];
   after: string;
-  version: string;
+  candidates: SenryuCandidate[];
+  initialIndex: number;
   totalVersion: string;
 };
 
@@ -29,9 +33,8 @@ export async function getSenryuCaption(): Promise<SenryuCaption | null> {
       .map((row) => ({ word: row[1].trim(), version: row[2]?.trim() ?? "" }));
     if (candidates.length === 0) return null;
 
-    const { word, version } = candidates[Math.floor(Math.random() * candidates.length)];
+    const initialIndex = Math.floor(Math.random() * candidates.length);
     const [before, after] = template.split("[]");
-    const words = candidates.map((c) => c.word);
 
     const totalVersion =
       dataRows
@@ -39,7 +42,7 @@ export async function getSenryuCaption(): Promise<SenryuCaption | null> {
         .filter((cell): cell is string => Boolean(cell))
         .pop() ?? "";
 
-    return { before, word, words, after, version, totalVersion };
+    return { before, after, candidates, initialIndex, totalVersion };
   } catch {
     return null;
   }

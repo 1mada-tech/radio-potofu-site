@@ -11,7 +11,7 @@ export type Member = {
   romaji?: string;
   participation?: string;
   bio?: string;
-  link?: string;
+  links: string[];
 };
 
 export async function getMembers(): Promise<Member[]> {
@@ -35,13 +35,17 @@ export async function getMembers(): Promise<Member[]> {
     for (let i = 1; i <= memberCount; i++) {
       const name = nameRow[i]?.trim();
       if (!name) continue;
+      const links = (linkRow?.[i] ?? "")
+        .split("\n")
+        .map((s) => s.trim())
+        .filter((s) => s.startsWith("http"));
       members.push({
         name,
         title: titleRow?.[i]?.trim() || undefined,
         romaji: romajiRow?.[i]?.trim() || undefined,
         participation: participationRow?.[i]?.trim() || undefined,
         bio: bioRow?.[i]?.trim() || undefined,
-        link: linkRow?.[i]?.trim() || undefined,
+        links,
       });
     }
     return members;

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import EssayCard from "@/components/EssayCard";
 import { getEssaysByType, ESSAY_TYPE_NOTE } from "@/lib/microcms";
 import { getSimpleCaption } from "@/lib/pageCaption";
+import { formatDate } from "@/lib/date";
 import Pagination from "@/components/Pagination";
 
 export const metadata: Metadata = { title: "ひみつノート" };
@@ -24,6 +26,8 @@ export default async function NotePage({
     getSimpleCaption(NOTE_CAPTION_CSV_URL),
   ]);
   const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
+  const featured = page === 1 ? contents[0] : null;
+  const rest = featured ? contents.slice(1) : contents;
 
   return (
     <div className="container page">
@@ -31,7 +35,7 @@ export default async function NotePage({
         <h1>ひみつノート</h1>
         <p className="page-subtitle">Notes</p>
       </div>
-      {caption && <p className="page-caption page-caption--soft">{caption}</p>}
+      {caption && <p className="page-caption">{caption}</p>}
       {contents.length > 0 ? (
         <>
           <Pagination
@@ -39,11 +43,29 @@ export default async function NotePage({
             totalPages={totalPages}
             hrefTemplate="/note?page={page}"
           />
-          <div className="list">
-            {contents.map((essay) => (
-              <EssayCard key={essay.id} essay={essay} basePath="/note" />
-            ))}
-          </div>
+          {featured && (
+            <section className="note-featured">
+              <p className="note-featured__label">最新記事</p>
+              <p className="article__date">
+                {formatDate(featured.publishDate)}
+                {featured.author ? ` / ${featured.author}` : ""}
+              </p>
+              <h2 className="note-featured__title">
+                <Link href={`/note/${featured.id}`}>{featured.title}</Link>
+              </h2>
+              <div
+                className="article__body"
+                dangerouslySetInnerHTML={{ __html: featured.body }}
+              />
+            </section>
+          )}
+          {rest.length > 0 && (
+            <div className="list">
+              {rest.map((essay) => (
+                <EssayCard key={essay.id} essay={essay} basePath="/note" />
+              ))}
+            </div>
+          )}
           <Pagination
             page={page}
             totalPages={totalPages}

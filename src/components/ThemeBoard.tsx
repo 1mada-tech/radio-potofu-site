@@ -59,7 +59,7 @@ function NewPostForm({ parentId, onDone }: { parentId?: number; onDone: () => vo
       <textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}
-        placeholder={parentId ? "返信を入力" : "聴きたいテーマを入力"}
+        placeholder={parentId ? "返信を入力" : "聴きたい／話したいテーマを入力"}
         className="theme-form__body"
         maxLength={1000}
         rows={parentId ? 2 : 3}

@@ -3,7 +3,7 @@ import EssayCard from "@/components/EssayCard";
 import { getEssaysByType, ESSAY_TYPE_SENRYU } from "@/lib/microcms";
 import { getSenryuCaption } from "@/lib/caption";
 import Pagination from "@/components/Pagination";
-import SenryuCaptionWord from "@/components/SenryuCaptionWord";
+import SenryuHeading from "@/components/SenryuHeading";
 
 export const metadata: Metadata = { title: "現代川柳" };
 
@@ -27,23 +27,19 @@ export default async function SenryuPage({
 
   return (
     <div className="container page">
-      <div className="page-heading">
-        <h1>
-          現代川柳
-          {caption?.version && (
-            <span className="senryu-caption__version">
-              {`version:${caption.version}${caption.totalVersion ? `/${caption.totalVersion}` : ""}`}
-            </span>
-          )}
-        </h1>
-        <p className="page-subtitle">Senryu</p>
-      </div>
-      {caption && (
-        <p className="page-caption">
-          {caption.before}
-          <SenryuCaptionWord initialWord={caption.word} words={caption.words} />
-          {caption.after}
-        </p>
+      {caption ? (
+        <SenryuHeading
+          candidates={caption.candidates}
+          initialIndex={caption.initialIndex}
+          before={caption.before}
+          after={caption.after}
+          totalVersion={caption.totalVersion}
+        />
+      ) : (
+        <div className="page-heading">
+          <h1>現代川柳</h1>
+          <p className="page-subtitle">Senryu</p>
+        </div>
       )}
       {contents.length > 0 ? (
         <>

@@ -77,8 +77,6 @@ const SLIDERS: { key: SliderKey; label: string }[] = [
   { key: "sleepiness", label: "眠気度" },
 ];
 
-const DIAGNOSE_DURATION = 1900;
-
 export default function PickDraw({
   episodes,
   buttonLabel,
@@ -88,8 +86,6 @@ export default function PickDraw({
 }) {
   const [picked, setPicked] = useState<Episode | null>(null);
   const [now, setNow] = useState<Date | null>(null);
-  const [diagnosing, setDiagnosing] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [values, setValues] = useState<Record<SliderKey, number>>({
     fatigue: 50,
     fullness: 50,
@@ -101,18 +97,11 @@ export default function PickDraw({
     fullness: 5,
     sleepiness: 5,
   });
-  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     setNow(new Date());
     const timer = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-    };
   }, []);
 
   const getCtx = () => {
@@ -139,67 +128,38 @@ export default function PickDraw({
   };
 
   const draw = () => {
-    if (episodes.length === 0 || diagnosing) return;
-
     const ctx = getCtx();
     if (ctx.state === "suspended") {
-      ctx.resume();
+      ctx.resume().then(() => playDrawSound(ctx));
+    } else {
+      playDrawSound(ctx);
     }
 
-    setPicked(null);
-    setDiagnosing(true);
-    setProgress(0);
-
-    const startedAt = performance.now();
-    const tick = (t: number) => {
-      const elapsed = t - startedAt;
-      setProgress(Math.min(99, Math.floor((elapsed / DIAGNOSE_DURATION) * 100)));
-      if (elapsed < DIAGNOSE_DURATION) {
-        rafRef.current = requestAnimationFrame(tick);
-      }
-    };
-    rafRef.current = requestAnimationFrame(tick);
-
-    window.setTimeout(() => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-      const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
-      playDrawSound(getCtx());
-      setProgress(100);
-      setPicked(result);
-      setDiagnosing(false);
-    }, DIAGNOSE_DURATION);
+    if (episodes.length === 0) return;
+    const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
+    setPicked(result);
   };
 
   return (
     <div className="pick">
-      {diagnosing ? (
-        <p className="pick__clock pick__clock--diagnosing">
-          <span className="pick__clock-line pick__clock-label">診断中</span>
+      {now && (
+        <p className="pick__clock">
           <span className="pick__clock-line">
-            {String(progress).padStart(3, "0")}
-            <span className="pick__clock-kanji">%</span>
+            {now.getFullYear()}
+            <span className="pick__clock-kanji">年</span>
+            {now.getMonth() + 1}
+            <span className="pick__clock-kanji">月</span>
+            {now.getDate()}
+            <span className="pick__clock-kanji">
+              日({WEEKDAYS[now.getDay()]})
+            </span>
+          </span>
+          <span className="pick__clock-line">
+            {String(now.getHours()).padStart(2, "0")}:
+            {String(now.getMinutes()).padStart(2, "0")}:
+            {String(now.getSeconds()).padStart(2, "0")}
           </span>
         </p>
-      ) : (
-        now && (
-          <p className="pick__clock">
-            <span className="pick__clock-line">
-              {now.getFullYear()}
-              <span className="pick__clock-kanji">年</span>
-              {now.getMonth() + 1}
-              <span className="pick__clock-kanji">月</span>
-              {now.getDate()}
-              <span className="pick__clock-kanji">
-                日({WEEKDAYS[now.getDay()]})
-              </span>
-            </span>
-            <span className="pick__clock-line">
-              {String(now.getHours()).padStart(2, "0")}:
-              {String(now.getMinutes()).padStart(2, "0")}:
-              {String(now.getSeconds()).padStart(2, "0")}
-            </span>
-          </p>
-        )
       )}
 
       <div className="pick__sliders">
@@ -221,16 +181,11 @@ export default function PickDraw({
         ))}
       </div>
 
-      <button
-        type="button"
-        className="pick__button"
-        onClick={draw}
-        disabled={diagnosing}
-      >
-        {diagnosing ? "診断中…" : buttonLabel}
+      <button type="button" className="pick__button" onClick={draw}>
+        {buttonLabel}
       </button>
 
-      {picked && !diagnosing && (
+      {picked && (
         <div className="pick__result">
           <p className="pick__diagnosis">
             疲労{values.fatigue}・満腹{values.fullness}・眠気{values.sleepiness}の

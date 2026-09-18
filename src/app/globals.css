@@ -326,44 +326,6 @@ ul {
   box-shadow: none;
 }
 
-.pick__button:disabled {
-  cursor: default;
-  opacity: 0.7;
-}
-
-.pick__button:disabled:hover {
-  background: var(--color-ink);
-  border-color: var(--color-ink);
-}
-
-.pick__clock-label {
-  font-family: var(--font-body), sans-serif;
-  font-size: 0.45em;
-  letter-spacing: 0.3em;
-  color: var(--color-accent);
-}
-
-.pick__clock--diagnosing {
-  animation: pick-clock-flicker 2.4s steps(1, end) infinite;
-}
-
-@keyframes pick-clock-flicker {
-  0%,
-  92%,
-  100% {
-    opacity: 1;
-  }
-  94% {
-    opacity: 0.72;
-  }
-  96% {
-    opacity: 1;
-  }
-  97% {
-    opacity: 0.85;
-  }
-}
-
 .pick__sliders {
   display: flex;
   flex-direction: column;
@@ -1369,13 +1331,6 @@ a.episode-tag:hover {
   margin-right: auto;
 }
 
-.page-caption--soft {
-  border: none;
-  border-bottom: 1px solid var(--color-border);
-  padding: 0 0 20px;
-  max-width: none;
-}
-
 .page-caption .episode-tag {
   display: inline;
   position: static;
@@ -1387,17 +1342,33 @@ a.episode-tag:hover {
   -webkit-box-decoration-break: clone;
 }
 
-.senryu-caption__word {
-  display: inline-block;
+.senryu-caption__word-box {
+  position: relative;
+  display: inline-grid;
+  vertical-align: baseline;
   background: #d4ff3f;
+  padding: 0 8px 3px;
+  border-bottom: 1px solid var(--color-ink);
+}
+
+.senryu-caption__word-sizer,
+.senryu-caption__word {
+  grid-area: 1 / 1;
+}
+
+.senryu-caption__word-sizer {
+  visibility: hidden;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.senryu-caption__word {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
   color: var(--color-ink);
   font-weight: 700;
-  padding: 0 8px;
-  text-decoration: underline;
-  text-decoration-style: solid;
-  text-decoration-color: var(--color-ink);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
   opacity: 1;
   transition: opacity 1.4s ease;
 }
@@ -1418,6 +1389,34 @@ a.episode-tag:hover {
 
 .page--article {
   max-width: 720px;
+}
+
+.note-featured {
+  max-width: 720px;
+  margin: 0 0 48px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.note-featured__label {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--color-accent);
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.note-featured__title {
+  margin: 0.2em 0 0;
+}
+
+.note-featured__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.note-featured__title a:hover {
+  text-decoration: underline;
 }
 
 .note-detail-layout {
@@ -1618,6 +1617,13 @@ a.episode-tag:hover {
   font-size: 1.3em;
   line-height: 1;
   margin-bottom: 0.2em;
+}
+
+.member-row__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 4px;
 }
 
 .member-row__link {
