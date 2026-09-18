@@ -457,11 +457,24 @@ ul {
 .site-header__nav-inner {
   display: flex;
   flex-direction: column;
+  border: 1px solid transparent;
 }
 
 .site-header__nav-row {
   display: flex;
   flex-wrap: wrap;
+}
+
+.site-header__nav-row + .site-header__nav-row {
+  border-top: 1px solid transparent;
+}
+
+.site-header__nav-row li {
+  border-right: 1px solid transparent;
+}
+
+.site-header__nav-row li:last-child {
+  border-right: none;
 }
 
 .site-header__nav a {
