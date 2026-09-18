@@ -466,6 +466,18 @@ ul {
   gap: 4px 24px;
 }
 
+.site-header__nav-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.site-header__nav-arrow {
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+}
+
 .site-header__nav a {
   position: relative;
   display: inline-block;
