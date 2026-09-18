@@ -44,9 +44,6 @@ export default function Header() {
               <li>
                 <Link href="/episodes" onClick={() => setIsOpen(false)}>
                   これまでの配信
-                  <span className="site-header__nav-triangle" aria-hidden="true">
-                    ▶
-                  </span>
                 </Link>
               </li>
               <li>

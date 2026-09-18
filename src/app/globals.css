@@ -457,42 +457,11 @@ ul {
 .site-header__nav-inner {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-border);
 }
 
 .site-header__nav-row {
   display: flex;
   flex-wrap: wrap;
-}
-
-.site-header__nav-row + .site-header__nav-row {
-  border-top: 1px solid var(--color-border);
-}
-
-.site-header__nav-row li {
-  border-right: 1px solid var(--color-border);
-}
-
-.site-header__nav-row li:last-child {
-  border-right: none;
-}
-
-.site-header__nav-triangle {
-  display: inline-block;
-  margin-left: 6px;
-  color: var(--color-accent);
-  font-size: 0.7rem;
-  animation: nav-triangle-blink 2.2s ease-in-out infinite;
-}
-
-@keyframes nav-triangle-blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.2;
-  }
 }
 
 .site-header__nav a {
@@ -1758,21 +1727,12 @@ a.episode-tag:hover {
   .site-header__nav-inner {
     overflow: hidden;
     min-height: 0;
-    border: none;
     gap: 16px;
   }
 
   .site-header__nav-row {
     flex-direction: column;
     gap: 16px;
-  }
-
-  .site-header__nav-row + .site-header__nav-row {
-    border-top: none;
-  }
-
-  .site-header__nav-row li {
-    border-right: none;
   }
 
   .site-header__nav a {
