@@ -87,14 +87,10 @@ const SLIDERS: { key: SliderKey; label: string }[] = [
   { key: "sleepiness", label: "眠気度" },
 ];
 
-// 診断中に順番に見せるステージ。durationはミリ秒、各ステージの開始時に「ピ」を鳴らす。
-const DIAGNOSE_STAGES: { key: SliderKey | null; label: string; duration: number }[] = [
-  { key: "fatigue", label: "疲労度を分析中", duration: 450 },
-  { key: "fullness", label: "満腹度を照合中", duration: 450 },
-  { key: "sleepiness", label: "眠気度を確認中", duration: 450 },
-  { key: null, label: "総合診断中", duration: 450 },
-];
-const FINAL_PAUSE = 550; // 最後の「間」。ここで長めのビープを鳴らす。
+// 診断中の各ステージの長さ(ミリ秒)。開始時ごとに等間隔の「ピ」を鳴らす。
+const STAGE_COUNT = 4;
+const STAGE_DURATION = 900; // 元の450msから倍に
+const FINAL_PAUSE = 1100; // 最後の「間」。元の550msから倍に。ここで長めのビープを鳴らす。
 
 export default function PickDraw({
   episodes,
@@ -106,9 +102,6 @@ export default function PickDraw({
   const [picked, setPicked] = useState<Episode | null>(null);
   const [now, setNow] = useState<Date | null>(null);
   const [diagnosing, setDiagnosing] = useState(false);
-  const [stageIndex, setStageIndex] = useState(0);
-  const [stageProgress, setStageProgress] = useState(0);
-  const [finalizing, setFinalizing] = useState(false);
   const [values, setValues] = useState<Record<SliderKey, number>>({
     fatigue: 50,
     fullness: 50,
@@ -120,7 +113,6 @@ export default function PickDraw({
     fullness: 5,
     sleepiness: 5,
   });
-  const rafRef = useRef<number | null>(null);
   const timeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -131,7 +123,6 @@ export default function PickDraw({
 
   useEffect(() => {
     return () => {
-      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
       if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);
     };
   }, []);
@@ -164,34 +155,18 @@ export default function PickDraw({
     playPashun(getCtx());
     setPicked(result);
     setDiagnosing(false);
-    setFinalizing(false);
   };
 
   const runStage = (i: number) => {
-    setStageIndex(i);
-    setStageProgress(0);
     playBeep(getCtx());
-
-    const stage = DIAGNOSE_STAGES[i];
-    const startedAt = performance.now();
-
-    const tick = (t: number) => {
-      const elapsed = t - startedAt;
-      const ratio = Math.min(1, elapsed / stage.duration);
-      setStageProgress(Math.floor(ratio * 100));
-      if (ratio < 1) {
-        rafRef.current = requestAnimationFrame(tick);
-        return;
-      }
-      if (i < DIAGNOSE_STAGES.length - 1) {
+    timeoutRef.current = window.setTimeout(() => {
+      if (i < STAGE_COUNT - 1) {
         runStage(i + 1);
       } else {
-        setFinalizing(true);
         playLongBeep(getCtx());
         timeoutRef.current = window.setTimeout(finish, FINAL_PAUSE);
       }
-    };
-    rafRef.current = requestAnimationFrame(tick);
+    }, STAGE_DURATION);
   };
 
   const draw = () => {
@@ -203,7 +178,6 @@ export default function PickDraw({
     }
 
     setPicked(null);
-    setFinalizing(false);
     setDiagnosing(true);
     runStage(0);
   };
@@ -255,32 +229,8 @@ export default function PickDraw({
         onClick={draw}
         disabled={diagnosing}
       >
-        {diagnosing ? "診断中…" : buttonLabel}
+        {buttonLabel}
       </button>
-
-      {diagnosing && (
-        <div className="pick__diagnostics">
-          {DIAGNOSE_STAGES.map((stage, i) => {
-            const state = i < stageIndex ? "done" : i === stageIndex ? "active" : "pending";
-            const fill = i < stageIndex ? 100 : i === stageIndex ? stageProgress : 0;
-            return (
-              <div
-                key={stage.label}
-                className={`pick__diagnostics-step pick__diagnostics-step--${state}`}
-              >
-                <span className="pick__diagnostics-label">{stage.label}</span>
-                <span className="pick__diagnostics-bar">
-                  <span
-                    className="pick__diagnostics-bar-fill"
-                    style={{ width: `${fill}%` }}
-                  />
-                </span>
-              </div>
-            );
-          })}
-          {finalizing && <p className="pick__diagnostics-final">回答を確定中…</p>}
-        </div>
-      )}
 
       {picked && !diagnosing && (
         <div className="pick__result">
