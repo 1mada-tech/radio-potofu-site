@@ -11,11 +11,11 @@ export const revalidate = 60;
 const PER_PAGE = 30;
 
 function renderCaption(text: string) {
-  const parts = text.split("タグ");
+  const parts = text.split("#タグ");
   return parts.map((part, i) => (
     <Fragment key={i}>
       {part}
-      {i < parts.length - 1 && <span className="episode-tag">タグ</span>}
+      {i < parts.length - 1 && <span className="episode-tag">#タグ</span>}
     </Fragment>
   ));
 }
