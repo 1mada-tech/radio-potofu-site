@@ -457,25 +457,15 @@ ul {
 .site-header__nav-inner {
   display: flex;
   flex-direction: column;
-  border: 1px solid transparent;
 }
 
 .site-header__nav-row {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-}
-
-.site-header__nav-row + .site-header__nav-row {
-  border-top: 1px solid transparent;
 }
 
 .site-header__nav-row li {
-  border-right: 1px solid transparent;
-}
-
-.site-header__nav-row li:last-child {
-  border-right: none;
+  flex: 1 1 auto;
 }
 
 .site-header__nav a {
@@ -1745,8 +1735,11 @@ a.episode-tag:hover {
 
   .site-header__nav-row {
     flex-direction: column;
-    justify-content: flex-start;
     gap: 16px;
+  }
+
+  .site-header__nav-row li {
+    flex: initial;
   }
 
   .site-header__nav a {
