@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { Episode } from "@/lib/podcast";
 import EpisodeTableRow from "@/components/EpisodeTableRow";
 
@@ -25,14 +25,14 @@ function playSliderTick(ctx: AudioContext, value: number) {
   playTone(ctx, freq, 0.04);
 }
 
-// 処理中の等間隔ビープ「ピ」。
+// 処理中のビープ「ピ」。ステージが詰まるにつれてテンポも上がっていく。
 function playBeep(ctx: AudioContext) {
   playTone(ctx, 880, 0.08, 0.05);
 }
 
 // 最後の間に鳴らす長めのビープ「ピー」。
-function playLongBeep(ctx: AudioContext) {
-  playTone(ctx, 880, 0.45, 0.05);
+function playLongBeep(ctx: AudioContext, duration: number) {
+  playTone(ctx, 880, duration / 1000, 0.05);
 }
 
 // 結果表示と同時に鳴らす「パシュン！」。ノイズの立ち上がり + 短い下降チャープ。
@@ -87,10 +87,29 @@ const SLIDERS: { key: SliderKey; label: string }[] = [
   { key: "sleepiness", label: "眠気度" },
 ];
 
-// 診断中の各ステージの長さ(ミリ秒)。開始時ごとに等間隔の「ピ」を鳴らす。
-const STAGE_COUNT = 4;
-const STAGE_DURATION = 900; // 元の450msから倍に
-const FINAL_PAUSE = 1100; // 最後の「間」。元の550msから倍に。ここで長めのビープを鳴らす。
+// 診断中に次々切り替わる処理内容の表示。
+const PHRASES = [
+  "疲労度を分析中",
+  "満腹度を照合中",
+  "眠気度を確認中",
+  "傾向をスコアリング中",
+  "総合診断中",
+];
+
+function randRange(min: number, max: number) {
+  return min + Math.random() * (max - min);
+}
+
+// 毎回すこしバラつきつつ、後半ほど間隔が詰まっていくステージ長の配列を作る。
+function buildStageDurations() {
+  const decay = randRange(0.66, 0.8);
+  let d = randRange(550, 750);
+  return PHRASES.map(() => {
+    const duration = Math.max(140, Math.round(d * randRange(0.85, 1.15)));
+    d *= decay;
+    return duration;
+  });
+}
 
 export default function PickDraw({
   episodes,
@@ -102,6 +121,7 @@ export default function PickDraw({
   const [picked, setPicked] = useState<Episode | null>(null);
   const [now, setNow] = useState<Date | null>(null);
   const [diagnosing, setDiagnosing] = useState(false);
+  const [phraseIndex, setPhraseIndex] = useState(0);
   const [values, setValues] = useState<Record<SliderKey, number>>({
     fatigue: 50,
     fullness: 50,
@@ -114,6 +134,8 @@ export default function PickDraw({
     sleepiness: 5,
   });
   const timeoutRef = useRef<number | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [buttonWidth, setButtonWidth] = useState<number | null>(null);
 
   useEffect(() => {
     setNow(new Date());
@@ -126,6 +148,13 @@ export default function PickDraw({
       if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);
     };
   }, []);
+
+  // 押下前のラベル幅を測っておき、診断中の文言変更でボタンサイズが変わらないようにする。
+  useLayoutEffect(() => {
+    if (!diagnosing && buttonRef.current) {
+      setButtonWidth(buttonRef.current.offsetWidth);
+    }
+  }, [diagnosing, buttonLabel]);
 
   const getCtx = () => {
     if (!audioCtxRef.current) {
@@ -157,16 +186,20 @@ export default function PickDraw({
     setDiagnosing(false);
   };
 
-  const runStage = (i: number) => {
+  const runStage = (i: number, durations: number[]) => {
+    setPhraseIndex(i);
     playBeep(getCtx());
     timeoutRef.current = window.setTimeout(() => {
-      if (i < STAGE_COUNT - 1) {
-        runStage(i + 1);
+      if (i < durations.length - 1) {
+        runStage(i + 1, durations);
       } else {
-        playLongBeep(getCtx());
-        timeoutRef.current = window.setTimeout(finish, FINAL_PAUSE);
+        const longBeepDuration = randRange(400, 550);
+        playLongBeep(getCtx(), longBeepDuration);
+        timeoutRef.current = window.setTimeout(() => {
+          timeoutRef.current = window.setTimeout(finish, randRange(220, 350));
+        }, longBeepDuration);
       }
-    }, STAGE_DURATION);
+    }, durations[i]);
   };
 
   const draw = () => {
@@ -179,7 +212,7 @@ export default function PickDraw({
 
     setPicked(null);
     setDiagnosing(true);
-    runStage(0);
+    runStage(0, buildStageDurations());
   };
 
   return (
@@ -224,13 +257,17 @@ export default function PickDraw({
       </div>
 
       <button
+        ref={buttonRef}
         type="button"
-        className="pick__button"
+        className={`pick__button${diagnosing ? " pick__button--diagnosing" : ""}`}
         onClick={draw}
         disabled={diagnosing}
+        style={buttonWidth ? { width: buttonWidth } : undefined}
       >
-        {buttonLabel}
+        {diagnosing ? "診断中…" : buttonLabel}
       </button>
+
+      {diagnosing && <p className="pick__status">{PHRASES[phraseIndex]}</p>}
 
       {picked && !diagnosing && (
         <div className="pick__result">

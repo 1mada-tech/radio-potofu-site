@@ -336,6 +336,21 @@ ul {
   border-color: var(--color-ink);
 }
 
+.pick__button--diagnosing,
+.pick__button--diagnosing:disabled:hover {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent-soft);
+  color: var(--color-ink);
+}
+
+.pick__status {
+  min-height: 3em;
+  margin: 14px 0 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--color-ink-soft);
+}
+
 .pick__sliders {
   display: flex;
   flex-direction: column;
