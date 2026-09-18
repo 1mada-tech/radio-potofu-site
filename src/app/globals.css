@@ -299,7 +299,7 @@ ul {
 }
 
 .pick__button {
-  display: inline-block;
+  display: inline-grid;
   background: var(--color-ink);
   color: #fff;
   border: 1px solid var(--color-ink);
@@ -314,6 +314,16 @@ ul {
     color 0.15s ease,
     transform 0.1s ease,
     box-shadow 0.1s ease;
+}
+
+.pick__button-sizer,
+.pick__button-label {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+}
+
+.pick__button-sizer {
+  visibility: hidden;
 }
 
 .pick__button:hover {

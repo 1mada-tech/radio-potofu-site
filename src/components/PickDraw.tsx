@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Episode } from "@/lib/podcast";
 import EpisodeTableRow from "@/components/EpisodeTableRow";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+const DIAGNOSING_LABEL = "診断中…";
 
 function playTone(ctx: AudioContext, freq: number, duration: number, gain = 0.06) {
   const osc = ctx.createOscillator();
@@ -30,9 +31,26 @@ function playBeep(ctx: AudioContext) {
   playTone(ctx, 880, 0.08, 0.05);
 }
 
-// 最後の間に鳴らす長めのビープ「ピー」。
-function playLongBeep(ctx: AudioContext, duration: number) {
-  playTone(ctx, 880, duration / 1000, 0.05);
+// 最後の間に鳴らす、心電図モニターのような一様に長い「ピー」。
+// 音量を保持したまま鳴らし続け、末尾だけ短く減衰させて切る(尻すぼみに減衰させない)。
+function playMonitorBeep(ctx: AudioContext, durationMs: number) {
+  const durationSec = durationMs / 1000;
+  const releaseSec = Math.min(0.05, durationSec / 4);
+  const t0 = ctx.currentTime;
+
+  const osc = ctx.createOscillator();
+  osc.type = "sine";
+  osc.frequency.value = 880;
+
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.05, t0);
+  gain.gain.setValueAtTime(0.05, t0 + durationSec - releaseSec);
+  gain.gain.linearRampToValueAtTime(0.0001, t0 + durationSec);
+
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.start(t0);
+  osc.stop(t0 + durationSec);
 }
 
 // 結果表示と同時に鳴らす「パシュン！」。ノイズの立ち上がり + 短い下降チャープ。
@@ -96,16 +114,18 @@ const PHRASES = [
   "総合診断中",
 ];
 
+const DOT_INTERVAL = 200; // 末尾のピリオドが増えていく間隔
+
 function randRange(min: number, max: number) {
   return min + Math.random() * (max - min);
 }
 
 // 毎回すこしバラつきつつ、後半ほど間隔が詰まっていくステージ長の配列を作る。
 function buildStageDurations() {
-  const decay = randRange(0.66, 0.8);
-  let d = randRange(550, 750);
+  const decay = randRange(0.68, 0.82);
+  let d = randRange(1100, 1500);
   return PHRASES.map(() => {
-    const duration = Math.max(140, Math.round(d * randRange(0.85, 1.15)));
+    const duration = Math.max(300, Math.round(d * randRange(0.85, 1.15)));
     d *= decay;
     return duration;
   });
@@ -122,6 +142,7 @@ export default function PickDraw({
   const [now, setNow] = useState<Date | null>(null);
   const [diagnosing, setDiagnosing] = useState(false);
   const [phraseIndex, setPhraseIndex] = useState(0);
+  const [dotCount, setDotCount] = useState(0);
   const [values, setValues] = useState<Record<SliderKey, number>>({
     fatigue: 50,
     fullness: 50,
@@ -134,8 +155,7 @@ export default function PickDraw({
     sleepiness: 5,
   });
   const timeoutRef = useRef<number | null>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const [buttonWidth, setButtonWidth] = useState<number | null>(null);
+  const dotTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     setNow(new Date());
@@ -146,15 +166,21 @@ export default function PickDraw({
   useEffect(() => {
     return () => {
       if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);
+      if (dotTimerRef.current !== null) window.clearInterval(dotTimerRef.current);
     };
   }, []);
 
-  // 押下前のラベル幅を測っておき、診断中の文言変更でボタンサイズが変わらないようにする。
-  useLayoutEffect(() => {
-    if (!diagnosing && buttonRef.current) {
-      setButtonWidth(buttonRef.current.offsetWidth);
-    }
-  }, [diagnosing, buttonLabel]);
+  // フレーズが切り替わるたびに末尾のピリオドを0からカウントし直す。
+  useEffect(() => {
+    if (!diagnosing) return;
+    setDotCount(0);
+    dotTimerRef.current = window.setInterval(() => {
+      setDotCount((d) => (d + 1) % 4);
+    }, DOT_INTERVAL);
+    return () => {
+      if (dotTimerRef.current !== null) window.clearInterval(dotTimerRef.current);
+    };
+  }, [diagnosing, phraseIndex]);
 
   const getCtx = () => {
     if (!audioCtxRef.current) {
@@ -193,11 +219,11 @@ export default function PickDraw({
       if (i < durations.length - 1) {
         runStage(i + 1, durations);
       } else {
-        const longBeepDuration = randRange(400, 550);
-        playLongBeep(getCtx(), longBeepDuration);
+        const monitorBeepDuration = randRange(900, 1300);
+        playMonitorBeep(getCtx(), monitorBeepDuration);
         timeoutRef.current = window.setTimeout(() => {
-          timeoutRef.current = window.setTimeout(finish, randRange(220, 350));
-        }, longBeepDuration);
+          timeoutRef.current = window.setTimeout(finish, randRange(440, 700));
+        }, monitorBeepDuration);
       }
     }, durations[i]);
   };
@@ -257,17 +283,28 @@ export default function PickDraw({
       </div>
 
       <button
-        ref={buttonRef}
         type="button"
         className={`pick__button${diagnosing ? " pick__button--diagnosing" : ""}`}
         onClick={draw}
         disabled={diagnosing}
-        style={buttonWidth ? { width: buttonWidth } : undefined}
       >
-        {diagnosing ? "診断中…" : buttonLabel}
+        <span className="pick__button-sizer" aria-hidden="true">
+          {buttonLabel}
+        </span>
+        <span className="pick__button-sizer" aria-hidden="true">
+          {DIAGNOSING_LABEL}
+        </span>
+        <span className="pick__button-label">
+          {diagnosing ? DIAGNOSING_LABEL : buttonLabel}
+        </span>
       </button>
 
-      {diagnosing && <p className="pick__status">{PHRASES[phraseIndex]}</p>}
+      {diagnosing && (
+        <p className="pick__status">
+          {PHRASES[phraseIndex]}
+          {".".repeat(dotCount)}
+        </p>
+      )}
 
       {picked && !diagnosing && (
         <div className="pick__result">
