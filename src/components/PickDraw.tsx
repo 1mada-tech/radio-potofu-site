@@ -327,7 +327,7 @@ export default function PickDraw({
         <div className="pick__result">
           <p className="pick__diagnosis">
             疲労{values.fatigue}・満腹{values.fullness}・眠気{values.sleepiness}の
-            あなたにぴったりなのはこちら
+            あなたにおすすめなのは
           </p>
           <div className="episode-table-wrap">
             <table className="episode-table">
