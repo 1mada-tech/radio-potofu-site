@@ -1420,8 +1420,9 @@ a.episode-tag:hover {
 
 .senryu-caption__word-box {
   position: relative;
-  display: inline-grid;
-  vertical-align: baseline;
+  display: grid;
+  width: fit-content;
+  margin: 10px auto;
   background: #d4ff3f;
   padding: 0 8px 3px;
   border-bottom: 1px solid var(--color-ink);
@@ -1762,12 +1763,6 @@ a.episode-tag:hover {
 }
 
 @media (max-width: 600px) {
-  .senryu-caption__word-box {
-    display: grid;
-    width: fit-content;
-    margin: 10px auto;
-  }
-
   .site-header__inner {
     align-items: center;
   }
