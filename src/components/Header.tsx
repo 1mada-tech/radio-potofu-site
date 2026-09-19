@@ -52,7 +52,7 @@ export default function Header() {
                   className="site-header__pick"
                   onClick={() => setIsOpen(false)}
                 >
-                  きょうのあなたへ
+                  きょうのあなたに
                 </Link>
               </li>
               <li>
