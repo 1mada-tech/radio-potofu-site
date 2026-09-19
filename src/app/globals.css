@@ -1562,6 +1562,11 @@ a.episode-tag:hover {
   margin-bottom: 1.4em;
 }
 
+.article__body h3,
+.article__body h4 {
+  margin-top: 1.6em;
+}
+
 .article__body a {
   color: var(--color-accent);
   text-decoration: underline;
