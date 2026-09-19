@@ -135,6 +135,7 @@ export default function PickDraw({
   const [diagnosing, setDiagnosing] = useState(false);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const [values, setValues] = useState<Record<SliderKey, number>>({
     fatigue: 50,
     fullness: 50,
@@ -178,9 +179,11 @@ export default function PickDraw({
     const decile = Math.floor(value / 10);
     if (decile !== lastDecileRef.current[key]) {
       lastDecileRef.current[key] = decile;
-      const ctx = getCtx();
-      if (ctx.state !== "suspended") {
-        playSliderTick(ctx, value);
+      if (soundEnabled) {
+        const ctx = getCtx();
+        if (ctx.state !== "suspended") {
+          playSliderTick(ctx, value);
+        }
       }
     }
   };
@@ -188,20 +191,20 @@ export default function PickDraw({
   const finish = () => {
     if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
     const result = hashPick(episodes, [values.fatigue, values.fullness, values.sleepiness]);
-    playPashun(getCtx());
+    if (soundEnabled) playPashun(getCtx());
     setPicked(result);
     setDiagnosing(false);
   };
 
   const runStage = (i: number) => {
     setPhraseIndex(i);
-    playBeep(getCtx());
+    if (soundEnabled) playBeep(getCtx());
     timeoutRef.current = window.setTimeout(() => {
       if (i < STAGE_DURATIONS.length - 1) {
         runStage(i + 1);
       } else {
         timeoutRef.current = window.setTimeout(() => {
-          playMonitorBeep(getCtx(), MONITOR_BEEP_DURATION);
+          if (soundEnabled) playMonitorBeep(getCtx(), MONITOR_BEEP_DURATION);
           timeoutRef.current = window.setTimeout(() => {
             timeoutRef.current = window.setTimeout(finish, FINAL_PAUSE);
           }, MONITOR_BEEP_DURATION);
@@ -213,9 +216,11 @@ export default function PickDraw({
   const draw = () => {
     if (episodes.length === 0 || diagnosing) return;
 
-    const ctx = getCtx();
-    if (ctx.state === "suspended") {
-      ctx.resume();
+    if (soundEnabled) {
+      const ctx = getCtx();
+      if (ctx.state === "suspended") {
+        ctx.resume();
+      }
     }
 
     setPicked(null);
@@ -255,6 +260,27 @@ export default function PickDraw({
           </span>
         </p>
       )}
+
+      <button
+        type="button"
+        className="pick__sound-toggle"
+        aria-pressed={soundEnabled}
+        onClick={() => {
+          setSoundEnabled((v) => {
+            const next = !v;
+            if (next) {
+              const ctx = getCtx();
+              if (ctx.state === "suspended") ctx.resume();
+            }
+            return next;
+          });
+        }}
+      >
+        <span className="pick__sound-toggle-track">
+          <span className="pick__sound-toggle-thumb" />
+        </span>
+        音
+      </button>
 
       <div className="pick__sliders">
         {SLIDERS.map(({ key, label }) => (
