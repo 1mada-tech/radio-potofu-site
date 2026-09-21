@@ -25,7 +25,8 @@ export async function getSenryuCaption(): Promise<SenryuCaption | null> {
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     const dataRows = rows.slice(1);
 
-    const template = dataRows.find((row) => row[0]?.trim())?.[0]?.trim() ?? "";
+    // 行頭のスペース(字下げ)を活かすため、末尾だけtrimする。
+    const template = dataRows.find((row) => row[0]?.trim())?.[0]?.trimEnd() ?? "";
     if (!template.includes("[]")) return null;
 
     const candidates = dataRows
