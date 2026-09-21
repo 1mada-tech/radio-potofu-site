@@ -24,14 +24,22 @@ function getTopTags(episodes: { tags?: string[] }[]) {
     .map(([tag]) => tag);
 }
 
+// "#" と"♯"(音楽記号のシャープ。見た目が似ているため入力時に混同しやすい)の
+// どちらで書かれていても、タグっぽい語(#に続く空白・句読点までの文字列)を
+// 実際のタグ表示と同じ見た目でハイライトする。
 function renderCaption(text: string) {
-  const parts = text.split("#タグ");
-  return parts.map((part, i) => (
-    <Fragment key={i}>
-      {part}
-      {i < parts.length - 1 && <span className="episode-tag">#タグ</span>}
-    </Fragment>
-  ));
+  const parts = text.split(/([#♯][^\s、。]+)/g);
+  return parts.map((part, i) => {
+    const match = part.match(/^[#♯](.+)$/);
+    if (match) {
+      return (
+        <span key={i} className="episode-tag">
+          #{match[1]}
+        </span>
+      );
+    }
+    return <Fragment key={i}>{part}</Fragment>;
+  });
 }
 
 export default async function EpisodesPage({
