@@ -1428,6 +1428,22 @@ a.episode-tag:hover {
   border-bottom: 1px solid var(--color-ink);
 }
 
+.senryu-caption__word-box--scrambling {
+  animation: senryu-scramble-glow 0.3s ease-in-out infinite;
+}
+
+@keyframes senryu-scramble-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(240, 121, 27, 0.55);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 18px 7px rgba(240, 121, 27, 0.55);
+    transform: scale(1.06);
+  }
+}
+
 .senryu-caption__word-sizer,
 .senryu-caption__word {
   grid-area: 1 / 1;
@@ -1446,12 +1462,6 @@ a.episode-tag:hover {
   white-space: nowrap;
   color: var(--color-ink);
   font-weight: 700;
-  opacity: 1;
-  transition: opacity 1.4s ease;
-}
-
-.senryu-caption__word--fading {
-  opacity: 0;
 }
 
 .senryu-caption__version {
@@ -1462,6 +1472,18 @@ a.episode-tag:hover {
   color: var(--color-ink-soft);
   white-space: nowrap;
   vertical-align: baseline;
+  animation: senryu-version-pop 0.5s ease;
+}
+
+@keyframes senryu-version-pop {
+  0% {
+    transform: scale(1.5);
+    color: var(--color-accent);
+  }
+  100% {
+    transform: scale(1);
+    color: var(--color-ink-soft);
+  }
 }
 
 .page--article {
