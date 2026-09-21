@@ -1168,10 +1168,17 @@ a.episode-tag:hover {
   align-items: center;
   gap: 4px;
   max-width: 360px;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
   padding: 4px 4px 4px 16px;
   border-radius: 999px;
   background: var(--color-bg-alt);
+}
+
+.episode-search__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin-bottom: 24px;
 }
 
 .episode-search__input {

@@ -9,6 +9,20 @@ export const metadata: Metadata = { title: "これまでの配信" };
 export const revalidate = 60;
 
 const PER_PAGE = 30;
+const TOP_TAG_COUNT = 8;
+
+function getTopTags(episodes: { tags?: string[] }[]) {
+  const counts = new Map<string, number>();
+  for (const episode of episodes) {
+    for (const tag of episode.tags ?? []) {
+      counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, TOP_TAG_COUNT)
+    .map(([tag]) => tag);
+}
 
 function renderCaption(text: string) {
   const parts = text.split("#タグ");
@@ -31,23 +45,29 @@ export default async function EpisodesPage({
   const query = params.q?.trim() || undefined;
   const offset = (page - 1) * PER_PAGE;
 
-  let contents;
-  let totalCount;
+  const [pageResult, allForTags, caption] = await Promise.all([
+    query ? getEpisodes(9999, 0, tagFilter) : getEpisodes(PER_PAGE, offset, tagFilter),
+    getEpisodes(9999),
+    getSimpleCaption(EPISODE_EXTRAS_CSV_URL),
+  ]);
+
+  let contents = pageResult.contents;
+  let totalCount = pageResult.totalCount;
   if (query) {
-    const all = await getEpisodes(9999, 0, tagFilter);
-    contents = all.contents.filter((e) =>
-      e.title.toLowerCase().includes(query.toLowerCase()),
+    const lowerQuery = query.toLowerCase();
+    contents = contents.filter(
+      (e) =>
+        e.title.toLowerCase().includes(lowerQuery) ||
+        e.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)),
     );
     totalCount = contents.length;
-  } else {
-    ({ contents, totalCount } = await getEpisodes(PER_PAGE, offset, tagFilter));
   }
 
+  const topTags = getTopTags(allForTags.contents);
   const totalPages = Math.max(1, Math.ceil(totalCount / PER_PAGE));
   const pageHrefTemplate = tagFilter
     ? `/episodes?tag=${encodeURIComponent(tagFilter)}&page={page}`
     : `/episodes?page={page}`;
-  const caption = await getSimpleCaption(EPISODE_EXTRAS_CSV_URL);
 
   return (
     <div className="container page">
@@ -61,7 +81,7 @@ export default async function EpisodesPage({
           type="text"
           name="q"
           defaultValue={query ?? ""}
-          placeholder="タイトルで検索"
+          placeholder="タイトル・タグで検索"
           className="episode-search__input"
         />
         <button type="submit" className="episode-search__button" aria-label="検索">
@@ -79,6 +99,19 @@ export default async function EpisodesPage({
           </svg>
         </button>
       </form>
+      {topTags.length > 0 && (
+        <div className="episode-search__tags">
+          {topTags.map((tag) => (
+            <a
+              key={tag}
+              href={`/episodes?tag=${encodeURIComponent(tag)}`}
+              className="episode-tag"
+            >
+              #{tag}
+            </a>
+          ))}
+        </div>
+      )}
       {tagFilter && (
         <p className="episode-filter-notice">
           「#{tagFilter}」で絞り込み中（{totalCount}件）
