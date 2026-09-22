@@ -1429,7 +1429,7 @@ a.episode-tag:hover {
   position: relative;
   display: grid;
   width: fit-content;
-  margin: 10px auto 10px 2em;
+  margin: 10px auto 10px 4em;
   background: #d4ff3f;
   padding: 0 8px 3px;
   border-bottom: 1px solid var(--color-ink);
