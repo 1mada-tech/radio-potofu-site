@@ -1644,9 +1644,14 @@ a.episode-tag:hover {
   margin-bottom: 1.4em;
 }
 
+.article__body h2,
 .article__body h3,
 .article__body h4 {
+  display: inline-block;
   margin-top: 1.6em;
+  padding: 4px 12px;
+  background: #fff;
+  color: var(--color-ink);
 }
 
 .article__body a {
