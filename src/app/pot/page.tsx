@@ -23,7 +23,7 @@ export default async function PotPage() {
       <PotForm />
       <PotScene creatures={creatures} />
       <p className="pot-archive-link">
-        <Link href="/pot/archive">鍋のダシになった子たちの記録はこちら →</Link>
+        <Link href="/pot/archive">鍋の記録(出入り・節目・時間経過)はこちら →</Link>
       </p>
     </div>
   );

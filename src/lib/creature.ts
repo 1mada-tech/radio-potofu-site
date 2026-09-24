@@ -74,18 +74,27 @@ export function derivePosition(poem: string, index: number) {
 
 const KATAKANA_RUN = /[ァ-ヶー]{2,}/g;
 
+const HONORIFICS = ["くん", "ちゃん", "にゃん", "先生", "さん", "氏"];
+
 // 川柳の文字列から名前を抜き出す。カタカナの連続部分があればそれを、
 // なければ末尾の数文字をフォールバックとして使う。
+// さらに、くん/ちゃん/にゃん等の敬称を文字列ごとに決定論的に割り振る。
 export function deriveName(poem: string): string {
   const trimmed = poem.trim();
   if (!trimmed) return "なまえなし";
 
+  let base = "";
   const katakanaMatches = trimmed.match(KATAKANA_RUN);
   if (katakanaMatches) {
     const longest = katakanaMatches.reduce((a, b) => (b.length > a.length ? b : a));
-    if (longest.length >= 2) return longest;
+    if (longest.length >= 2) base = longest;
+  }
+  if (!base) {
+    const tailLength = Math.min(4, trimmed.length);
+    base = trimmed.slice(-tailLength);
   }
 
-  const tailLength = Math.min(4, trimmed.length);
-  return trimmed.slice(-tailLength);
+  const rng = makeRng(hashString(`${trimmed}::honorific`) || 1);
+  const honorific = HONORIFICS[Math.floor(rng() * HONORIFICS.length)];
+  return `${base}${honorific}`;
 }

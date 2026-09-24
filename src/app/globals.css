@@ -2289,29 +2289,61 @@ a.episode-tag:hover {
   color: var(--color-accent);
 }
 
-.pot-archive-list {
+.pot-log-list {
   display: flex;
   flex-direction: column;
 }
 
-.pot-archive-item {
-  padding: 16px 0;
+.pot-log-item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 0;
   border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
 }
 
-.pot-archive-item__name {
-  margin: 0 0 4px;
-  font-weight: 700;
-  color: var(--color-accent);
-}
-
-.pot-archive-item__poem {
-  margin: 0 0 4px;
-  color: var(--color-ink);
-}
-
-.pot-archive-item__meta {
-  margin: 0;
-  font-size: 0.8rem;
+.pot-log-item__date {
+  flex-shrink: 0;
+  width: 5.5em;
+  font-size: 0.78rem;
   color: var(--color-ink-soft);
+}
+
+.pot-log-item__label {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  color: var(--color-ink-soft);
+  border: 1px solid var(--color-border);
+}
+
+.pot-log-item--enter .pot-log-item__label {
+  color: var(--color-green);
+  border-color: var(--color-green);
+}
+
+.pot-log-item--melt .pot-log-item__label {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.pot-log-item--milestone {
+  font-weight: 700;
+}
+
+.pot-log-item--milestone .pot-log-item__label {
+  color: #fff;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.pot-log-item--flavor .pot-log-item__label {
+  color: var(--color-teal);
+  border-color: var(--color-teal);
+}
+
+.pot-log-item__message {
+  color: var(--color-ink);
 }

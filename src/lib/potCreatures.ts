@@ -44,6 +44,14 @@ export async function getMeltedCreatures(): Promise<PotCreature[]> {
   return rows.map(toCreature);
 }
 
+// 記録ページ用。生死問わず全員を古い順で返す。
+export async function getAllPotCreatures(): Promise<PotCreature[]> {
+  const { rows } = await pool.query<Row>(
+    "SELECT id, author_name, poem, created_at FROM pot_creatures ORDER BY created_at ASC",
+  );
+  return rows.map(toCreature);
+}
+
 export async function createPotCreature(params: {
   authorName: string;
   poem: string;
