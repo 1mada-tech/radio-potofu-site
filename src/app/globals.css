@@ -2101,8 +2101,8 @@ a.episode-tag:hover {
   position: absolute;
   width: 66px;
   height: 66px;
-  transform: translate(-50%, -50%) scaleY(0.72);
   transform-origin: bottom center;
+  transition: transform 0.3s ease;
   padding: 0;
   border: none;
   background: none;

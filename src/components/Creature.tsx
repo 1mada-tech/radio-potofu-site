@@ -4,11 +4,13 @@ export default function Creature({
   poem,
   top,
   left,
+  scale = 1,
   onClick,
 }: {
   poem: string;
   top: number;
   left: number;
+  scale?: number;
   onClick?: () => void;
 }) {
   const appearance = deriveAppearance(poem);
@@ -18,7 +20,11 @@ export default function Creature({
     <button
       type="button"
       className="creature"
-      style={{ top: `${top}%`, left: `${left}%` }}
+      style={{
+        top: `${top}%`,
+        left: `${left}%`,
+        transform: `translate(-50%, -50%) scaleY(0.72) scale(${scale})`,
+      }}
       onClick={onClick}
       aria-label={`${name}(${poem})`}
     >

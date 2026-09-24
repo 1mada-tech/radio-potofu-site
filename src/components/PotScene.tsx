@@ -6,10 +6,20 @@ import { derivePosition, deriveName, POT_LIFESPAN_DAYS } from "@/lib/creature";
 import { formatDate } from "@/lib/date";
 import type { PotCreature } from "@/lib/potCreatures";
 
-function daysLeft(createdAt: string): number {
+function elapsedDays(createdAt: string): number {
   const elapsedMs = Date.now() - new Date(createdAt).getTime();
-  const elapsedDays = elapsedMs / (1000 * 60 * 60 * 24);
-  return Math.max(0, Math.ceil(POT_LIFESPAN_DAYS - elapsedDays));
+  return elapsedMs / (1000 * 60 * 60 * 24);
+}
+
+function daysLeft(createdAt: string): number {
+  return Math.max(0, Math.ceil(POT_LIFESPAN_DAYS - elapsedDays(createdAt)));
+}
+
+// 経過日数(丸め)に応じて1日ごとに一段階ずつ縮んでいく。
+// 寿命を迎える頃には半分のサイズになる。
+function creatureScale(createdAt: string): number {
+  const wholeDays = Math.floor(elapsedDays(createdAt));
+  return Math.max(0.5, 1 - 0.5 * (wholeDays / POT_LIFESPAN_DAYS));
 }
 
 export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
@@ -44,6 +54,7 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
                   poem={creature.poem}
                   top={top}
                   left={left}
+                  scale={creatureScale(creature.createdAt)}
                   onClick={() => setSelected(creature)}
                 />
               );

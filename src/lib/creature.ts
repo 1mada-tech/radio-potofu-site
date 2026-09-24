@@ -4,7 +4,7 @@
 // 鍋に入ってから溶けて消える(=アーカイブ行き)までの日数。
 // クライアントコンポーネントからも参照するため、DB接続を持つ
 // lib/potCreatures.tsではなくここに置く。
-export const POT_LIFESPAN_DAYS = 7;
+export const POT_LIFESPAN_DAYS = 5;
 
 const BODY_COLORS = [
   "#f0791b", // にんじん
