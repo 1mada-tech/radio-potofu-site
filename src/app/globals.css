@@ -1847,3 +1847,422 @@ a.episode-tag:hover {
     padding-top: 48px;
   }
 }
+
+/* ポトフ鍋 */
+.senryu-pot-link {
+  margin: -12px 0 32px;
+  font-size: 0.9rem;
+}
+
+.senryu-pot-link a {
+  color: var(--color-accent);
+}
+
+.pot-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 420px;
+  margin-bottom: 8px;
+  padding: 16px;
+  background: var(--color-bg-alt);
+}
+
+.pot-form__name {
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.pot-form__poem {
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  resize: vertical;
+}
+
+.pot-form__honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pot-form__submit {
+  align-self: flex-start;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 10px 24px;
+  background: var(--color-ink);
+  color: #fff;
+  border: 1px solid var(--color-ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.pot-form__submit:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.pot-form__submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.pot-scene {
+  display: flex;
+  justify-content: center;
+  margin-top: 56px;
+}
+
+.pot {
+  position: relative;
+  width: 480px;
+  height: 380px;
+}
+
+@media (max-width: 560px) {
+  .pot-scene {
+    margin-top: 40px;
+  }
+
+  .pot {
+    zoom: 0.8;
+  }
+}
+
+@media (max-width: 460px) {
+  .pot {
+    zoom: 0.62;
+  }
+}
+
+.pot__ground-shadow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 440px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.16);
+  filter: blur(4px);
+}
+
+.pot__steam {
+  position: absolute;
+  top: -20px;
+  width: 10px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  filter: blur(3px);
+}
+
+.pot__steam--1 {
+  left: 150px;
+  transform: rotate(-8deg);
+}
+
+.pot__steam--2 {
+  left: 230px;
+  height: 55px;
+  top: -35px;
+}
+
+.pot__steam--3 {
+  left: 310px;
+  transform: rotate(8deg);
+}
+
+.pot__handle {
+  position: absolute;
+  top: 108px;
+  width: 34px;
+  height: 64px;
+  border: 12px solid #4a4540;
+  border-radius: 50px 0 0 50px;
+}
+
+.pot__handle--left {
+  left: -20px;
+  border-right: none;
+}
+
+.pot__handle--right {
+  right: -20px;
+  border-left: none;
+  border-radius: 0 50px 50px 0;
+}
+
+.pot__wall {
+  position: absolute;
+  top: 90px;
+  left: 20px;
+  width: 440px;
+  height: 220px;
+  border-radius: 0 0 190px 190px / 0 0 90px 90px;
+  background: linear-gradient(180deg, #58524b 0%, #3a352f 55%, #2a2622 100%);
+  box-shadow: inset 0 -14px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pot__rim-shadow {
+  position: absolute;
+  top: 90px;
+  left: 20px;
+  width: 440px;
+  height: 30px;
+  background: #241f1b;
+  border-radius: 50%;
+}
+
+.pot__opening {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 480px;
+  height: 150px;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 38% 28%, rgba(255, 255, 255, 0.2), transparent 55%),
+    linear-gradient(160deg, #c98a4b, #a8632e 75%);
+  box-shadow:
+    0 8px 0 #7a4a22,
+    inset 0 8px 16px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  z-index: 2;
+}
+
+.pot__empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+}
+
+.pot__veg {
+  position: absolute;
+  border-radius: 50%;
+}
+
+.pot__veg--carrot {
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle at 40% 35%, #ffb15c, #f0791b 75%);
+  transform: scaleY(0.68);
+}
+
+.pot__veg--carrot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 22%, rgba(0, 0, 0, 0.12) 23%, transparent 25%),
+    radial-gradient(circle at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.1) 41%, transparent 43%);
+}
+
+.pot__veg--carrot-1 {
+  top: 30px;
+  left: 40px;
+}
+
+.pot__veg--carrot-2 {
+  width: 20px;
+  height: 20px;
+  top: 105px;
+  left: 70px;
+}
+
+.pot__veg--cabbage {
+  width: 38px;
+  height: 26px;
+  border-radius: 50% 50% 45% 45%;
+  background: linear-gradient(160deg, #a9c46e, #7fa33e 70%);
+  transform: scaleY(0.68);
+  top: 95px;
+  left: 340px;
+}
+
+.creature {
+  position: absolute;
+  width: 66px;
+  height: 66px;
+  transform: translate(-50%, -50%) scaleY(0.72);
+  transform-origin: bottom center;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.creature__body {
+  position: absolute;
+  inset: 0;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15);
+}
+
+.creature__eyes {
+  position: absolute;
+  top: 27px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 11px;
+}
+
+.creature__eye {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #211a15;
+}
+
+.creature__eye--sleepy {
+  width: 8px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.creature__mouth {
+  position: absolute;
+  top: 39px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.creature__mouth--smile {
+  width: 8px;
+  height: 4px;
+  border: 2px solid #211a15;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.creature__mouth--o {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #211a15;
+}
+
+.creature__mouth--line {
+  width: 8px;
+  height: 3px;
+  background: #211a15;
+  border-radius: 2px;
+}
+
+.creature__ear {
+  position: absolute;
+  top: -8px;
+  width: 14px;
+  height: 17px;
+}
+
+.creature__ear--left {
+  left: 8px;
+  transform: rotate(-15deg);
+}
+
+.creature__ear--right {
+  right: 8px;
+  transform: rotate(15deg);
+}
+
+.creature__antenna {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 12px;
+}
+
+.creature__antenna::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: inherit;
+}
+
+.creature__name-tag {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%) scaleY(1.39);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #3a2c1a;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+
+.pot__detail {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(33, 26, 21, 0.55);
+}
+
+.pot__detail-card {
+  width: 100%;
+  max-width: 320px;
+  padding: 24px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-ink);
+  text-align: center;
+}
+
+.pot__detail-name {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.pot__detail-poem {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.pot__detail-meta {
+  margin: 0 0 16px;
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+}
+
+.pot__detail-close {
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 8px 20px;
+  background: var(--color-ink);
+  color: #fff;
+  border: 1px solid var(--color-ink);
+  cursor: pointer;
+}
