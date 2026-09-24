@@ -2252,9 +2252,15 @@ a.episode-tag:hover {
 }
 
 .pot__detail-meta {
-  margin: 0 0 16px;
+  margin: 0 0 4px;
   font-size: 0.8rem;
   color: var(--color-ink-soft);
+}
+
+.pot__detail-lifespan {
+  margin: 0 0 16px;
+  font-size: 0.78rem;
+  color: var(--color-accent);
 }
 
 .pot__detail-close {
@@ -2265,4 +2271,47 @@ a.episode-tag:hover {
   color: #fff;
   border: 1px solid var(--color-ink);
   cursor: pointer;
+}
+
+.pot-archive-link,
+.pot-archive-back {
+  margin-top: 40px;
+  font-size: 0.9rem;
+}
+
+.pot-archive-back {
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.pot-archive-link a,
+.pot-archive-back a {
+  color: var(--color-accent);
+}
+
+.pot-archive-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.pot-archive-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.pot-archive-item__name {
+  margin: 0 0 4px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.pot-archive-item__poem {
+  margin: 0 0 4px;
+  color: var(--color-ink);
+}
+
+.pot-archive-item__meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
 }

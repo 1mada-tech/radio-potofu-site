@@ -2,9 +2,15 @@
 
 import { useState } from "react";
 import Creature from "@/components/Creature";
-import { derivePosition, deriveName } from "@/lib/creature";
+import { derivePosition, deriveName, POT_LIFESPAN_DAYS } from "@/lib/creature";
 import { formatDate } from "@/lib/date";
 import type { PotCreature } from "@/lib/potCreatures";
+
+function daysLeft(createdAt: string): number {
+  const elapsedMs = Date.now() - new Date(createdAt).getTime();
+  const elapsedDays = elapsedMs / (1000 * 60 * 60 * 24);
+  return Math.max(0, Math.ceil(POT_LIFESPAN_DAYS - elapsedDays));
+}
 
 export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
   const [selected, setSelected] = useState<PotCreature | null>(null);
@@ -53,6 +59,9 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
             <p className="pot__detail-poem">{selected.poem}</p>
             <p className="pot__detail-meta">
               {selected.authorName || "名無し"} ・ {formatDate(selected.createdAt)}
+            </p>
+            <p className="pot__detail-lifespan">
+              あと{daysLeft(selected.createdAt)}日で鍋のダシになります
             </p>
             <button type="button" className="pot__detail-close" onClick={() => setSelected(null)}>
               閉じる
