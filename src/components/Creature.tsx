@@ -28,7 +28,6 @@ export default function Creature({
       onClick={onClick}
       aria-label={`${name}(${poem})`}
     >
-      <span className="creature__name-tag">{name}</span>
       <span
         className="creature__body"
         style={{ background: appearance.bodyColor, borderRadius: appearance.bodyRadius }}
@@ -70,6 +69,7 @@ export default function Creature({
       {appearance.mouthType === "smile" && <span className="creature__mouth creature__mouth--smile" />}
       {appearance.mouthType === "o" && <span className="creature__mouth creature__mouth--o" />}
       {appearance.mouthType === "line" && <span className="creature__mouth creature__mouth--line" />}
+      <span className="creature__name-tag">{name}</span>
     </button>
   );
 }
