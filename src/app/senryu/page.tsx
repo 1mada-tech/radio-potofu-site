@@ -43,7 +43,7 @@ export default async function SenryuPage({
         </div>
       )}
       <p className="senryu-pot-link">
-        <Link href="/pot">投稿した川柳からキャラが生まれる「ポトフ鍋」はこちら →</Link>
+        <Link href="/pot">投稿した川柳からキャラが生まれる「川柳ポトフ鍋」はこちら →</Link>
       </p>
       {contents.length > 0 ? (
         <>

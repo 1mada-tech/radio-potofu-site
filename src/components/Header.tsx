@@ -3,9 +3,26 @@
 import { useState } from "react";
 import Link from "next/link";
 
-const navRow2 = [
-  { href: "/senryu", label: "現代川柳" },
-  { href: "/netprint", label: "ネットプリント" },
+const navGroups = [
+  {
+    href: "/episodes",
+    label: "これまでの配信",
+    children: [
+      { href: "/pick", label: "きょうのあなたに", pick: true },
+      { href: "/themes", label: "テーマ募集" },
+    ],
+  },
+  {
+    href: "/senryu",
+    label: "現代川柳",
+    children: [
+      { href: "/netprint", label: "ネットプリント" },
+      { href: "/pot", label: "川柳ポトフ鍋" },
+    ],
+  },
+];
+
+const standaloneLinks = [
   { href: "/note", label: "ひみつノート" },
   { href: "/history", label: "年表" },
 ];
@@ -40,36 +57,41 @@ export default function Header() {
 
         <nav className={`site-header__nav${isOpen ? " site-header__nav--open" : ""}`}>
           <div className="site-header__nav-inner">
-            <ul className="site-header__nav-row">
-              <li>
-                <Link href="/episodes" onClick={() => setIsOpen(false)}>
-                  これまでの配信
-                </Link>
-              </li>
-              <li>
+            {navGroups.map((group) => (
+              <div className="site-header__nav-group" key={group.href}>
                 <Link
-                  href="/pick"
-                  className="site-header__pick"
+                  href={group.href}
+                  className="site-header__nav-group-title"
                   onClick={() => setIsOpen(false)}
                 >
-                  きょうのあなたに
+                  {group.label}
                 </Link>
-              </li>
-              <li>
-                <Link href="/themes" onClick={() => setIsOpen(false)}>
-                  テーマ募集
-                </Link>
-              </li>
-            </ul>
-            <ul className="site-header__nav-row">
-              {navRow2.map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} onClick={() => setIsOpen(false)}>
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                <ul className="site-header__nav-children">
+                  {group.children.map((child) => (
+                    <li key={child.href}>
+                      <Link
+                        href={child.href}
+                        className={child.pick ? "site-header__pick" : undefined}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {child.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            <div className="site-header__nav-group site-header__nav-group--standalone">
+              <ul className="site-header__nav-children">
+                {standaloneLinks.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} onClick={() => setIsOpen(false)}>
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </nav>
       </div>

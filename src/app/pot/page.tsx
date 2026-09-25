@@ -5,7 +5,7 @@ import PotScene from "@/components/PotScene";
 import PotForm from "@/components/PotForm";
 import PotLog from "@/components/PotLog";
 
-export const metadata: Metadata = { title: "ポトフ鍋" };
+export const metadata: Metadata = { title: "川柳ポトフ鍋" };
 export const revalidate = 0;
 
 export default async function PotPage() {
@@ -17,7 +17,7 @@ export default async function PotPage() {
   return (
     <div className="container page">
       <div className="page-heading">
-        <h1>ポトフ鍋</h1>
+        <h1>川柳ポトフ鍋</h1>
         <p className="page-subtitle">The Pot</p>
       </div>
       <p className="page-caption">
