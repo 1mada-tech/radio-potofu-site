@@ -8,7 +8,7 @@ const navGroups = [
     href: "/episodes",
     label: "これまでの配信",
     children: [
-      { href: "/pick", label: "きょうのあなたに", pick: true },
+      { href: "/pick", label: "きょうのあなたに" },
       { href: "/themes", label: "テーマ募集" },
     ],
   },
@@ -58,40 +58,34 @@ export default function Header() {
         <nav className={`site-header__nav${isOpen ? " site-header__nav--open" : ""}`}>
           <div className="site-header__nav-inner">
             {navGroups.map((group) => (
-              <div className="site-header__nav-group" key={group.href}>
-                <Link
-                  href={group.href}
-                  className="site-header__nav-group-title"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {group.label}
-                </Link>
-                <ul className="site-header__nav-children">
-                  {group.children.map((child) => (
-                    <li key={child.href}>
-                      <Link
-                        href={child.href}
-                        className={child.pick ? "site-header__pick" : undefined}
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {child.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-            <div className="site-header__nav-group site-header__nav-group--standalone">
-              <ul className="site-header__nav-children">
-                {standaloneLinks.map((item) => (
-                  <li key={item.href}>
-                    <Link href={item.href} onClick={() => setIsOpen(false)}>
-                      {item.label}
+              <ul className="site-header__nav-row" key={group.href}>
+                <li>
+                  <Link
+                    href={group.href}
+                    className="site-header__nav-group-title"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {group.label}
+                  </Link>
+                </li>
+                {group.children.map((child) => (
+                  <li key={child.href}>
+                    <Link href={child.href} onClick={() => setIsOpen(false)}>
+                      {child.label}
                     </Link>
                   </li>
                 ))}
               </ul>
-            </div>
+            ))}
+            <ul className="site-header__nav-row">
+              {standaloneLinks.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} onClick={() => setIsOpen(false)}>
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </nav>
       </div>
