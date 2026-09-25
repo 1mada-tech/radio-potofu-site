@@ -1,10 +1,5 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { getAllPotCreatures } from "@/lib/potCreatures";
 import { buildPotEvents, potAgeDays, type PotEventType } from "@/lib/potLog";
-
-export const metadata: Metadata = { title: "鍋の記録" };
-export const revalidate = 0;
+import type { PotCreature } from "@/lib/potCreatures";
 
 const EVENT_LABEL: Record<PotEventType, string> = {
   enter: "投入",
@@ -21,24 +16,17 @@ function formatDateTime(at: number) {
   return `${y}.${m}.${d}`;
 }
 
-export default async function PotArchivePage() {
-  const creatures = await getAllPotCreatures();
+export default function PotLog({ creatures }: { creatures: PotCreature[] }) {
   const events = buildPotEvents(creatures);
   const ageDays = potAgeDays(creatures);
 
   return (
-    <div className="container page">
-      <div className="page-heading">
-        <h1>鍋の記録</h1>
-        <p className="page-subtitle">The Pot Log</p>
-      </div>
-      <p className="page-caption">
+    <section className="pot-log">
+      <h2 className="pot-log__heading">鍋の記録</h2>
+      <p className="pot-log__caption">
         {creatures.length > 0
           ? `鍋が稼働してから${ageDays}日。これまでの出入り・節目・スープの煮詰まり具合の記録です。`
           : "まだ鍋は動いていません。最初の一匹を投稿してみませんか？"}
-      </p>
-      <p className="pot-archive-back">
-        <Link href="/pot">ポトフ鍋に戻る →</Link>
       </p>
       {events.length > 0 ? (
         <ul className="pot-log-list">
@@ -53,6 +41,6 @@ export default async function PotArchivePage() {
       ) : (
         <p className="empty-message">まだ記録がありません。</p>
       )}
-    </div>
+    </section>
   );
 }

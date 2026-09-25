@@ -2273,20 +2273,20 @@ a.episode-tag:hover {
   cursor: pointer;
 }
 
-.pot-archive-link,
-.pot-archive-back {
-  margin-top: 40px;
+.pot-log {
+  margin-top: 56px;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-border);
+}
+
+.pot-log__heading {
+  margin: 0 0 8px;
+}
+
+.pot-log__caption {
+  margin: 0 0 20px;
   font-size: 0.9rem;
-}
-
-.pot-archive-back {
-  margin-top: 0;
-  margin-bottom: 24px;
-}
-
-.pot-archive-link a,
-.pot-archive-back a {
-  color: var(--color-accent);
+  color: var(--color-ink-soft);
 }
 
 .pot-log-list {

@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { getPotCreatures } from "@/lib/potCreatures";
+import { getPotCreatures, getAllPotCreatures } from "@/lib/potCreatures";
 import { POT_LIFESPAN_DAYS } from "@/lib/creature";
 import PotScene from "@/components/PotScene";
 import PotForm from "@/components/PotForm";
+import PotLog from "@/components/PotLog";
 
 export const metadata: Metadata = { title: "ポトフ鍋" };
 export const revalidate = 0;
 
 export default async function PotPage() {
-  const creatures = await getPotCreatures();
+  const [creatures, allCreatures] = await Promise.all([
+    getPotCreatures(),
+    getAllPotCreatures(),
+  ]);
 
   return (
     <div className="container page">
@@ -22,9 +25,7 @@ export default async function PotPage() {
       </p>
       <PotForm />
       <PotScene creatures={creatures} />
-      <p className="pot-archive-link">
-        <Link href="/pot/archive">鍋の記録(出入り・節目・時間経過)はこちら →</Link>
-      </p>
+      <PotLog creatures={allCreatures} />
     </div>
   );
 }
