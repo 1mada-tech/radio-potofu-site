@@ -14,41 +14,6 @@ function photoDateStamp(): string {
   return `${y}.${m}.${d}`;
 }
 
-// html2canvasはCSSのclip-pathを描画できないため、
-// 炎の部分だけキャンバス上に手描きし直す(CSS側の多角形定義と一致させる)。
-const FLAME_POLYGON: [number, number][] = [
-  [50, 0], [63, 14], [54, 24], [72, 32], [78, 54], [64, 58], [72, 76],
-  [50, 100], [28, 76], [36, 58], [22, 54], [28, 32], [46, 24], [37, 14],
-];
-
-function drawFlameLayer(
-  ctx: CanvasRenderingContext2D,
-  box: { x: number; y: number; w: number; h: number },
-  inset: { top: number; right: number; bottom: number; left: number },
-  colorStops: [number, string][]
-) {
-  const bx = box.x + inset.left * box.w;
-  const by = box.y + inset.top * box.h;
-  const bw = box.w - (inset.left + inset.right) * box.w;
-  const bh = box.h - (inset.top + inset.bottom) * box.h;
-
-  ctx.save();
-  ctx.beginPath();
-  FLAME_POLYGON.forEach(([px, py], i) => {
-    const cx = bx + (px / 100) * bw;
-    const cy = by + (py / 100) * bh;
-    if (i === 0) ctx.moveTo(cx, cy);
-    else ctx.lineTo(cx, cy);
-  });
-  ctx.closePath();
-  ctx.clip();
-  const gradient = ctx.createLinearGradient(0, by + bh, 0, by);
-  colorStops.forEach(([stop, color]) => gradient.addColorStop(stop, color));
-  ctx.fillStyle = gradient;
-  ctx.fillRect(bx, by, bw, bh);
-  ctx.restore();
-}
-
 function elapsedDays(createdAt: string): number {
   const elapsedMs = Date.now() - new Date(createdAt).getTime();
   return elapsedMs / (1000 * 60 * 60 * 24);
@@ -72,8 +37,7 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
 
   async function handlePhoto() {
     const potEl = potRef.current;
-    const fireEl = potEl?.querySelector<HTMLElement>(".pot__fire");
-    if (!potEl || !fireEl || capturing) return;
+    if (!potEl || capturing) return;
     setCapturing(true);
     try {
       const { default: html2canvas } = await import("html2canvas");
@@ -81,7 +45,6 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
       const topMargin = 60; // 湯気を描き足すための、鍋の上の余白(CSS px)
 
       const potRect = potEl.getBoundingClientRect();
-      const fireRect = fireEl.getBoundingClientRect();
 
       // html2canvasは要素自身の矩形しか捉えられないため、まず鍋本体だけを撮る。
       const potCanvas = await html2canvas(potEl, {
@@ -122,46 +85,6 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
         });
         ctx.restore();
 
-        const fireBox = {
-          x: (fireRect.left - potRect.left) * scale,
-          y: (fireRect.top - potRect.top) * scale + topMargin * scale,
-          w: fireRect.width * scale,
-          h: fireRect.height * scale,
-        };
-        ctx.clearRect(fireBox.x, fireBox.y, fireBox.w, fireBox.h + 4);
-        ctx.fillStyle = "#e4e4e0";
-        ctx.fillRect(fireBox.x, fireBox.y, fireBox.w, fireBox.h + 4);
-
-        // 消してしまった地面の影を、火のすぐ下だけ描き直す。
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(fireBox.x, fireBox.y, fireBox.w, fireBox.h + 4);
-        ctx.clip();
-        ctx.fillStyle = "rgba(0, 0, 0, 0.16)";
-        ctx.beginPath();
-        ctx.ellipse(
-          0.5 * potRect.width * scale,
-          topMargin * scale + (357 / 380) * potRect.height * scale,
-          (220 / 480) * potRect.width * scale,
-          (17 / 380) * potRect.height * scale,
-          0,
-          0,
-          Math.PI * 2
-        );
-        ctx.fill();
-        ctx.restore();
-
-        drawFlameLayer(ctx, fireBox, { top: 0, right: 0, bottom: 0, left: 0 }, [
-          [0, "#b81c1c"],
-          [0.65, "#f0791b"],
-          [1, "#ffce54"],
-        ]);
-        drawFlameLayer(ctx, fireBox, { top: 0.26, right: 0.24, bottom: 0, left: 0.24 }, [
-          [0, "#f0791b"],
-          [0.55, "#ffce54"],
-          [1, "#fff6df"],
-        ]);
-
         const stamp = photoDateStamp();
         const fontSize = 22;
         ctx.font = `${fontSize}px sans-serif`;
@@ -200,8 +123,28 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
 
         <div className="pot__ground-shadow" aria-hidden="true" />
         <div className="pot__fire" aria-hidden="true">
-          <span className="pot__flame pot__flame--outer" />
-          <span className="pot__flame pot__flame--inner" />
+          <svg className="pot__flame-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="pot-flame-outer" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0" stopColor="#b81c1c" />
+                <stop offset="0.65" stopColor="#f0791b" />
+                <stop offset="1" stopColor="#ffce54" />
+              </linearGradient>
+              <linearGradient id="pot-flame-inner" x1="0" y1="1" x2="0" y2="0">
+                <stop offset="0" stopColor="#f0791b" />
+                <stop offset="0.55" stopColor="#ffce54" />
+                <stop offset="1" stopColor="#fff6df" />
+              </linearGradient>
+            </defs>
+            <polygon
+              fill="url(#pot-flame-outer)"
+              points="50,0 63,14 54,24 72,32 78,54 64,58 72,76 50,100 28,76 36,58 22,54 28,32 46,24 37,14"
+            />
+            <polygon
+              fill="url(#pot-flame-inner)"
+              points="50,26 56.76,36.36 52.08,43.76 61.44,49.68 64.56,65.96 57.28,68.92 61.44,82.24 50,100 38.56,82.24 42.72,68.92 35.44,65.96 38.56,49.68 47.92,43.76 43.24,36.36"
+            />
+          </svg>
         </div>
         <div className="pot__handle pot__handle--left" aria-hidden="true" />
         <div className="pot__handle pot__handle--right" aria-hidden="true" />

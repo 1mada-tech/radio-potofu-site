@@ -1992,34 +1992,10 @@ a.episode-tag:hover {
   height: 78px;
 }
 
-.pot__flame {
-  position: absolute;
-  clip-path: polygon(
-    50% 0%,
-    63% 14%,
-    54% 24%,
-    72% 32%,
-    78% 54%,
-    64% 58%,
-    72% 76%,
-    50% 100%,
-    28% 76%,
-    36% 58%,
-    22% 54%,
-    28% 32%,
-    46% 24%,
-    37% 14%
-  );
-}
-
-.pot__flame--outer {
-  inset: 0;
-  background: linear-gradient(to top, #b81c1c 0%, #f0791b 65%, #ffce54 100%);
-}
-
-.pot__flame--inner {
-  inset: 26% 24% 0 24%;
-  background: linear-gradient(to top, #f0791b 0%, #ffce54 55%, #fff6df 100%);
+.pot__flame-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .pot__steam {
