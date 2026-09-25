@@ -12,7 +12,15 @@ async function postJson(url: string, body: unknown) {
   if (!res.ok) throw new Error("failed");
 }
 
-export default function PotForm() {
+export default function PotForm({
+  namePlaceholder,
+  poemPlaceholder,
+  submitLabel,
+}: {
+  namePlaceholder: string;
+  poemPlaceholder: string;
+  submitLabel: string;
+}) {
   const router = useRouter();
   const [authorName, setAuthorName] = useState("");
   const [poem, setPoem] = useState("");
@@ -39,14 +47,14 @@ export default function PotForm() {
         type="text"
         value={authorName}
         onChange={(e) => setAuthorName(e.target.value)}
-        placeholder="お名前(任意)"
+        placeholder={namePlaceholder}
         className="pot-form__name"
         maxLength={50}
       />
       <textarea
         value={poem}
         onChange={(e) => setPoem(e.target.value)}
-        placeholder="川柳を入力するとキャラが鍋に入ります"
+        placeholder={poemPlaceholder}
         className="pot-form__poem"
         maxLength={200}
         rows={2}
@@ -62,7 +70,7 @@ export default function PotForm() {
         aria-hidden="true"
       />
       <button type="submit" className="pot-form__submit" disabled={submitting}>
-        {submitting ? "生成中…" : "キャラを鍋に入れる"}
+        {submitting ? "生成中…" : submitLabel}
       </button>
     </form>
   );

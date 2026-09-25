@@ -16,16 +16,24 @@ function formatDateTime(at: number) {
   return `${y}.${m}.${d}`;
 }
 
-export default function PotLog({ creatures }: { creatures: PotCreature[] }) {
+export default function PotLog({
+  creatures,
+  heading,
+  captionTemplate,
+}: {
+  creatures: PotCreature[];
+  heading: string;
+  captionTemplate: string;
+}) {
   const events = buildPotEvents(creatures);
   const ageDays = potAgeDays(creatures);
 
   return (
     <section className="pot-log">
-      <h2 className="pot-log__heading">鍋の記録</h2>
+      <h2 className="pot-log__heading">{heading}</h2>
       <p className="pot-log__caption">
         {creatures.length > 0
-          ? `鍋が稼働してから${ageDays}日。これまでの出入り・節目・スープの煮詰まり具合の記録です。`
+          ? captionTemplate.replace(/\d+日/, `${ageDays}日`)
           : "まだ鍋は動いていません。最初の一匹を投稿してみませんか？"}
       </p>
       {events.length > 0 ? (
