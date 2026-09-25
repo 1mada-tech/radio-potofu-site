@@ -34,9 +34,8 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
 
         <div className="pot__ground-shadow" aria-hidden="true" />
         <div className="pot__fire" aria-hidden="true">
-          <span className="pot__flame pot__flame--1" />
-          <span className="pot__flame pot__flame--2" />
-          <span className="pot__flame pot__flame--3" />
+          <span className="pot__flame pot__flame--outer" />
+          <span className="pot__flame pot__flame--inner" />
         </div>
         <div className="pot__handle pot__handle--left" aria-hidden="true" />
         <div className="pot__handle pot__handle--right" aria-hidden="true" />
