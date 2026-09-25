@@ -1,18 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Creature from "@/components/Creature";
 import { derivePosition, deriveName, POT_LIFESPAN_DAYS } from "@/lib/creature";
 import { formatDate } from "@/lib/date";
 import type { PotCreature } from "@/lib/potCreatures";
-
-function photoDateStamp(): string {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  return `${y}.${m}.${d}`;
-}
 
 function elapsedDays(createdAt: string): number {
   const elapsedMs = Date.now() - new Date(createdAt).getTime();
@@ -32,91 +24,10 @@ function creatureScale(createdAt: string): number {
 
 export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
   const [selected, setSelected] = useState<PotCreature | null>(null);
-  const [capturing, setCapturing] = useState(false);
-  const potRef = useRef<HTMLDivElement>(null);
-
-  async function handlePhoto() {
-    const potEl = potRef.current;
-    if (!potEl || capturing) return;
-    setCapturing(true);
-    try {
-      const { default: html2canvas } = await import("html2canvas");
-      const scale = 2;
-      const topMargin = 60; // 湯気を描き足すための、鍋の上の余白(CSS px)
-
-      const potRect = potEl.getBoundingClientRect();
-
-      // html2canvasは要素自身の矩形しか捉えられないため、まず鍋本体だけを撮る。
-      const potCanvas = await html2canvas(potEl, {
-        backgroundColor: "#e4e4e0",
-        scale,
-      });
-
-      const canvas = document.createElement("canvas");
-      canvas.width = potCanvas.width;
-      canvas.height = potCanvas.height + topMargin * scale;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.fillStyle = "#e4e4e0";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(potCanvas, 0, topMargin * scale);
-
-        // 湯気を手描きする(鍋の外にはみ出す部分はhtml2canvasが捉えられないため)。
-        const steamWisps: { leftFrac: number; heightFrac: number; topFrac: number; rotateDeg: number }[] = [
-          { leftFrac: 150 / 480, heightFrac: 40 / 380, topFrac: -20 / 380, rotateDeg: -8 },
-          { leftFrac: 230 / 480, heightFrac: 55 / 380, topFrac: -35 / 380, rotateDeg: 0 },
-          { leftFrac: 310 / 480, heightFrac: 40 / 380, topFrac: -20 / 380, rotateDeg: 8 },
-        ];
-        ctx.save();
-        ctx.filter = "blur(6px)";
-        ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
-        steamWisps.forEach((wisp) => {
-          const cx = wisp.leftFrac * potRect.width * scale;
-          const cy = topMargin * scale + wisp.topFrac * potRect.height * scale;
-          const h = wisp.heightFrac * potRect.height * scale;
-          const w = 10 * scale;
-          ctx.save();
-          ctx.translate(cx, cy);
-          ctx.rotate((wisp.rotateDeg * Math.PI) / 180);
-          ctx.beginPath();
-          ctx.ellipse(0, 0, w / 2, h / 2, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
-        });
-        ctx.restore();
-
-        const stamp = photoDateStamp();
-        const fontSize = 22;
-        ctx.font = `${fontSize}px sans-serif`;
-        const padding = 14;
-        const textWidth = ctx.measureText(stamp).width;
-        ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
-        ctx.fillRect(
-          canvas.width - textWidth - padding * 2,
-          canvas.height - fontSize - padding * 1.6,
-          textWidth + padding * 2,
-          fontSize + padding * 0.8
-        );
-        ctx.fillStyle = "#fff";
-        ctx.textBaseline = "middle";
-        ctx.fillText(
-          stamp,
-          canvas.width - textWidth - padding,
-          canvas.height - padding
-        );
-      }
-      const link = document.createElement("a");
-      link.download = `ポトフ鍋_${photoDateStamp()}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    } finally {
-      setCapturing(false);
-    }
-  }
 
   return (
     <div className="pot-scene">
-      <div className="pot" ref={potRef}>
+      <div className="pot">
         <span className="pot__steam pot__steam--1" aria-hidden="true" />
         <span className="pot__steam pot__steam--2" aria-hidden="true" />
         <span className="pot__steam pot__steam--3" aria-hidden="true" />
@@ -175,15 +86,6 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
           )}
         </div>
       </div>
-
-      <button
-        type="button"
-        className="pot__photo-button"
-        onClick={handlePhoto}
-        disabled={capturing}
-      >
-        {capturing ? "撮影中…" : "記念写真を撮る"}
-      </button>
 
       {selected && (
         <div className="pot__detail" role="dialog" onClick={() => setSelected(null)}>
