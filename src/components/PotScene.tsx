@@ -23,7 +23,13 @@ function creatureScale(createdAt: string): number {
 }
 
 export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
-  const [selected, setSelected] = useState<PotCreature | null>(null);
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
+
+  const positioned = creatures.map((creature, i) => ({
+    creature,
+    ...derivePosition(creature.poem, creature.id ?? i),
+  }));
+  const hovered = positioned.find((p) => p.creature.id === hoveredId) ?? null;
 
   return (
     <div className="pot-scene">
@@ -67,43 +73,43 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
           <span className="pot__veg pot__veg--carrot pot__veg--carrot-2" aria-hidden="true" />
           <span className="pot__veg pot__veg--cabbage" aria-hidden="true" />
 
-          {creatures.length === 0 ? (
+          {positioned.length === 0 ? (
             <p className="pot__empty">まだ誰も入っていません。最初の一匹を投稿してみませんか？</p>
           ) : (
-            creatures.map((creature, i) => {
-              const { top, left } = derivePosition(creature.poem, creature.id ?? i);
-              return (
-                <Creature
-                  key={creature.id}
-                  poem={creature.poem}
-                  top={top}
-                  left={left}
-                  scale={creatureScale(creature.createdAt)}
-                  onClick={() => setSelected(creature)}
-                />
-              );
-            })
+            positioned.map(({ creature, top, left }) => (
+              <Creature
+                key={creature.id}
+                poem={creature.poem}
+                top={top}
+                left={left}
+                scale={creatureScale(creature.createdAt)}
+                onHoverStart={() => setHoveredId(creature.id)}
+                onHoverEnd={() => setHoveredId((id) => (id === creature.id ? null : id))}
+              />
+            ))
           )}
         </div>
-      </div>
 
-      {selected && (
-        <div className="pot__detail" role="dialog" onClick={() => setSelected(null)}>
-          <div className="pot__detail-card" onClick={(e) => e.stopPropagation()}>
-            <p className="pot__detail-name">{deriveName(selected.poem)}</p>
-            <p className="pot__detail-poem">{selected.poem}</p>
-            <p className="pot__detail-meta">
-              {selected.authorName || "名無し"} ・ {formatDate(selected.createdAt)}
+        {hovered && (
+          <div
+            className="pot__tooltip"
+            style={{
+              // pot__openingは鍋(480x380)の上部150px分なので、%表示を鍋全体の座標系に変換する。
+              top: `${(hovered.top * 150) / 380}%`,
+              left: `${hovered.left}%`,
+            }}
+          >
+            <p className="pot__tooltip-name">{deriveName(hovered.creature.poem)}</p>
+            <p className="pot__tooltip-poem">{hovered.creature.poem}</p>
+            <p className="pot__tooltip-meta">
+              {hovered.creature.authorName || "名無し"} ・ {formatDate(hovered.creature.createdAt)}
             </p>
-            <p className="pot__detail-lifespan">
-              あと{daysLeft(selected.createdAt)}日で鍋のダシになります
+            <p className="pot__tooltip-lifespan">
+              あと{daysLeft(hovered.creature.createdAt)}日で鍋のダシになります
             </p>
-            <button type="button" className="pot__detail-close" onClick={() => setSelected(null)}>
-              閉じる
-            </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -5,13 +5,15 @@ export default function Creature({
   top,
   left,
   scale = 1,
-  onClick,
+  onHoverStart,
+  onHoverEnd,
 }: {
   poem: string;
   top: number;
   left: number;
   scale?: number;
-  onClick?: () => void;
+  onHoverStart?: () => void;
+  onHoverEnd?: () => void;
 }) {
   const appearance = deriveAppearance(poem);
   const name = deriveName(poem);
@@ -25,7 +27,10 @@ export default function Creature({
         left: `${left}%`,
         transform: `translate(-50%, -50%) scaleY(0.72) scale(${scale})`,
       }}
-      onClick={onClick}
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
+      onFocus={onHoverStart}
+      onBlur={onHoverEnd}
       aria-label={`${name}(${poem})`}
     >
       <span
