@@ -1801,12 +1801,10 @@ a.episode-tag:hover {
     position: fixed;
     inset: 0;
     z-index: 30;
-    background: rgba(33, 26, 21, 0.4);
+    background: transparent;
     opacity: 0;
     visibility: hidden;
-    transition:
-      opacity 0.2s ease,
-      visibility 0.2s;
+    transition: visibility 0.2s;
     pointer-events: none;
   }
 
@@ -1819,15 +1817,15 @@ a.episode-tag:hover {
   .site-header__nav {
     position: absolute;
     top: 100%;
-    left: 0;
+    right: 0;
     width: fit-content;
     max-width: 70vw;
     max-height: 70vh;
     overflow-y: auto;
     background: var(--color-bg);
     border-top: 1px solid var(--color-border);
-    border-right: 1px solid var(--color-border);
-    box-shadow: 4px 10px 20px rgba(33, 26, 21, 0.18);
+    border-left: 1px solid var(--color-border);
+    box-shadow: -4px 10px 20px rgba(33, 26, 21, 0.18);
     padding: 20px 24px 28px;
     opacity: 0;
     visibility: hidden;
