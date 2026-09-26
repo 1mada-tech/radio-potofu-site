@@ -83,6 +83,13 @@ export default function Header() {
                     <span className="site-header__nav-group-title">▼{group.label}</span>
                   )}
                   <ul className="site-header__nav-children">
+                    {group.href && (
+                      <li className="site-header__nav-index">
+                        <Link href={group.href} onClick={() => setIsOpen(false)}>
+                          {group.label} 一覧
+                        </Link>
+                      </li>
+                    )}
                     {group.children.map((child) => (
                       <li key={child.href}>
                         <Link href={child.href} onClick={() => setIsOpen(false)}>

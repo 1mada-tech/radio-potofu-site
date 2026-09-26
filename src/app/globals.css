@@ -1908,6 +1908,10 @@ a.episode-tag:hover {
     position: static;
   }
 
+  .site-header__nav-index {
+    display: none;
+  }
+
   .site-header__nav-children {
     display: flex;
     position: static;
