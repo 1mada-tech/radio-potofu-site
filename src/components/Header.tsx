@@ -20,11 +20,14 @@ const navGroups = [
       { href: "/pot", label: "川柳ポトフ鍋" },
     ],
   },
-];
-
-const standaloneLinks = [
-  { href: "/note", label: "ひみつノート" },
-  { href: "/history", label: "年表" },
+  {
+    href: null,
+    label: "おたのしみ",
+    children: [
+      { href: "/note", label: "ひみつノート" },
+      { href: "/history", label: "年表" },
+    ],
+  },
 ];
 
 export default function Header() {
@@ -65,32 +68,29 @@ export default function Header() {
           onClick={() => setIsOpen(false)}
         >
           <div className="site-header__nav-inner">
-            {navGroups.map((group) => (
-              <ul className="site-header__nav-row" key={group.href}>
-                <li>
-                  <Link
-                    href={group.href}
-                    className="site-header__nav-group-title"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {group.label}
-                  </Link>
-                </li>
-                {group.children.map((child) => (
-                  <li key={child.href}>
-                    <Link href={child.href} onClick={() => setIsOpen(false)}>
-                      {child.label}
+            <ul className="site-header__nav-main">
+              {navGroups.map((group) => (
+                <li className="site-header__nav-group" key={group.label}>
+                  {group.href ? (
+                    <Link
+                      href={group.href}
+                      className="site-header__nav-group-title"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      ▼{group.label}
                     </Link>
-                  </li>
-                ))}
-              </ul>
-            ))}
-            <ul className="site-header__nav-row">
-              {standaloneLinks.map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} onClick={() => setIsOpen(false)}>
-                    {item.label}
-                  </Link>
+                  ) : (
+                    <span className="site-header__nav-group-title">▼{group.label}</span>
+                  )}
+                  <ul className="site-header__nav-children">
+                    {group.children.map((child) => (
+                      <li key={child.href}>
+                        <Link href={child.href} onClick={() => setIsOpen(false)}>
+                          {child.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </li>
               ))}
             </ul>
