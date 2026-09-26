@@ -20,6 +20,14 @@ function scrambleFrame(target: string, frame: number) {
     .join("");
 }
 
+// versionは数字だけを、ランダム部分と同じフレーム数で左から確定させる。
+function scrambleDigits(target: string, frame: number) {
+  const resolvedCount = Math.floor((frame / SCRAMBLE_FRAMES) * target.length);
+  return Array.from(target)
+    .map((ch, i) => (i < resolvedCount ? ch : String(Math.floor(Math.random() * 10))))
+    .join("");
+}
+
 export default function SenryuHeading({
   candidates,
   initialIndex,
@@ -33,15 +41,14 @@ export default function SenryuHeading({
   after: string;
   totalVersion: string;
 }) {
-  const [index, setIndex] = useState(initialIndex);
   const [displayWord, setDisplayWord] = useState(candidates[initialIndex]?.word ?? "");
+  const [displayVersion, setDisplayVersion] = useState(candidates[initialIndex]?.version ?? "");
   const [scrambling, setScrambling] = useState(false);
   const indexRef = useRef(initialIndex);
   const longestWord = candidates.reduce(
     (longest, c) => (c.word.length > longest.length ? c.word : longest),
     "",
   );
-  const current = candidates[index];
 
   useEffect(() => {
     if (candidates.length <= 1) return;
@@ -53,6 +60,7 @@ export default function SenryuHeading({
       }
       indexRef.current = next;
       const target = candidates[next].word;
+      const targetVersion = candidates[next].version;
 
       setScrambling(true);
       let frame = 0;
@@ -61,11 +69,12 @@ export default function SenryuHeading({
         if (frame >= SCRAMBLE_FRAMES) {
           window.clearInterval(frameTimer);
           setDisplayWord(target);
-          setIndex(next);
+          setDisplayVersion(targetVersion);
           setScrambling(false);
           return;
         }
         setDisplayWord(scrambleFrame(target, frame));
+        if (targetVersion) setDisplayVersion(scrambleDigits(targetVersion, frame));
       }, SCRAMBLE_FRAME_MS);
     }, 9000);
 
@@ -77,9 +86,11 @@ export default function SenryuHeading({
       <div className="page-heading">
         <h1>
           現代川柳
-          {current?.version && (
-            <span key={current.version} className="senryu-caption__version">
-              {`version:${current.version}${totalVersion ? `/${totalVersion}` : ""}`}
+          {displayVersion && (
+            <span
+              className={`senryu-caption__version${scrambling ? " senryu-caption__version--scrambling" : ""}`}
+            >
+              {`version:${displayVersion}${totalVersion ? `/${totalVersion}` : ""}`}
             </span>
           )}
         </h1>
