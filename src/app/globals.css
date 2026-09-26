@@ -1627,7 +1627,7 @@ a.episode-tag:hover {
 .article__body h2,
 .article__body h3,
 .article__body h4 {
-  display: inline-block;
+  display: table;
   margin-top: 1.6em;
   padding: 4px 12px;
   background: #fff;
