@@ -55,7 +55,10 @@ export default function Header() {
           <span className="site-header__toggle-label">メニュー</span>
         </button>
 
-        <nav className={`site-header__nav${isOpen ? " site-header__nav--open" : ""}`}>
+        <nav
+          className={`site-header__nav${isOpen ? " site-header__nav--open" : ""}`}
+          onClick={() => setIsOpen(false)}
+        >
           <div className="site-header__nav-inner">
             {navGroups.map((group) => (
               <ul className="site-header__nav-row" key={group.href}>

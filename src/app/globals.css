@@ -1782,37 +1782,61 @@ a.episode-tag:hover {
     align-items: center;
   }
 
+  .site-header__brand,
+  .site-header__toggle {
+    position: relative;
+    z-index: 2;
+  }
+
   .site-header__toggle {
     display: flex;
   }
 
   .site-header__nav {
-    display: grid;
-    grid-template-rows: 0fr;
-    width: 100%;
-    order: 3;
-    transition: grid-template-rows 0.25s ease;
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    background: var(--color-bg);
+    padding: 88px 24px 24px;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease,
+      visibility 0.2s;
+    pointer-events: none;
   }
 
   .site-header__nav--open {
-    grid-template-rows: 1fr;
-    margin-top: 12px;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
   }
 
   .site-header__nav-inner {
-    overflow: hidden;
-    min-height: 0;
+    flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
+    width: 100%;
+    gap: 28px;
   }
 
   .site-header__nav-row {
     flex-direction: column;
-    gap: 10px;
+    gap: 14px;
   }
 
   .site-header__nav a {
-    padding: 0;
+    padding: 4px 0;
+    font-size: 1.05rem;
+  }
+
+  .site-header__nav-group-title {
+    font-size: 1.1rem;
   }
 
   .section {
