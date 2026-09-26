@@ -1868,7 +1868,7 @@ a.episode-tag:hover {
 }
 
 .pot-form__submit {
-  align-self: flex-start;
+  align-self: center;
   font-family: inherit;
   font-weight: 700;
   font-size: 0.9rem;
