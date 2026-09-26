@@ -1653,6 +1653,22 @@ a.episode-tag:hover {
   text-decoration: underline;
 }
 
+.article__body blockquote {
+  margin: 1.6em 0;
+  padding: 4px 20px;
+  border-left: 3px solid var(--color-accent);
+  color: var(--color-ink-soft);
+  font-style: italic;
+}
+
+.article__body blockquote p {
+  margin-bottom: 0.6em;
+}
+
+.article__body blockquote p:last-child {
+  margin-bottom: 0;
+}
+
 /* Personality / members */
 .member-list {
   display: flex;
