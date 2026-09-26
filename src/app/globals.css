@@ -1820,12 +1820,14 @@ a.episode-tag:hover {
     position: absolute;
     top: 100%;
     left: 0;
-    right: 0;
+    width: fit-content;
+    max-width: 70vw;
     max-height: 70vh;
     overflow-y: auto;
     background: var(--color-bg);
     border-top: 1px solid var(--color-border);
-    box-shadow: 0 10px 20px rgba(33, 26, 21, 0.18);
+    border-right: 1px solid var(--color-border);
+    box-shadow: 4px 10px 20px rgba(33, 26, 21, 0.18);
     padding: 20px 24px 28px;
     opacity: 0;
     visibility: hidden;
