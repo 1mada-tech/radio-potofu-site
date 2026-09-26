@@ -86,7 +86,7 @@ export default function Header() {
                     {group.href && (
                       <li className="site-header__nav-index">
                         <Link href={group.href} onClick={() => setIsOpen(false)}>
-                          {group.label} 一覧
+                          {group.label} トップ
                         </Link>
                       </li>
                     )}

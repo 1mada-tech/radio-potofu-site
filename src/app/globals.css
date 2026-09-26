@@ -1876,7 +1876,8 @@ a.episode-tag:hover {
     z-index: 31;
     width: fit-content;
     max-width: 70vw;
-    max-height: 70vh;
+    max-height: calc(100vh - 110px);
+    max-height: calc(100dvh - 110px);
     overflow-y: auto;
     background: var(--color-bg);
     border-top: 1px solid var(--color-border);
@@ -1909,10 +1910,6 @@ a.episode-tag:hover {
 
   .site-header__nav-group {
     position: static;
-  }
-
-  .site-header__nav-index {
-    display: none;
   }
 
   .site-header__nav-children::before {
