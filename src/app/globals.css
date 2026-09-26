@@ -1881,15 +1881,6 @@ a.episode-tag:hover {
 }
 
 /* 川柳ポトフ鍋 */
-.senryu-pot-link {
-  margin: -12px 0 32px;
-  font-size: 0.9rem;
-}
-
-.senryu-pot-link a {
-  color: var(--color-accent);
-}
-
 .pot-form {
   display: flex;
   flex-direction: column;

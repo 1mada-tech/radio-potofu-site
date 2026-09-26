@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import EssayCard from "@/components/EssayCard";
 import { getEssaysByType, ESSAY_TYPE_SENRYU } from "@/lib/microcms";
 import { getSenryuCaption } from "@/lib/caption";
@@ -42,9 +41,6 @@ export default async function SenryuPage({
           <p className="page-subtitle">Senryu</p>
         </div>
       )}
-      <p className="senryu-pot-link">
-        <Link href="/pot">投稿した川柳からキャラが生まれる「川柳ポトフ鍋」はこちら →</Link>
-      </p>
       {contents.length > 0 ? (
         <>
           <Pagination
