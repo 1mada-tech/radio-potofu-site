@@ -1935,27 +1935,33 @@ a.episode-tag:hover {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
+  transform-origin: bottom center;
   width: 100px;
   height: 78px;
-  animation: pot-fire-flicker 9s steps(1) infinite;
+  animation: pot-fire-flicker 2.6s steps(1) infinite;
 }
 
 @keyframes pot-fire-flicker {
   0%,
-  60% {
-    transform: translateX(-50%) scale(1);
+  25% {
+    transform: translateX(-50%) scale(1) rotate(0deg);
     filter: brightness(1);
   }
-  70% {
-    transform: translateX(-50%) scale(1.05);
-    filter: brightness(1.08);
+  35% {
+    transform: translateX(calc(-50% - 4px)) scale(1.06) rotate(-5deg);
+    filter: brightness(1.1);
   }
-  85% {
-    transform: translateX(-50%) scale(0.96);
-    filter: brightness(0.95);
+  50%,
+  60% {
+    transform: translateX(-50%) scale(0.96) rotate(0deg);
+    filter: brightness(0.94);
+  }
+  75% {
+    transform: translateX(calc(-50% + 4px)) scale(1.05) rotate(5deg);
+    filter: brightness(1.06);
   }
   100% {
-    transform: translateX(-50%) scale(1);
+    transform: translateX(-50%) scale(1) rotate(0deg);
     filter: brightness(1);
   }
 }
@@ -1974,26 +1980,35 @@ a.episode-tag:hover {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.55);
   filter: blur(3px);
-  animation: pot-steam-pulse 12s steps(1) infinite;
+  animation: pot-steam-pulse 3.6s steps(1) infinite;
 }
 
 @keyframes pot-steam-pulse {
   0%,
-  55% {
+  20% {
     opacity: 0.55;
     filter: blur(3px);
+    margin-left: 0;
   }
-  65% {
+  35% {
     opacity: 0.75;
     filter: blur(4px);
+    margin-left: 4px;
   }
-  85% {
+  55% {
     opacity: 0.4;
     filter: blur(2px);
+    margin-left: -4px;
+  }
+  80% {
+    opacity: 0.65;
+    filter: blur(3.5px);
+    margin-left: 3px;
   }
   100% {
     opacity: 0.55;
     filter: blur(3px);
+    margin-left: 0;
   }
 }
 
@@ -2007,13 +2022,13 @@ a.episode-tag:hover {
   left: 230px;
   height: 55px;
   top: -35px;
-  animation-delay: 4s;
+  animation-delay: 1.2s;
 }
 
 .pot__steam--3 {
   left: 310px;
   transform: rotate(8deg);
-  animation-delay: 8s;
+  animation-delay: 2.4s;
 }
 
 .pot__handle {
@@ -2085,25 +2100,79 @@ a.episode-tag:hover {
   color: var(--color-ink-soft);
 }
 
+.pot__ripple {
+  position: absolute;
+  width: 50px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  animation: pot-ripple 4.5s ease-out infinite;
+}
+
+@keyframes pot-ripple {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.6;
+  }
+  65% {
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.pot__ripple--1 {
+  top: 55px;
+  left: 170px;
+  animation-delay: 0s;
+}
+
+.pot__ripple--2 {
+  top: 85px;
+  left: 290px;
+  animation-delay: 2.2s;
+}
+
 .pot__veg {
   position: absolute;
   border-radius: 50%;
-  animation: pot-veg-glint 14s steps(1) infinite;
+  animation: pot-veg-glint 4.2s steps(1) infinite;
 }
 
 @keyframes pot-veg-glint {
   0%,
-  75% {
+  25% {
     filter: brightness(1);
+    margin-left: 0;
+    margin-top: 0;
+  }
+  40% {
+    filter: brightness(1.1);
+    margin-left: 3px;
+    margin-top: -2px;
+  }
+  60%,
+  70% {
+    filter: brightness(0.92);
+    margin-left: -3px;
+    margin-top: 1px;
   }
   85% {
-    filter: brightness(1.12);
-  }
-  95% {
-    filter: brightness(0.92);
+    filter: brightness(1.05);
+    margin-left: 2px;
+    margin-top: -1px;
   }
   100% {
     filter: brightness(1);
+    margin-left: 0;
+    margin-top: 0;
   }
 }
 
@@ -2135,7 +2204,7 @@ a.episode-tag:hover {
   height: 20px;
   top: 105px;
   left: 70px;
-  animation-delay: 5s;
+  animation-delay: 1.4s;
 }
 
 .pot__veg--cabbage {
@@ -2146,7 +2215,7 @@ a.episode-tag:hover {
   transform: scaleY(0.68);
   top: 95px;
   left: 340px;
-  animation-delay: 9s;
+  animation-delay: 2.8s;
 }
 
 .creature {
@@ -2160,6 +2229,31 @@ a.episode-tag:hover {
   background: none;
   cursor: pointer;
   z-index: 1;
+}
+
+.creature__inner {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: bottom center;
+  animation: creature-wiggle 3.2s steps(1) infinite;
+}
+
+@keyframes creature-wiggle {
+  0%,
+  35% {
+    transform: translateX(0) rotate(0deg);
+  }
+  45% {
+    transform: translateX(2px) rotate(3deg);
+  }
+  65% {
+    transform: translateX(-2px) rotate(-3deg);
+  }
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
 }
 
 .creature__body {

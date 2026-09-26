@@ -69,6 +69,8 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
         <div className="pot__wall" aria-hidden="true" />
 
         <div className="pot__opening">
+          <span className="pot__ripple pot__ripple--1" aria-hidden="true" />
+          <span className="pot__ripple pot__ripple--2" aria-hidden="true" />
           <span className="pot__veg pot__veg--carrot pot__veg--carrot-1" aria-hidden="true" />
           <span className="pot__veg pot__veg--carrot pot__veg--carrot-2" aria-hidden="true" />
           <span className="pot__veg pot__veg--cabbage" aria-hidden="true" />

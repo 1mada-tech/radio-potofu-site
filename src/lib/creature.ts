@@ -72,6 +72,13 @@ export function derivePosition(poem: string, index: number) {
   return { top, left };
 }
 
+// キャラの揺れアニメーションの開始タイミングをずらすための遅延(秒)。
+// 全キャラが同時に揺れると不自然なので、文字列ごとにばらけさせる。
+export function deriveWiggleDelay(poem: string): number {
+  const rng = makeRng(hashString(`${poem}::wiggle`) || 1);
+  return rng() * 3;
+}
+
 const KATAKANA_RUN = /[ァ-ヶー]{2,}/g;
 
 const HONORIFICS = ["くん", "ちゃん", "にゃん", "先生", "さん", "氏"];

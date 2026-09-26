@@ -1,4 +1,4 @@
-import { deriveAppearance, deriveName } from "@/lib/creature";
+import { deriveAppearance, deriveName, deriveWiggleDelay } from "@/lib/creature";
 
 export default function Creature({
   poem,
@@ -17,6 +17,7 @@ export default function Creature({
 }) {
   const appearance = deriveAppearance(poem);
   const name = deriveName(poem);
+  const wiggleDelay = deriveWiggleDelay(poem);
 
   return (
     <button
@@ -33,47 +34,49 @@ export default function Creature({
       onBlur={onHoverEnd}
       aria-label={`${name}(${poem})`}
     >
-      <span
-        className="creature__body"
-        style={{ background: appearance.bodyColor, borderRadius: appearance.bodyRadius }}
-      />
-      {appearance.earType === "round" && (
-        <>
-          <span
-            className="creature__ear creature__ear--left"
-            style={{ background: appearance.bodyColor, borderRadius: "50%" }}
-          />
-          <span
-            className="creature__ear creature__ear--right"
-            style={{ background: appearance.bodyColor, borderRadius: "50%" }}
-          />
-        </>
-      )}
-      {appearance.earType === "pointy" && (
-        <>
-          <span
-            className="creature__ear creature__ear--left"
-            style={{ background: appearance.bodyColor, borderRadius: "50% 50% 50% 0" }}
-          />
-          <span
-            className="creature__ear creature__ear--right"
-            style={{ background: appearance.bodyColor, borderRadius: "50% 50% 0 50%" }}
-          />
-        </>
-      )}
-      {appearance.earType === "antenna" && (
+      <span className="creature__inner" style={{ animationDelay: `${wiggleDelay}s` }}>
         <span
-          className="creature__antenna"
-          style={{ background: appearance.bodyColor }}
+          className="creature__body"
+          style={{ background: appearance.bodyColor, borderRadius: appearance.bodyRadius }}
         />
-      )}
-      <span className="creature__eyes">
-        <span className={`creature__eye${appearance.eyeType === "sleepy" ? " creature__eye--sleepy" : ""}`} />
-        <span className={`creature__eye${appearance.eyeType === "sleepy" ? " creature__eye--sleepy" : ""}`} />
+        {appearance.earType === "round" && (
+          <>
+            <span
+              className="creature__ear creature__ear--left"
+              style={{ background: appearance.bodyColor, borderRadius: "50%" }}
+            />
+            <span
+              className="creature__ear creature__ear--right"
+              style={{ background: appearance.bodyColor, borderRadius: "50%" }}
+            />
+          </>
+        )}
+        {appearance.earType === "pointy" && (
+          <>
+            <span
+              className="creature__ear creature__ear--left"
+              style={{ background: appearance.bodyColor, borderRadius: "50% 50% 50% 0" }}
+            />
+            <span
+              className="creature__ear creature__ear--right"
+              style={{ background: appearance.bodyColor, borderRadius: "50% 50% 0 50%" }}
+            />
+          </>
+        )}
+        {appearance.earType === "antenna" && (
+          <span
+            className="creature__antenna"
+            style={{ background: appearance.bodyColor }}
+          />
+        )}
+        <span className="creature__eyes">
+          <span className={`creature__eye${appearance.eyeType === "sleepy" ? " creature__eye--sleepy" : ""}`} />
+          <span className={`creature__eye${appearance.eyeType === "sleepy" ? " creature__eye--sleepy" : ""}`} />
+        </span>
+        {appearance.mouthType === "smile" && <span className="creature__mouth creature__mouth--smile" />}
+        {appearance.mouthType === "o" && <span className="creature__mouth creature__mouth--o" />}
+        {appearance.mouthType === "line" && <span className="creature__mouth creature__mouth--line" />}
       </span>
-      {appearance.mouthType === "smile" && <span className="creature__mouth creature__mouth--smile" />}
-      {appearance.mouthType === "o" && <span className="creature__mouth creature__mouth--o" />}
-      {appearance.mouthType === "line" && <span className="creature__mouth creature__mouth--line" />}
       <span className="creature__name-tag">{name}</span>
     </button>
   );
