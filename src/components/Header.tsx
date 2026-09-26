@@ -32,6 +32,11 @@ export default function Header() {
 
   return (
     <header className="site-header">
+      <div
+        className={`site-header__backdrop${isOpen ? " site-header__backdrop--open" : ""}`}
+        onClick={() => setIsOpen(false)}
+        aria-hidden="true"
+      />
       <div className="container site-header__inner">
         <div className="site-header__brand">
           <Link href="/" className="site-header__logo" onClick={() => setIsOpen(false)}>

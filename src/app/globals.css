@@ -179,6 +179,10 @@ ul {
   cursor: pointer;
 }
 
+.site-header__backdrop {
+  display: none;
+}
+
 .site-header__toggle-bars {
   display: flex;
   flex-direction: column;
@@ -1778,32 +1782,54 @@ a.episode-tag:hover {
 }
 
 @media (max-width: 600px) {
+  .site-header {
+    position: relative;
+    z-index: 40;
+  }
+
   .site-header__inner {
+    position: relative;
     align-items: center;
   }
 
-  .site-header__brand,
-  .site-header__toggle {
-    position: relative;
-    z-index: 2;
-  }
-
   .site-header__toggle {
     display: flex;
+  }
+
+  .site-header__backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgba(33, 26, 21, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.2s ease,
+      visibility 0.2s;
+    pointer-events: none;
+  }
+
+  .site-header__backdrop--open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
   }
 
   .site-header__nav {
-    position: fixed;
-    inset: 0;
-    z-index: 1;
-    display: flex;
-    align-items: flex-start;
-    background: var(--color-bg);
-    padding: 88px 24px 24px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 70vh;
     overflow-y: auto;
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 10px 20px rgba(33, 26, 21, 0.18);
+    padding: 20px 24px 28px;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-8px);
+    transform: translateY(-6px);
     transition:
       opacity 0.2s ease,
       transform 0.2s ease,
