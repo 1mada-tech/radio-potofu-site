@@ -1937,6 +1937,27 @@ a.episode-tag:hover {
   transform: translateX(-50%);
   width: 100px;
   height: 78px;
+  animation: pot-fire-flicker 9s steps(1) infinite;
+}
+
+@keyframes pot-fire-flicker {
+  0%,
+  60% {
+    transform: translateX(-50%) scale(1);
+    filter: brightness(1);
+  }
+  70% {
+    transform: translateX(-50%) scale(1.05);
+    filter: brightness(1.08);
+  }
+  85% {
+    transform: translateX(-50%) scale(0.96);
+    filter: brightness(0.95);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    filter: brightness(1);
+  }
 }
 
 .pot__flame-svg {
@@ -1953,22 +1974,46 @@ a.episode-tag:hover {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.55);
   filter: blur(3px);
+  animation: pot-steam-pulse 12s steps(1) infinite;
+}
+
+@keyframes pot-steam-pulse {
+  0%,
+  55% {
+    opacity: 0.55;
+    filter: blur(3px);
+  }
+  65% {
+    opacity: 0.75;
+    filter: blur(4px);
+  }
+  85% {
+    opacity: 0.4;
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0.55;
+    filter: blur(3px);
+  }
 }
 
 .pot__steam--1 {
   left: 150px;
   transform: rotate(-8deg);
+  animation-delay: 0s;
 }
 
 .pot__steam--2 {
   left: 230px;
   height: 55px;
   top: -35px;
+  animation-delay: 4s;
 }
 
 .pot__steam--3 {
   left: 310px;
   transform: rotate(8deg);
+  animation-delay: 8s;
 }
 
 .pot__handle {
@@ -2043,6 +2088,23 @@ a.episode-tag:hover {
 .pot__veg {
   position: absolute;
   border-radius: 50%;
+  animation: pot-veg-glint 14s steps(1) infinite;
+}
+
+@keyframes pot-veg-glint {
+  0%,
+  75% {
+    filter: brightness(1);
+  }
+  85% {
+    filter: brightness(1.12);
+  }
+  95% {
+    filter: brightness(0.92);
+  }
+  100% {
+    filter: brightness(1);
+  }
 }
 
 .pot__veg--carrot {
@@ -2065,6 +2127,7 @@ a.episode-tag:hover {
 .pot__veg--carrot-1 {
   top: 30px;
   left: 40px;
+  animation-delay: 0s;
 }
 
 .pot__veg--carrot-2 {
@@ -2072,6 +2135,7 @@ a.episode-tag:hover {
   height: 20px;
   top: 105px;
   left: 70px;
+  animation-delay: 5s;
 }
 
 .pot__veg--cabbage {
@@ -2082,6 +2146,7 @@ a.episode-tag:hover {
   transform: scaleY(0.68);
   top: 95px;
   left: 340px;
+  animation-delay: 9s;
 }
 
 .creature {
