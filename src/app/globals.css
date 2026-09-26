@@ -1818,6 +1818,7 @@ a.episode-tag:hover {
     position: absolute;
     top: 100%;
     right: 0;
+    z-index: 31;
     width: fit-content;
     max-width: 70vw;
     max-height: 70vh;
