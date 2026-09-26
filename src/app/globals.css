@@ -2154,28 +2154,38 @@ a.episode-tag:hover {
 
 .pot__ripple {
   position: absolute;
-  width: 50px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.55);
   border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 0.25) 55%,
+    rgba(255, 255, 255, 0.05) 75%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.35);
   opacity: 0;
   pointer-events: none;
-  animation: pot-ripple 4.5s ease-out infinite;
+  animation: pot-bubble 2.4s ease-in-out infinite;
 }
 
-@keyframes pot-ripple {
+@keyframes pot-bubble {
   0% {
-    transform: scale(0.4);
+    transform: scale(0.2);
     opacity: 0;
   }
-  12% {
-    opacity: 0.6;
+  15% {
+    transform: scale(1);
+    opacity: 0.85;
   }
-  65% {
+  70% {
+    transform: scale(1.05);
+    opacity: 0.75;
+  }
+  85% {
+    transform: scale(1.5);
     opacity: 0;
   }
   100% {
-    transform: scale(2.2);
+    transform: scale(0.2);
     opacity: 0;
   }
 }
@@ -2183,13 +2193,33 @@ a.episode-tag:hover {
 .pot__ripple--1 {
   top: 55px;
   left: 170px;
+  width: 14px;
+  height: 9px;
   animation-delay: 0s;
 }
 
 .pot__ripple--2 {
-  top: 85px;
-  left: 290px;
-  animation-delay: 2.2s;
+  top: 90px;
+  left: 300px;
+  width: 10px;
+  height: 6px;
+  animation-delay: 0.9s;
+}
+
+.pot__ripple--3 {
+  top: 40px;
+  left: 250px;
+  width: 8px;
+  height: 5px;
+  animation-delay: 1.6s;
+}
+
+.pot__ripple--4 {
+  top: 105px;
+  left: 200px;
+  width: 12px;
+  height: 8px;
+  animation-delay: 0.4s;
 }
 
 .pot__veg {
