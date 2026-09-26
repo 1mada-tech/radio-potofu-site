@@ -85,18 +85,20 @@ export default function SenryuHeading({
         </h1>
         <p className="page-subtitle">Senryu</p>
       </div>
-      <p className="page-caption">
-        {before}
-        <span
-          className={`senryu-caption__word-box${scrambling ? " senryu-caption__word-box--scrambling" : ""}`}
-        >
-          <span className="senryu-caption__word-sizer" aria-hidden="true">
-            {longestWord}
+      <div className="page-caption">
+        <p className="senryu-caption__body">
+          {before}
+          <span
+            className={`senryu-caption__word-box${scrambling ? " senryu-caption__word-box--scrambling" : ""}`}
+          >
+            <span className="senryu-caption__word-sizer" aria-hidden="true">
+              {longestWord}
+            </span>
+            <span className="senryu-caption__word">{displayWord}</span>
           </span>
-          <span className="senryu-caption__word">{displayWord}</span>
-        </span>
-        {after}
-      </p>
+        </p>
+        <p className="senryu-caption__closing">{after.replace(/^[\s　]+/, "")}</p>
+      </div>
     </>
   );
 }

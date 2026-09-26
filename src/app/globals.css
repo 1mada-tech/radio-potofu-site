@@ -1398,6 +1398,25 @@ a.episode-tag:hover {
   margin-right: auto;
 }
 
+.senryu-caption__body {
+  margin: 0;
+}
+
+.senryu-caption__closing {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6em;
+  margin: 0.3em 0 0;
+}
+
+.senryu-caption__closing::before {
+  content: "";
+  flex: 1;
+  align-self: center;
+  height: 1px;
+  background: var(--color-ink-soft);
+}
+
 .page-caption .episode-tag {
   display: inline;
   position: static;
