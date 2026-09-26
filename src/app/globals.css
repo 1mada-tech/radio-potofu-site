@@ -540,6 +540,16 @@ ul {
   white-space: nowrap;
 }
 
+/* ラベルとの隙間(margin-top)を通る間もホバーが切れないようにする橋渡し */
+.site-header__nav-children::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -8px;
+  height: 8px;
+}
+
 .site-header__nav-group:hover .site-header__nav-children,
 .site-header__nav-group:focus-within .site-header__nav-children {
   display: flex;
@@ -1902,6 +1912,10 @@ a.episode-tag:hover {
   }
 
   .site-header__nav-index {
+    display: none;
+  }
+
+  .site-header__nav-children::before {
     display: none;
   }
 
