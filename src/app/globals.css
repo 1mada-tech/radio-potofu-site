@@ -1403,18 +1403,8 @@ a.episode-tag:hover {
 }
 
 .senryu-caption__closing {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6em;
+  text-align: right;
   margin: 0.3em 0 0;
-}
-
-.senryu-caption__closing::before {
-  content: "";
-  flex: 1;
-  align-self: center;
-  height: 1px;
-  background: var(--color-ink-soft);
 }
 
 .page-caption .episode-tag {
