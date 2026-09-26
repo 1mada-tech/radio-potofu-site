@@ -1422,7 +1422,8 @@ a.episode-tag:hover {
   position: relative;
   display: grid;
   width: fit-content;
-  margin: 10px auto 10px 4em;
+  margin: 10px auto;
+  transform: translateX(-1.2em);
   background: #d4ff3f;
   padding: 0 8px 3px;
   border-bottom: 1px solid var(--color-ink);
@@ -1437,11 +1438,11 @@ a.episode-tag:hover {
   0%,
   100% {
     box-shadow: 0 0 0 0 rgba(240, 121, 27, 0.55);
-    transform: scale(1);
+    transform: translateX(-1.2em) scale(1);
   }
   50% {
     box-shadow: 0 0 18px 7px rgba(240, 121, 27, 0.55);
-    transform: scale(1.06);
+    transform: translateX(-1.2em) scale(1.06);
   }
 }
 
