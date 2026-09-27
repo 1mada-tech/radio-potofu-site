@@ -35,12 +35,31 @@ const vt323 = VT323({
   display: "swap",
 });
 
+const siteUrl = "https://www.radio-potofu.com";
+const siteTitle = "ラジオポトフ";
+const siteDescription = "ポッドキャスト「ラジオポトフ」公式サイト";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: "ラジオポトフ",
+    default: siteTitle,
     template: "%s | ラジオポトフ",
   },
-  description: "ポッドキャスト「ラジオポトフ」公式サイト",
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: siteTitle,
+    title: siteTitle,
+    description: siteDescription,
+    images: [{ url: "/images/hero.jpg" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+    images: ["/images/hero.jpg"],
+  },
 };
 
 export default async function RootLayout({
