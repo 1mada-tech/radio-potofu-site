@@ -684,6 +684,10 @@ p.hero__poem-title {
     aspect-ratio: 3 / 4;
   }
 
+  .hero__image img {
+    object-position: 38% 30%;
+  }
+
   .hero__poem {
     left: 8%;
     right: 8%;
