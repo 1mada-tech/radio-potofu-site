@@ -686,6 +686,8 @@ p.hero__poem-title {
 
   .hero__image img {
     object-position: 50% 30%;
+    transform: scale(1.15);
+    transform-origin: 50% 45%;
   }
 
   .hero__poem {
