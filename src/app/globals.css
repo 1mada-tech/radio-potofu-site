@@ -681,11 +681,11 @@ p.hero__poem-title {
 
 @media (max-width: 700px) {
   .hero__image {
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 1 / 1;
   }
 
   .hero__image img {
-    object-position: 45% 30%;
+    object-position: 50% 30%;
   }
 
   .hero__poem {
