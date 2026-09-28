@@ -31,12 +31,6 @@ export const ESSAY_TYPE_NOTE = "ノート";
 export type SiteSettings = {
   introText: string;
   heroImage?: MicroCMSImage;
-  member1Name?: string;
-  member1Bio?: string;
-  member1Photo?: MicroCMSImage;
-  member2Name?: string;
-  member2Bio?: string;
-  member2Photo?: MicroCMSImage;
   footerText: string;
 };
 

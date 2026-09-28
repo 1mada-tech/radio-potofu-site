@@ -1721,20 +1721,6 @@ a.episode-tag:hover {
   padding-top: 0;
 }
 
-.member-row__photo {
-  width: 100px;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  background: var(--color-bg-alt);
-  flex-shrink: 0;
-}
-
-.member-row__photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .member-row__body {
   display: flex;
   flex-direction: column;

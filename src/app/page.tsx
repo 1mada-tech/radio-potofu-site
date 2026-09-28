@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import Hero from "@/components/Hero";
 import EpisodeCard from "@/components/EpisodeCard";
 import EssayCard from "@/components/EssayCard";
@@ -8,18 +7,11 @@ import {
   getEssaysByType,
   ESSAY_TYPE_SENRYU,
   ESSAY_TYPE_NOTE,
-  type MicroCMSImage,
 } from "@/lib/microcms";
 import { getEpisodes } from "@/lib/podcast";
 import { getMembers, type Member } from "@/lib/members";
 
 export const revalidate = 60;
-
-type MemberInfo = {
-  name?: string;
-  bio?: string;
-  photo?: MicroCMSImage;
-};
 
 const LISTENER_FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSeOhplhZTIclDQfUUbQTYbWwDkKVQOOTCOZPXOSwTTCXSo6rw/viewform";
@@ -37,29 +29,6 @@ function SectionHeading({
     <div className="section-title">
       <span className={`pop-tag pop-tag--${color}`}>{tag}</span>
       <h2>{title}</h2>
-    </div>
-  );
-}
-
-function MemberRow({ member }: { member: MemberInfo }) {
-  if (!member.name) return null;
-
-  return (
-    <div className="member-row">
-      {member.photo && (
-        <div className="member-row__photo">
-          <Image
-            src={member.photo.url}
-            alt={member.name}
-            width={member.photo.width}
-            height={member.photo.height}
-          />
-        </div>
-      )}
-      <div className="member-row__body">
-        <h3>{member.name}</h3>
-        <p>{member.bio}</p>
-      </div>
     </div>
   );
 }
@@ -140,19 +109,6 @@ export default async function HomePage() {
     getMembers(),
   ]);
 
-  const members: MemberInfo[] = [
-    {
-      name: siteSettings.member1Name,
-      bio: siteSettings.member1Bio,
-      photo: siteSettings.member1Photo,
-    },
-    {
-      name: siteSettings.member2Name,
-      bio: siteSettings.member2Bio,
-      photo: siteSettings.member2Photo,
-    },
-  ].filter((m) => m.name);
-
   return (
     <>
       <div className="container hero-cta">
@@ -168,17 +124,6 @@ export default async function HomePage() {
       </div>
 
       <Hero image={siteSettings.heroImage} introText={siteSettings.introText} />
-
-      {members.length > 0 && (
-        <section className="section container">
-          <h2>パーソナリティ</h2>
-          <div className="member-list">
-            {members.map((member) => (
-              <MemberRow member={member} key={member.name} />
-            ))}
-          </div>
-        </section>
-      )}
 
       <section className="section container">
         <div className="section__header">
