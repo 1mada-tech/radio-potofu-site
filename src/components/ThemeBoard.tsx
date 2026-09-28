@@ -77,6 +77,7 @@ function NewPostForm({ parentId, onDone }: { parentId?: number; onDone: () => vo
       <button type="submit" className="theme-form__submit" disabled={submitting}>
         {submitting ? "送信中…" : parentId ? "返信する" : "投稿する"}
       </button>
+      {!parentId && <p className="form-notice">入力内容は表示のために保存されます。</p>}
     </form>
   );
 }

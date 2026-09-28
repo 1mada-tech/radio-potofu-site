@@ -72,6 +72,7 @@ export default function PotForm({
       <button type="submit" className="pot-form__submit" disabled={submitting}>
         {submitting ? "生成中…" : submitLabel}
       </button>
+      <p className="form-notice">入力内容は表示のために保存されます。</p>
     </form>
   );
 }
