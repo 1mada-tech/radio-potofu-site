@@ -279,7 +279,7 @@ export default function PickDraw({
         <span className="pick__sound-toggle-track">
           <span className="pick__sound-toggle-thumb" />
         </span>
-        音
+        効果音{soundEnabled ? "オン" : "オフ"}
       </button>
 
       <div className="pick__sliders">
