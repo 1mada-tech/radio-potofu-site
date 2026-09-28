@@ -22,7 +22,7 @@ const navGroups = [
   },
   {
     href: null,
-    label: "おたのしみ",
+    label: "モアポトフ",
     children: [
       { href: "/note", label: "ひみつノート" },
       { href: "/history", label: "年表" },
