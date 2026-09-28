@@ -30,7 +30,7 @@ export default async function PotPage() {
         poemPlaceholder={content.formPoemPlaceholder}
         submitLabel={content.formSubmitLabel}
       />
-      <PotScene creatures={creatures} />
+      <PotScene creatures={creatures} tooltipLifespanTemplate={content.tooltipLifespanTemplate} />
       <PotLog
         creatures={allCreatures}
         heading={content.logHeading}

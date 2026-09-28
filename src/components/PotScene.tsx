@@ -22,7 +22,13 @@ function creatureScale(createdAt: string): number {
   return Math.max(0.5, 1 - 0.5 * (wholeDays / POT_LIFESPAN_DAYS));
 }
 
-export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
+export default function PotScene({
+  creatures,
+  tooltipLifespanTemplate,
+}: {
+  creatures: PotCreature[];
+  tooltipLifespanTemplate: string;
+}) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   const positioned = creatures.map((creature, i) => ({
@@ -109,7 +115,7 @@ export default function PotScene({ creatures }: { creatures: PotCreature[] }) {
               {hovered.creature.authorName || "名無し"} ・ {formatDate(hovered.creature.createdAt)}
             </p>
             <p className="pot__tooltip-lifespan">
-              あと{daysLeft(hovered.creature.createdAt)}日で鍋のダシになります
+              {tooltipLifespanTemplate.replace("x日", `${daysLeft(hovered.creature.createdAt)}日`)}
             </p>
           </div>
         )}

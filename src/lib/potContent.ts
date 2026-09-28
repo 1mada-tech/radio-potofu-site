@@ -12,6 +12,7 @@ export type PotContent = {
   formSubmitLabel: string;
   logHeading: string;
   logCaptionTemplate: string;
+  tooltipLifespanTemplate: string;
 };
 
 const DEFAULT_CONTENT: PotContent = {
@@ -22,6 +23,7 @@ const DEFAULT_CONTENT: PotContent = {
   formSubmitLabel: "キャラを鍋に入れる",
   logHeading: "鍋の記録",
   logCaptionTemplate: "鍋が稼働してから0日。これまでの出入り・節目・スープの煮詰まり具合の記録です。",
+  tooltipLifespanTemplate: "あとx日で完全に溶けてダシになります",
 };
 
 export async function getPotContent(): Promise<PotContent> {
@@ -35,6 +37,7 @@ export async function getPotContent(): Promise<PotContent> {
     const capIdx = header.findIndex((cell) => cell.trim() === "キャプション");
     const formIdx = header.findIndex((cell) => cell.trim() === "川柳入力エリア");
     const logIdx = header.findIndex((cell) => cell.trim() === "記録エリア");
+    const tooltipIdx = header.findIndex((cell) => cell.trim() === "キャラマウスオーバー");
 
     const column = (idx: number) =>
       idx === -1
@@ -44,6 +47,7 @@ export async function getPotContent(): Promise<PotContent> {
     const capCells = column(capIdx);
     const formCells = column(formIdx);
     const logCells = column(logIdx);
+    const tooltipCells = column(tooltipIdx);
 
     return {
       caption: capCells[0] ?? DEFAULT_CONTENT.caption,
@@ -52,6 +56,9 @@ export async function getPotContent(): Promise<PotContent> {
       formSubmitLabel: formCells[2] ?? DEFAULT_CONTENT.formSubmitLabel,
       logHeading: logCells[0] ?? DEFAULT_CONTENT.logHeading,
       logCaptionTemplate: logCells[1] ?? DEFAULT_CONTENT.logCaptionTemplate,
+      // 先頭3行(キャラ名/川柳本文/名前・日付)はどの内容が入るかのラベルなので使わず、
+      // 実際に編集可能な文言である最後の行(残り日数のテンプレート)だけを使う。
+      tooltipLifespanTemplate: tooltipCells[tooltipCells.length - 1] ?? DEFAULT_CONTENT.tooltipLifespanTemplate,
     };
   } catch {
     return DEFAULT_CONTENT;
