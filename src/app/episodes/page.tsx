@@ -5,7 +5,10 @@ import { getSimpleCaption } from "@/lib/pageCaption";
 import Pagination from "@/components/Pagination";
 import EpisodeTableRow from "@/components/EpisodeTableRow";
 
-export const metadata: Metadata = { title: "これまでの配信" };
+export const metadata: Metadata = {
+  title: "これまでの配信",
+  description: "ポッドキャスト「ラジオポトフ」のこれまでの配信一覧です。",
+};
 export const revalidate = 60;
 
 const PER_PAGE = 30;

@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { getNetprintIssues, NETPRINT_CSV_URL } from "@/lib/netprint";
 import { getSimpleCaption } from "@/lib/pageCaption";
 
-export const metadata: Metadata = { title: "ネットプリント" };
+export const metadata: Metadata = {
+  title: "ネットプリント",
+  description: "ラジオポトフのネットプリント配布情報です。",
+};
 export const revalidate = 60;
 
 const DEFAULT_CAPTION =

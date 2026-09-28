@@ -6,7 +6,10 @@ import { getSimpleCaption } from "@/lib/pageCaption";
 import { formatDate } from "@/lib/date";
 import Pagination from "@/components/Pagination";
 
-export const metadata: Metadata = { title: "ひみつノート" };
+export const metadata: Metadata = {
+  title: "ひみつノート",
+  description: "ラジオポトフのひみつノート。配信の裏話やコラムなど。",
+};
 
 const PER_PAGE = 12;
 

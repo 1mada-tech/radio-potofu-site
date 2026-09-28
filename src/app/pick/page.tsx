@@ -3,7 +3,10 @@ import { getEpisodes } from "@/lib/podcast";
 import { getPickConfig } from "@/lib/pickConfig";
 import PickDraw from "@/components/PickDraw";
 
-export const metadata: Metadata = { title: "きょうのあなたへ" };
+export const metadata: Metadata = {
+  title: "きょうのあなたへ",
+  description: "今日のあなたにおすすめの配信を1本、ランダムにお届けします。",
+};
 export const revalidate = 60;
 
 export default async function PickPage() {

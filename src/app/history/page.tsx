@@ -2,7 +2,10 @@ import { Fragment } from "react";
 import type { Metadata } from "next";
 import { getHistoryEntries, getHistoryCaption, type HistoryEntry } from "@/lib/history";
 
-export const metadata: Metadata = { title: "年表" };
+export const metadata: Metadata = {
+  title: "年表",
+  description: "ラジオポトフのこれまでの歩みをまとめた年表です。",
+};
 export const revalidate = 60;
 
 function groupByYear(entries: HistoryEntry[]) {

@@ -1,6 +1,22 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getEssay } from "@/lib/microcms";
 import { formatDateJa } from "@/lib/date";
+import { excerptFromHtml } from "@/lib/excerpt";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const essay = await getEssay(id);
+  if (!essay) return {};
+  return {
+    title: essay.title,
+    description: excerptFromHtml(essay.body),
+  };
+}
 
 export default async function SenryuDetailPage({
   params,

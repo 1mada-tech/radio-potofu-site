@@ -5,7 +5,10 @@ import PotScene from "@/components/PotScene";
 import PotForm from "@/components/PotForm";
 import PotLog from "@/components/PotLog";
 
-export const metadata: Metadata = { title: "川柳ポトフ鍋" };
+export const metadata: Metadata = {
+  title: "川柳ポトフ鍋",
+  description: "投稿された現代川柳からキャラが生まれる「川柳ポトフ鍋」。",
+};
 export const revalidate = 0;
 
 export default async function PotPage() {

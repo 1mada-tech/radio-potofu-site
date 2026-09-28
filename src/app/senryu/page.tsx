@@ -5,7 +5,10 @@ import { getSenryuCaption } from "@/lib/caption";
 import Pagination from "@/components/Pagination";
 import SenryuHeading from "@/components/SenryuHeading";
 
-export const metadata: Metadata = { title: "現代川柳" };
+export const metadata: Metadata = {
+  title: "現代川柳",
+  description: "ラジオポトフが送る現代川柳のコーナーです。",
+};
 
 const PER_PAGE = 12;
 
