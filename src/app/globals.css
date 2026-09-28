@@ -1528,6 +1528,9 @@ a.episode-tag:hover {
 
 .page--article h1 {
   font-size: clamp(1.6rem, 4vw, 2.2rem);
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--color-ink);
 }
 
 .note-featured {
@@ -1583,7 +1586,7 @@ a.episode-tag:hover {
   top: 32px;
   max-height: calc(100vh - 64px);
   overflow-y: auto;
-  border-left: 1px solid var(--color-border);
+  border-left: 2px solid var(--color-ink);
   padding-left: 20px;
 }
 
@@ -1642,7 +1645,7 @@ a.episode-tag:hover {
     position: static;
     max-height: none;
     border-left: none;
-    border-top: 1px solid var(--color-border);
+    border-top: 2px solid var(--color-ink);
     padding-left: 0;
     padding-top: 20px;
   }
