@@ -272,19 +272,13 @@ ul {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  overflow: hidden;
   font-family: var(--font-digital), "Courier New", monospace;
   font-variant-numeric: tabular-nums;
   font-size: 3rem;
   letter-spacing: 0.08em;
-  background: #3a2e22;
-  color: var(--color-accent-soft);
-  padding: 20px 36px;
+  color: var(--color-ink);
+  padding: 8px 0;
   margin-bottom: 16px;
-  border-radius: 6px;
-  box-shadow:
-    inset 0 0 0 1px rgba(0, 0, 0, 0.5),
-    inset 0 3px 8px rgba(0, 0, 0, 0.6);
 }
 
 .pick__clock-line {
@@ -350,15 +344,16 @@ ul {
   position: relative;
   display: inline-grid;
   overflow: hidden;
-  background: var(--color-ink);
+  background: var(--color-accent);
   color: #fff;
-  border: 1px solid var(--color-ink);
-  padding: 14px 44px;
-  font-size: 0.95rem;
+  border: 1px solid var(--color-accent);
+  border-radius: 8px;
+  padding: 18px 52px;
+  font-size: 1.05rem;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
-  box-shadow: 0 4px 0 var(--color-ink-soft);
+  box-shadow: 0 6px 0 #b85f12;
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
@@ -385,12 +380,12 @@ ul {
 }
 
 .pick__button:hover {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
+  background: #d9660f;
+  border-color: #d9660f;
 }
 
 .pick__button:active {
-  transform: translateY(4px);
+  transform: translateY(6px);
   box-shadow: none;
 }
 
@@ -400,8 +395,8 @@ ul {
 }
 
 .pick__button:disabled:hover {
-  background: var(--color-ink);
-  border-color: var(--color-ink);
+  background: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .pick__button--diagnosing,
