@@ -7,7 +7,7 @@ import PotLog from "@/components/PotLog";
 
 export const metadata: Metadata = {
   title: "川柳ポトフ鍋",
-  description: "投稿された現代川柳からキャラが生まれる「川柳ポトフ鍋」。",
+  description: "投稿された現代川柳がキャラになり、鍋で煮込まれます。",
 };
 export const revalidate = 0;
 

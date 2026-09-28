@@ -4,7 +4,7 @@ import { getSimpleCaption } from "@/lib/pageCaption";
 
 export const metadata: Metadata = {
   title: "ネットプリント",
-  description: "ラジオポトフのネットプリント配布情報です。",
+  description: "ラジオポトフのネットプリント発行情報です。",
 };
 export const revalidate = 60;
 

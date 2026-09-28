@@ -8,7 +8,7 @@ import Pagination from "@/components/Pagination";
 
 export const metadata: Metadata = {
   title: "ひみつノート",
-  description: "ラジオポトフのひみつノート。配信の裏話やコラムなど。",
+  description: "ラジオポトフのひみつです。",
 };
 
 const PER_PAGE = 12;

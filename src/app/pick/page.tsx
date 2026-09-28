@@ -5,7 +5,7 @@ import PickDraw from "@/components/PickDraw";
 
 export const metadata: Metadata = {
   title: "きょうのあなたへ",
-  description: "今日のあなたにおすすめの配信を1本、ランダムにお届けします。",
+  description: "きょうのあなたへおすすめしたい回を紹介します。",
 };
 export const revalidate = 60;
 
