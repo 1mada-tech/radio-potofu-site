@@ -3,7 +3,7 @@ import { parse } from "csv-parse/sync";
 
 // SpotifyのApple Podcasts掲載情報(id1608810819)から取得した実際のRSSフィードURL。
 // これまでの配信は、microCMSではなくこのフィードから毎回自動で取得する。
-const FEED_URL = "https://anchor.fm/s/82465974/podcast/rss";
+export const FEED_URL = "https://anchor.fm/s/82465974/podcast/rss";
 
 // Spotifyはエピソード個別の直リンクを自動取得できないため(Web APIがPremium必須)、
 // 番組ページへの固定リンクをフォールバックとして使う。

@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import type { Metadata } from "next";
-import { getEpisodes, EPISODE_EXTRAS_CSV_URL } from "@/lib/podcast";
+import { getEpisodes, EPISODE_EXTRAS_CSV_URL, FEED_URL, type Episode } from "@/lib/podcast";
 import { getSimpleCaption } from "@/lib/pageCaption";
 import Pagination from "@/components/Pagination";
 import EpisodeTableRow from "@/components/EpisodeTableRow";
@@ -45,6 +45,26 @@ function renderCaption(text: string) {
   });
 }
 
+function podcastJsonLd(episodes: Episode[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "PodcastSeries",
+    name: "ラジオポトフ",
+    description: "ポッドキャスト「ラジオポトフ」公式サイト",
+    url: "https://www.radio-potofu.com/episodes",
+    webFeed: FEED_URL,
+    image: "https://www.radio-potofu.com/images/og-hero.jpg",
+    ...(episodes.length > 0 && {
+      hasPart: episodes.map((episode) => ({
+        "@type": "PodcastEpisode",
+        name: episode.title,
+        datePublished: episode.publishDate,
+        url: episode.spotifyUrl ?? episode.appleUrl,
+      })),
+    }),
+  };
+}
+
 export default async function EpisodesPage({
   searchParams,
 }: {
@@ -82,6 +102,10 @@ export default async function EpisodesPage({
 
   return (
     <div className="container page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(podcastJsonLd(contents)) }}
+      />
       <div className="page-heading">
         <h1>これまでの配信</h1>
         <p className="page-subtitle">Archive Ptf</p>

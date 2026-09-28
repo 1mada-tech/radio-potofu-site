@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_JP, Zen_Kaku_Gothic_New, Shippori_Mincho, VT323 } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { draftMode } from "next/headers";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -85,6 +86,7 @@ export default async function RootLayout({
         <main>{children}</main>
         <Footer footerText={siteSettings.footerText} />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
