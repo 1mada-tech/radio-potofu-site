@@ -665,7 +665,7 @@ p.hero__poem-kicker {
 }
 
 .hero__poem-title {
-  font-size: 2.6rem;
+  font-size: clamp(1.8rem, 2.5vw, 2.6rem);
   line-height: 2.4;
 }
 
@@ -674,7 +674,7 @@ p.hero__poem-title {
 }
 
 .hero__poem-body {
-  font-size: 1.5rem;
+  font-size: clamp(1.05rem, 1.5vw, 1.5rem);
   line-height: 2.6;
   white-space: pre-line;
 }
