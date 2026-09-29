@@ -676,6 +676,7 @@ p.hero__poem-title {
 .hero__poem-body {
   font-size: 1.5rem;
   line-height: 2.6;
+  white-space: pre-line;
 }
 
 @media (max-width: 700px) {
