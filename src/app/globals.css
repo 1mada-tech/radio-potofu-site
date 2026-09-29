@@ -1676,14 +1676,34 @@ a.episode-tag:hover {
   margin-bottom: 1.4em;
 }
 
-.article__body h2,
-.article__body h3,
-.article__body h4 {
+.article__body h2 {
   display: table;
   margin-top: 1.6em;
-  padding: 4px 12px;
+  padding: 6px 14px;
   background: #fff;
   color: var(--color-ink);
+  font-size: 1.25em;
+  font-weight: 700;
+}
+
+.article__body h3 {
+  display: table;
+  margin-top: 1.4em;
+  padding: 3px 10px;
+  background: var(--color-bg-alt);
+  color: var(--color-ink);
+  font-size: 1.05em;
+  font-weight: 700;
+}
+
+.article__body h4 {
+  display: inline-block;
+  margin-top: 1.2em;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--color-ink);
+  color: var(--color-ink);
+  font-size: 1em;
+  font-weight: 700;
 }
 
 .article__body a {
