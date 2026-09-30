@@ -1713,7 +1713,13 @@ a.episode-tag:hover {
 }
 
 /* 引用ではなく、レイアウト用の強調ボックス。エディタのカスタムclass「box」を
-   選んだ範囲に当たる。引用とは違う色の帯にしている。 */
+   選んだ範囲に当たる。実際の出力は <h2><span class="box">...</span></h2> のように
+   見出し・段落のテキスト全体を囲むinline要素として付与されるため、box自身をblock化
+   しつつ、親要素(見出し/段落)側の余白はゼロにしてbox側で余白を持たせている。 */
+.article__body :is(h1, h2, h3, h4, h5, p):has(> .box:only-child) {
+  margin: 0;
+}
+
 .article__body .box {
   display: block;
   margin: 1.6em 0;
@@ -1723,18 +1729,19 @@ a.episode-tag:hover {
   color: var(--color-ink);
 }
 
-.article__body .box:not(p) p {
-  margin-bottom: 0.6em;
-}
-
-/* 見出し+段落など、複数の要素に個別にboxが当たった場合でも
+/* 見出し+段落など、隣り合う要素がどちらもboxだけを含む場合は
    隙間なくつながって1つの箱に見えるようにする。 */
-.article__body .box + .box {
+.article__body :is(h1, h2, h3, h4, h5, p):has(> .box:only-child)
+  + :is(h1, h2, h3, h4, h5, p):has(> .box:only-child)
+  > .box {
   margin-top: 0;
   padding-top: 0;
 }
 
-.article__body .box:has(+ .box) {
+.article__body :is(h1, h2, h3, h4, h5, p):has(> .box:only-child):has(
+    + :is(h1, h2, h3, h4, h5, p) > .box:only-child
+  )
+  > .box {
   margin-bottom: 0;
 }
 
