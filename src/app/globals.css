@@ -1756,6 +1756,17 @@ a.episode-tag:hover {
   margin-bottom: 0.6em;
 }
 
+/* 見出し+段落など、複数の要素に個別にboxが当たった場合でも
+   隙間なくつながって1つの箱に見えるようにする。 */
+.article__body .box + .box {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.article__body .box:has(+ .box) {
+  margin-bottom: 0;
+}
+
 .article__body .box p:last-child {
   margin-bottom: 0;
 }
