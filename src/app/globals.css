@@ -1741,30 +1741,22 @@ a.episode-tag:hover {
   margin-bottom: 0;
 }
 
-/* 引用ではなく、レイアウト用の強調ボックス。エディタの「コード」機能を流用し、
-   等幅フォント等のコードらしさは打ち消して、引用とは違う色の帯にしている。 */
-.article__body pre {
+/* 引用ではなく、レイアウト用の強調ボックス。エディタのカスタムclass「box」を
+   選んだ範囲に当たる。引用とは違う色の帯にしている。 */
+.article__body .box {
+  display: block;
   margin: 1.6em 0;
   padding: 12px 20px;
   border-left: 3px solid var(--color-teal);
   background: var(--color-bg-alt);
   color: var(--color-ink);
-  font-family: inherit;
-  font-style: normal;
-  white-space: pre-wrap;
 }
 
-.article__body pre code {
-  font-family: inherit;
-  background: none;
-  padding: 0;
-}
-
-.article__body pre p {
+.article__body .box:not(p) p {
   margin-bottom: 0.6em;
 }
 
-.article__body pre p:last-child {
+.article__body .box p:last-child {
   margin-bottom: 0;
 }
 
