@@ -1676,7 +1676,21 @@ a.episode-tag:hover {
   margin-bottom: 1.4em;
 }
 
+.article__body h1 {
+  margin-top: 2em;
+  color: var(--color-ink);
+  font-size: 1.6em;
+  font-weight: 700;
+}
+
 .article__body h2 {
+  margin-top: 1.8em;
+  color: var(--color-ink);
+  font-size: 1.4em;
+  font-weight: 700;
+}
+
+.article__body h3 {
   display: table;
   margin-top: 1.6em;
   padding: 6px 14px;
@@ -1686,7 +1700,7 @@ a.episode-tag:hover {
   font-weight: 700;
 }
 
-.article__body h3 {
+.article__body h4 {
   display: table;
   margin-top: 1.4em;
   padding: 3px 10px;
@@ -1696,7 +1710,7 @@ a.episode-tag:hover {
   font-weight: 700;
 }
 
-.article__body h4 {
+.article__body h5 {
   display: inline-block;
   margin-top: 1.2em;
   padding-bottom: 2px;
