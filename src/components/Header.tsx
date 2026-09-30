@@ -3,6 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 
+const LISTENER_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSeOhplhZTIclDQfUUbQTYbWwDkKVQOOTCOZPXOSwTTCXSo6rw/viewform";
+
 const navGroups = [
   {
     href: "/episodes",
@@ -26,6 +29,7 @@ const navGroups = [
     children: [
       { href: "/note", label: "ひみつノート" },
       { href: "/history", label: "年表" },
+      { href: LISTENER_FORM_URL, label: "おたより", external: true },
     ],
   },
 ];
@@ -90,13 +94,21 @@ export default function Header() {
                         </Link>
                       </li>
                     )}
-                    {group.children.map((child) => (
-                      <li key={child.href}>
-                        <Link href={child.href} onClick={() => setIsOpen(false)}>
-                          {child.label}
-                        </Link>
-                      </li>
-                    ))}
+                    {group.children.map((child) =>
+                      "external" in child && child.external ? (
+                        <li key={child.href}>
+                          <a href={child.href} target="_blank" rel="noopener noreferrer">
+                            {child.label}
+                          </a>
+                        </li>
+                      ) : (
+                        <li key={child.href}>
+                          <Link href={child.href} onClick={() => setIsOpen(false)}>
+                            {child.label}
+                          </Link>
+                        </li>
+                      ),
+                    )}
                   </ul>
                 </li>
               ))}
