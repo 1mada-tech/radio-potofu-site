@@ -1546,7 +1546,7 @@ a.episode-tag:hover {
 }
 
 .note-detail-layout .article__body {
-  line-height: 2;
+  line-height: 1.85;
 }
 
 .note-detail-layout .article__body p {
@@ -1641,6 +1641,8 @@ a.episode-tag:hover {
 .article__body {
   margin-top: 32px;
   font-size: 1rem;
+  line-height: 1.75;
+  letter-spacing: -0.02em;
 }
 
 .article__body p {
