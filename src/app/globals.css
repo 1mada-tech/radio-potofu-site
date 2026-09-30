@@ -1695,7 +1695,7 @@ a.episode-tag:hover {
 
 .article__body a {
   color: var(--color-accent);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .article__body blockquote {
@@ -1727,7 +1727,7 @@ a.episode-tag:hover {
   margin: 1.6em 0;
   padding: 12px 20px;
   border-left: 3px solid var(--color-teal);
-  background: var(--color-bg-alt);
+  background: #f4f3ee;
   color: var(--color-ink);
 }
 
