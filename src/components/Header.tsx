@@ -29,7 +29,7 @@ const navGroups = [
     children: [
       { href: "/note", label: "ひみつノート" },
       { href: "/history", label: "年表" },
-      { href: LISTENER_FORM_URL, label: "おたより", external: true },
+      { href: LISTENER_FORM_URL, label: "おたよりを送る", external: true },
     ],
   },
 ];
