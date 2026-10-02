@@ -65,10 +65,17 @@ export function deriveAppearance(poem: string): CreatureAppearance {
 }
 
 // 鍋の中でのおおよその位置(%)。文字列ごとに決定論的だが散らばって見える。
+// 鍋の口(.pot__opening)は480x150のきれいな楕円なので、そこに内接する
+// 少し小さめの楕円の内部からランダムに点を選ぶ(矩形の角で楕円からはみ出さないように)。
+// 縮めている分(半径)はキャラ本体のサイズ分の余白。
 function derivePositionCandidate(poem: string, index: number, attempt: number) {
   const rng = makeRng(hashString(`${poem}::${index}::${attempt}`) || 1);
-  const top = 14 + rng() * 58;
-  const left = 12 + rng() * 66;
+  const angle = rng() * Math.PI * 2;
+  const radius = Math.sqrt(rng()); // 面積が一様になるよう平方根を取る
+  const rx = 43; // 横方向の半径(%)
+  const ry = 34; // 縦方向の半径(%)
+  const top = 50 + Math.sin(angle) * radius * ry;
+  const left = 50 + Math.cos(angle) * radius * rx;
   return { top, left };
 }
 
