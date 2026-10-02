@@ -1,6 +1,6 @@
 import { buildPotEvents, potAgeDays, type PotEventType } from "@/lib/potLog";
 import { deriveName, daysLeft } from "@/lib/creature";
-import { formatDate } from "@/lib/date";
+import { formatDate, formatDateTime } from "@/lib/date";
 import type { PotCreature } from "@/lib/potCreatures";
 import CreatureFace from "@/components/CreatureFace";
 
@@ -10,16 +10,6 @@ const EVENT_LABEL: Record<PotEventType, string> = {
   melt: "完成",
   flavor: "経過",
 };
-
-function formatDateTime(at: number) {
-  const date = new Date(at);
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  const hh = String(date.getHours()).padStart(2, "0");
-  const mm = String(date.getMinutes()).padStart(2, "0");
-  return `${y}.${m}.${d} / ${hh}:${mm}`;
-}
 
 export default function PotLog({
   creatures,
