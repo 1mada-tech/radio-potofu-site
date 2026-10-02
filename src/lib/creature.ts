@@ -79,15 +79,33 @@ function derivePositionCandidate(poem: string, index: number, attempt: number) {
   return { top, left };
 }
 
-// 鍋にいる全員分の位置をまとめて決める。1体ずつ完全ランダムだと
-// 少人数のときに固まって重なりやすいので、候補をいくつか試して
-// 既に置いたキャラから一番離れている位置を選ぶ(決定論的・既存の並び順に依存)。
-// 鍋の口は横長(top方向の可動域の方が狭い)なので、距離計算ではtopの差を
-// 大きめに重み付けしている。
+// キャラ本体(66px四方、縦はscaleY(0.72)で表示)が互いに重ならずに済む最小距離。
+// 2体がちょうど触れ合う距離は「半径の和」=直径なので、ここには直径を入れる。
+// 「具材同士がかぶって見える」のを避けるため、これを下回る距離の候補は
+// (他に選択肢がない場合を除いて)採用しない。
+const CREATURE_TOP_DIAMETER = 34; // %(.pot__openingの高さ基準。66px*scaleY(0.72)相当+余白)
+const CREATURE_LEFT_DIAMETER = 15; // %(.pot__openingの幅基準。66px相当+余白)
+
+function separation(
+  a: { top: number; left: number },
+  b: { top: number; left: number },
+): number {
+  // 直径で正規化した距離。1以上なら(円で近似した)本体同士が重ならない。
+  return Math.hypot(
+    (a.top - b.top) / CREATURE_TOP_DIAMETER,
+    (a.left - b.left) / CREATURE_LEFT_DIAMETER,
+  );
+}
+
+// 鍋にいる全員分の位置をまとめて決める。1体ずつ完全ランダムだと重なりやすいので、
+// 候補をたくさん試して、既に置いたキャラと重ならない(separation >= 1)もののうち
+// 一番離れているものを選ぶ(決定論的・既存の並び順に依存)。
+// 全く重ならない候補が見つからない場合(具材が増えすぎた場合)は、その中で
+// 一番マシな(一番離れている)候補にフォールバックする。
 export function derivePositions(
   items: { poem: string; index: number }[],
 ): { top: number; left: number }[] {
-  const CANDIDATES = 8;
+  const CANDIDATES = 200;
   const placed: { top: number; left: number }[] = [];
 
   return items.map(({ poem, index }) => {
@@ -99,15 +117,12 @@ export function derivePositions(
       const score =
         placed.length === 0
           ? Infinity
-          : Math.min(
-              ...placed.map((p) =>
-                Math.hypot((p.top - candidate.top) * 1.4, p.left - candidate.left),
-              ),
-            );
+          : Math.min(...placed.map((p) => separation(p, candidate)));
       if (score > bestScore) {
         bestScore = score;
         best = candidate;
       }
+      if (bestScore >= 1) break; // 重ならない候補が見つかった時点で十分
     }
 
     placed.push(best);
