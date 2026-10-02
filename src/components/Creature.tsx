@@ -10,6 +10,7 @@ export default function Creature({
   labelLevel = 0,
   onHoverStart,
   onHoverEnd,
+  onTap,
 }: {
   poem: string;
   createdAt?: string;
@@ -19,6 +20,7 @@ export default function Creature({
   labelLevel?: number;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
+  onTap?: () => void;
 }) {
   const name = deriveName(poem, createdAt);
   const wiggleDelay = deriveWiggleDelay(poem);
@@ -39,6 +41,7 @@ export default function Creature({
       onMouseLeave={onHoverEnd}
       onFocus={onHoverStart}
       onBlur={onHoverEnd}
+      onClick={onTap}
       aria-label={`${name}(${poem})`}
     >
       <span className="creature__scale-wrap" style={{ transform: `scaleY(0.72) scale(${scale})` }}>

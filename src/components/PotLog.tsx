@@ -1,8 +1,7 @@
 import { buildPotEvents, potAgeDays, type PotEventType } from "@/lib/potLog";
-import { deriveName, daysLeft } from "@/lib/creature";
-import { formatDate, formatDateTime } from "@/lib/date";
+import { formatDateTime } from "@/lib/date";
 import type { PotCreature } from "@/lib/potCreatures";
-import CreatureFace from "@/components/CreatureFace";
+import PotLogFaceTooltip from "@/components/PotLogFaceTooltip";
 
 const EVENT_LABEL: Record<PotEventType, string> = {
   enter: "投入",
@@ -54,32 +53,12 @@ export default function PotLog({
                 <span className="pot-log-item__label">{EVENT_LABEL[event.type]}</span>
                 <span className="pot-log-item__message">{event.message}</span>
                 {creature && (
-                  <span className="pot-log-item__face-wrap" tabIndex={0}>
-                    <span className="pot-log-item__face" aria-hidden="true">
-                      <CreatureFace poem={creature.poem} />
-                    </span>
-                    {/* 鍋の中のキャラにマウスオーバーした時と同じ内容のツールチップ。 */}
-                    <div className="pot__tooltip pot-log-item__tooltip" aria-hidden="true">
-                      <div className="pot__tooltip-head">
-                        <span className="pot__tooltip-face" aria-hidden="true">
-                          <CreatureFace poem={creature.poem} />
-                        </span>
-                        <p className="pot__tooltip-name">
-                          {deriveName(creature.poem, creature.createdAt)}
-                        </p>
-                      </div>
-                      <p className="pot__tooltip-poem">{creature.poem}</p>
-                      <p className="pot__tooltip-meta">
-                        {creature.authorName || "名無し"} ・ {formatDate(creature.createdAt)}
-                      </p>
-                      <p className="pot__tooltip-lifespan">
-                        {tooltipLifespanTemplate.replace(
-                          "x日",
-                          `${daysLeft(creature.createdAt)}日`,
-                        )}
-                      </p>
-                    </div>
-                  </span>
+                  <PotLogFaceTooltip
+                    poem={creature.poem}
+                    authorName={creature.authorName}
+                    createdAt={creature.createdAt}
+                    tooltipLifespanTemplate={tooltipLifespanTemplate}
+                  />
                 )}
               </li>
             );

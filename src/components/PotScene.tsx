@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Creature from "@/components/Creature";
 import CreatureFace from "@/components/CreatureFace";
 import {
@@ -66,6 +66,21 @@ export default function PotScene({
   tooltipLifespanTemplate: string;
 }) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const potRef = useRef<HTMLDivElement>(null);
+
+  // タップで開いている間、鍋の外側(ページのどこでも)をタップ/クリックしたら
+  // 閉じる。.pot-sceneのonClickだけだと、鍋の外の別のセクションをタップ
+  // した時に閉じられないため、documentレベルで見ている。
+  useEffect(() => {
+    if (hoveredId === null) return;
+    function handleOutside(event: MouseEvent) {
+      if (potRef.current && !potRef.current.contains(event.target as Node)) {
+        setHoveredId(null);
+      }
+    }
+    document.addEventListener("click", handleOutside);
+    return () => document.removeEventListener("click", handleOutside);
+  }, [hoveredId]);
 
   // creaturesは古い順(入った順)。鍋が手狭になりすぎないよう、
   // 実際に鍋の中に入れるのは最初のCOMFORTABLE_COUNT匹までとし、
@@ -91,7 +106,7 @@ export default function PotScene({
 
   return (
     <div className="pot-scene">
-      <div className="pot">
+      <div className="pot" ref={potRef}>
         <span className="pot__steam pot__steam--1" aria-hidden="true" />
         <span className="pot__steam pot__steam--2" aria-hidden="true" />
         <span className="pot__steam pot__steam--3" aria-hidden="true" />
@@ -155,6 +170,11 @@ export default function PotScene({
                 labelLevel={labelLevel}
                 onHoverStart={() => setHoveredId(creature.id)}
                 onHoverEnd={() => setHoveredId((id) => (id === creature.id ? null : id))}
+                // タップ時、先にonHoverStart(onMouseEnter由来)がhoveredIdを
+                // セットしてしまっていることがあるため、ここでは常に開く
+                // (トグルにすると直後に閉じてしまうことがある)。
+                // 閉じるのは外側タップ(.pot-sceneのonClick)に任せる。
+                onTap={() => setHoveredId(creature.id)}
               />
             ))
           )}
