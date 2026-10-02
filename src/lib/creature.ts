@@ -68,13 +68,19 @@ export function deriveAppearance(poem: string): CreatureAppearance {
 // 鍋の口(.pot__opening)は480x150のきれいな楕円なので、そこに内接する
 // 少し小さめの楕円の内部からランダムに点を選ぶ(矩形の角で楕円からはみ出さないように)。
 // 縮めている分(半径)はキャラ本体のサイズ分の余白。
+// 手前側(top%が大きい方)は鍋の立体感を出す濃い茶色の縁(.pot__rim-shadowや
+// グラデーションの暗い部分、top 60%あたりから始まる)と被ると不自然なので、
+// 縦方向の半径を手前側だけ小さくして、その帯には入らないようにしている。
 function derivePositionCandidate(poem: string, index: number, attempt: number) {
   const rng = makeRng(hashString(`${poem}::${index}::${attempt}`) || 1);
   const angle = rng() * Math.PI * 2;
   const radius = Math.sqrt(rng()); // 面積が一様になるよう平方根を取る
-  const rx = 43; // 横方向の半径(%)
-  const ry = 34; // 縦方向の半径(%)
-  const top = 50 + Math.sin(angle) * radius * ry;
+  const rx = 42; // 横方向の半径(%)
+  const ryBack = 32; // 奥側(top%が小さい方)の縦方向の半径(%)
+  const ryFront = 8; // 手前側(top%が大きい方)の縦方向の半径(%)。縁を避けるため小さめ
+  const sin = Math.sin(angle);
+  const ry = sin >= 0 ? ryFront : ryBack;
+  const top = 50 + sin * radius * ry;
   const left = 50 + Math.cos(angle) * radius * rx;
   return { top, left };
 }
