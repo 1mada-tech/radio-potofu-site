@@ -1,22 +1,26 @@
-import { deriveAppearance, deriveName, deriveWiggleDelay } from "@/lib/creature";
+import { deriveName, deriveWiggleDelay } from "@/lib/creature";
+import CreatureFace from "@/components/CreatureFace";
 
 export default function Creature({
   poem,
+  createdAt,
   top,
   left,
   scale = 1,
+  labelLevel = 0,
   onHoverStart,
   onHoverEnd,
 }: {
   poem: string;
+  createdAt?: string;
   top: number;
   left: number;
   scale?: number;
+  labelLevel?: number;
   onHoverStart?: () => void;
   onHoverEnd?: () => void;
 }) {
-  const appearance = deriveAppearance(poem);
-  const name = deriveName(poem);
+  const name = deriveName(poem, createdAt);
   const wiggleDelay = deriveWiggleDelay(poem);
 
   return (
@@ -24,9 +28,12 @@ export default function Creature({
       type="button"
       className="creature"
       style={{
-        top: `${top}%`,
-        left: `${left}%`,
-        transform: `translate(-50%, -50%) scaleY(0.72) scale(${scale})`,
+        // ここにtransformを置くと(transformを持つ要素は常に新しい重なり文脈を
+        // 作ってしまうため)、このキャラの名前ラベルが他のキャラの下に
+        // 潜り込んでしまう。位置決めはcalc()で行い、このボタン自体は
+        // transformを持たない(=重なり文脈を作らない)ようにしている。
+        top: `calc(${top}% - 33px)`,
+        left: `calc(${left}% - 33px)`,
       }}
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}
@@ -34,50 +41,17 @@ export default function Creature({
       onBlur={onHoverEnd}
       aria-label={`${name}(${poem})`}
     >
-      <span className="creature__inner" style={{ animationDelay: `${wiggleDelay}s` }}>
-        <span
-          className="creature__body"
-          style={{ background: appearance.bodyColor, borderRadius: appearance.bodyRadius }}
-        />
-        {appearance.earType === "round" && (
-          <>
-            <span
-              className="creature__ear creature__ear--left"
-              style={{ background: appearance.bodyColor, borderRadius: "50%" }}
-            />
-            <span
-              className="creature__ear creature__ear--right"
-              style={{ background: appearance.bodyColor, borderRadius: "50%" }}
-            />
-          </>
-        )}
-        {appearance.earType === "pointy" && (
-          <>
-            <span
-              className="creature__ear creature__ear--left"
-              style={{ background: appearance.bodyColor, borderRadius: "50% 50% 50% 0" }}
-            />
-            <span
-              className="creature__ear creature__ear--right"
-              style={{ background: appearance.bodyColor, borderRadius: "50% 50% 0 50%" }}
-            />
-          </>
-        )}
-        {appearance.earType === "antenna" && (
-          <span
-            className="creature__antenna"
-            style={{ background: appearance.bodyColor }}
-          />
-        )}
-        <span className="creature__eyes">
-          <span className={`creature__eye${appearance.eyeType === "sleepy" ? " creature__eye--sleepy" : ""}`} />
-          <span className={`creature__eye${appearance.eyeType === "sleepy" ? " creature__eye--sleepy" : ""}`} />
+      <span className="creature__scale-wrap" style={{ transform: `scaleY(0.72) scale(${scale})` }}>
+        <span className="creature__inner" style={{ animationDelay: `${wiggleDelay}s` }}>
+          <CreatureFace poem={poem} />
         </span>
-        {appearance.mouthType === "smile" && <span className="creature__mouth creature__mouth--smile" />}
-        {appearance.mouthType === "o" && <span className="creature__mouth creature__mouth--o" />}
-        {appearance.mouthType === "line" && <span className="creature__mouth creature__mouth--line" />}
       </span>
-      <span className="creature__name-tag">{name}</span>
+      <span
+        className="creature__name-tag"
+        style={labelLevel > 0 ? { top: `${-18 - labelLevel * 14}px` } : undefined}
+      >
+        {name}
+      </span>
     </button>
   );
 }

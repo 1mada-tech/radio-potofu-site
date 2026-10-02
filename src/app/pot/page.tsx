@@ -35,6 +35,7 @@ export default async function PotPage() {
         creatures={allCreatures}
         heading={content.logHeading}
         captionTemplate={content.logCaptionTemplate}
+        tooltipLifespanTemplate={content.tooltipLifespanTemplate}
       />
     </div>
   );

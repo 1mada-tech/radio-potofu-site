@@ -2042,7 +2042,10 @@ a.episode-tag:hover {
 
 .pot-scene {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
   margin-top: 56px;
 }
 
@@ -2052,6 +2055,53 @@ a.episode-tag:hover {
   height: 380px;
 }
 
+/* 鍋がいっぱいの時に、入りきらなかったキャラが並ぶ待機列。鍋の横に表示する。 */
+.pot__queue {
+  width: 180px;
+  flex: none;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-alt);
+}
+
+.pot__queue-heading {
+  margin: 0 0 10px;
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+}
+
+.pot__queue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pot__queue-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* CreatureFaceは66x66pxのボックス前提の絶対配置なので、箱のサイズはそのままに
+   見た目だけ縮小して待機列用の小さいアイコンにする。 */
+.pot__queue-face {
+  position: relative;
+  flex: none;
+  width: 66px;
+  height: 66px;
+  transform: scale(0.42);
+  margin: -19px -19px -19px -15px;
+}
+
+.pot__queue-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
 @media (max-width: 560px) {
   .pot-scene {
     margin-top: 40px;
@@ -2059,6 +2109,11 @@ a.episode-tag:hover {
 
   .pot {
     zoom: 0.8;
+  }
+
+  .pot__queue {
+    width: 100%;
+    max-width: 380px;
   }
 }
 
@@ -2401,13 +2456,27 @@ a.episode-tag:hover {
   position: absolute;
   width: 66px;
   height: 66px;
-  transform-origin: bottom center;
-  transition: transform 0.3s ease;
   padding: 0;
   border: none;
   background: none;
   cursor: pointer;
-  z-index: 1;
+  /* ここにtransformやz-indexを付けると、positionと組み合わさって
+     1体ごとに独立したスタッキングコンテキストができてしまい、
+     後からDOMに現れたキャラが別のキャラの名前ラベルを覆い隠してしまう。
+     位置決めはJS側でcalc()を使って行い、見た目のサイズ変化は
+     内側の.creature__scale-wrapに任せることで、このボタン自体は
+     transformを持たない(=重なり文脈を作らない)ようにしている。
+     名前ラベル側(.creature__name-tag)だけ全キャラ共通の文脈で
+     z-indexを与えて常に手前に出す。 */
+}
+
+.creature__scale-wrap {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: bottom center;
+  transition: transform 0.3s ease;
 }
 
 .creature__inner {
@@ -2534,14 +2603,19 @@ a.episode-tag:hover {
   position: absolute;
   top: -18px;
   left: 50%;
-  transform: translateX(-50%) scaleY(1.39);
+  transform: translateX(-50%);
   font-size: 0.6rem;
   font-weight: 700;
   color: #3a2c1a;
-  background: rgba(255, 255, 255, 0.55);
+  /* 半透明の白だと、鍋の縁からはみ出てページの薄いベージュ背景に乗った時に
+     同化して見えなくなるため、不透明に近い色+縁取りで背景を問わず見えるようにする。 */
+  background: #fdf6e8;
+  border: 1px solid rgba(58, 44, 26, 0.3);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
   padding: 1px 5px;
   white-space: nowrap;
-  opacity: 0.85;
+  /* 他のキャラの本体より必ず手前に出し、ラベルが読めなくなるのを防ぐ。 */
+  z-index: 2;
 }
 
 .pot__tooltip {
@@ -2556,8 +2630,27 @@ a.episode-tag:hover {
   pointer-events: none;
 }
 
-.pot__tooltip-name {
+.pot__tooltip-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   margin: 0 0 6px;
+}
+
+/* CreatureFaceの中身は66x66pxのボックスを前提にした絶対配置なので、
+   箱のサイズはそのままに、見た目だけ縮小してミニプレビューにする。 */
+.pot__tooltip-face {
+  position: relative;
+  flex: none;
+  width: 66px;
+  height: 66px;
+  transform: scale(0.45);
+  margin: -18px -18px -18px -14px;
+}
+
+.pot__tooltip-name {
+  margin: 0;
   font-size: 1rem;
   font-weight: 700;
   color: var(--color-accent);
@@ -2613,7 +2706,7 @@ a.episode-tag:hover {
 
 .pot-log-item__date {
   flex-shrink: 0;
-  width: 5.5em;
+  width: 9.5em;
   font-size: 0.78rem;
   color: var(--color-ink-soft);
 }
@@ -2654,4 +2747,43 @@ a.episode-tag:hover {
 
 .pot-log-item__message {
   color: var(--color-ink);
+}
+
+/* あたり判定(ホバー/フォーカス)用の実際の箱。中のCreatureFaceは66px前提の
+   絶対配置なので、見た目を縮小しても、この箱自体は負のmarginに潰されない
+   はっきりしたサイズを持たせておく(潰れるとホバーが効かなくなるため)。 */
+.pot-log-item__face-wrap {
+  position: relative;
+  flex: none;
+  align-self: center;
+  width: 24px;
+  height: 24px;
+  cursor: default;
+}
+
+.pot-log-item__face {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 66px;
+  height: 66px;
+  transform: translate(-50%, -50%) scale(0.36);
+}
+
+/* 鍋の中のキャラにマウスオーバーした時と同じ.pot__tooltipを、アイコンの
+   真上に出す。.pot__tooltip自体にはtop/leftの指定がない(鍋の中では
+   JS側で%指定している)ので、ここでは常にアイコンの上中央に出るよう固定する。 */
+.pot-log-item__tooltip {
+  top: 0;
+  left: 50%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;
+}
+
+.pot-log-item__face-wrap:hover .pot-log-item__tooltip,
+.pot-log-item__face-wrap:focus .pot-log-item__tooltip,
+.pot-log-item__face-wrap:focus-within .pot-log-item__tooltip {
+  opacity: 1;
+  visibility: visible;
 }
