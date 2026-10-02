@@ -1521,6 +1521,17 @@ a.episode-tag:hover {
 
 .senryu-caption__version--scrambling {
   color: var(--color-accent);
+  animation: senryu-version-glow 0.3s ease-in-out infinite;
+}
+
+@keyframes senryu-version-glow {
+  0%,
+  100% {
+    text-shadow: 0 0 0 rgba(240, 121, 27, 0);
+  }
+  50% {
+    text-shadow: 0 0 8px rgba(240, 121, 27, 0.75);
+  }
 }
 
 .page--article {
