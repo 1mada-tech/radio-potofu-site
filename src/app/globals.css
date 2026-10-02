@@ -2693,6 +2693,11 @@ a.episode-tag:hover {
 .pot-log-list {
   display: flex;
   flex-direction: column;
+  max-height: 480px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--color-border);
+  padding: 0 14px;
 }
 
 .pot-log-item {
