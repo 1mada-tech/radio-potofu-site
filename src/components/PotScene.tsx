@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Creature from "@/components/Creature";
-import { derivePosition, deriveName, POT_LIFESPAN_DAYS } from "@/lib/creature";
+import { derivePositions, deriveName, POT_LIFESPAN_DAYS } from "@/lib/creature";
 import { formatDate } from "@/lib/date";
 import type { PotCreature } from "@/lib/potCreatures";
 
@@ -31,9 +31,12 @@ export default function PotScene({
 }) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
+  const positions = derivePositions(
+    creatures.map((creature, i) => ({ poem: creature.poem, index: creature.id ?? i })),
+  );
   const positioned = creatures.map((creature, i) => ({
     creature,
-    ...derivePosition(creature.poem, creature.id ?? i),
+    ...positions[i],
   }));
   const hovered = positioned.find((p) => p.creature.id === hoveredId) ?? null;
 

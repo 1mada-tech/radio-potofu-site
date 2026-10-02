@@ -65,11 +65,47 @@ export function deriveAppearance(poem: string): CreatureAppearance {
 }
 
 // 鍋の中でのおおよその位置(%)。文字列ごとに決定論的だが散らばって見える。
-export function derivePosition(poem: string, index: number) {
-  const rng = makeRng(hashString(poem + index) || 1);
+function derivePositionCandidate(poem: string, index: number, attempt: number) {
+  const rng = makeRng(hashString(`${poem}::${index}::${attempt}`) || 1);
   const top = 14 + rng() * 58;
   const left = 12 + rng() * 66;
   return { top, left };
+}
+
+// 鍋にいる全員分の位置をまとめて決める。1体ずつ完全ランダムだと
+// 少人数のときに固まって重なりやすいので、候補をいくつか試して
+// 既に置いたキャラから一番離れている位置を選ぶ(決定論的・既存の並び順に依存)。
+// 鍋の口は横長(top方向の可動域の方が狭い)なので、距離計算ではtopの差を
+// 大きめに重み付けしている。
+export function derivePositions(
+  items: { poem: string; index: number }[],
+): { top: number; left: number }[] {
+  const CANDIDATES = 8;
+  const placed: { top: number; left: number }[] = [];
+
+  return items.map(({ poem, index }) => {
+    let best = derivePositionCandidate(poem, index, 0);
+    let bestScore = -1;
+
+    for (let attempt = 0; attempt < CANDIDATES; attempt++) {
+      const candidate = derivePositionCandidate(poem, index, attempt);
+      const score =
+        placed.length === 0
+          ? Infinity
+          : Math.min(
+              ...placed.map((p) =>
+                Math.hypot((p.top - candidate.top) * 1.4, p.left - candidate.left),
+              ),
+            );
+      if (score > bestScore) {
+        bestScore = score;
+        best = candidate;
+      }
+    }
+
+    placed.push(best);
+    return best;
+  });
 }
 
 // キャラの揺れアニメーションの開始タイミングをずらすための遅延(秒)。
