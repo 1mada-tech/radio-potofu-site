@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/date";
 
 export default function EpisodeTableRow({ episode }: { episode: Episode }) {
   const hasTags = Boolean(episode.tags && episode.tags.length > 0);
+  const hasAutoTopics = Boolean(episode.autoTopics && episode.autoTopics.length > 0);
   const hasComment = Boolean(episode.comment || episode.recommendation);
   const tagList = hasTags && (
     <>
@@ -11,6 +12,17 @@ export default function EpisodeTableRow({ episode }: { episode: Episode }) {
         <a key={tag} href={`/episodes?tag=${encodeURIComponent(tag)}`} className="episode-tag">
           #{tag}
         </a>
+      ))}
+    </>
+  );
+  // 配信者が手入力したtagsとは別の、LISTENの文字起こしから自動抽出した
+  // 話題キーワード。絞り込みには使わないのでリンクにはしない。
+  const autoTopicList = hasAutoTopics && (
+    <>
+      {episode.autoTopics?.map((topic) => (
+        <span key={topic} className="episode-auto-topic">
+          {topic}
+        </span>
       ))}
     </>
   );
@@ -25,6 +37,7 @@ export default function EpisodeTableRow({ episode }: { episode: Episode }) {
         <td>
           {episode.title}
           {hasTags && <div className="episode-table__tags episode-table__tags--title">{tagList}</div>}
+          {hasAutoTopics && <div className="episode-table__auto-topics">{autoTopicList}</div>}
         </td>
         <td>
           <span className="episode-table__links">

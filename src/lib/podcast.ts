@@ -1,5 +1,6 @@
 import Parser from "rss-parser";
 import { parse } from "csv-parse/sync";
+import { EPISODE_AUTO_TOPICS } from "@/lib/episodeTopics";
 
 // SpotifyのApple Podcasts掲載情報(id1608810819)から取得した実際のRSSフィードURL。
 // これまでの配信は、microCMSではなくこのフィードから毎回自動で取得する。
@@ -28,6 +29,9 @@ export type Episode = {
   comment?: string;
   tags?: string[];
   recommendation?: string;
+  // LISTENの文字起こしから抜き出した話題キーワード(自動抽出+目視チェック)。
+  // 配信者自身が管理するtagsとは別物。episodeTopics.tsを参照。
+  autoTopics?: string[];
 };
 
 type EpisodeExtras = {
@@ -136,6 +140,7 @@ async function fetchAllEpisodes(): Promise<Episode[]> {
         comment: extras?.comment,
         tags: extras?.tags,
         recommendation: extras?.recommendation,
+        autoTopics: episodeNumber !== null ? EPISODE_AUTO_TOPICS[episodeNumber] : undefined,
       };
     })
     .sort((a, b) => (a.publishDate < b.publishDate ? 1 : -1));

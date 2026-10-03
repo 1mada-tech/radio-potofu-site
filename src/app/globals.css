@@ -1196,6 +1196,24 @@ a.episode-tag:hover {
   color: #fff;
 }
 
+/* LISTENの文字起こしから自動抽出した話題キーワード。配信者が管理する
+   episode-tagとは見た目を分け、クリックできないことが分かるようにする。 */
+.episode-table__auto-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.episode-auto-topic {
+  display: inline-block;
+  line-height: 1;
+  border: 1px solid var(--color-border);
+  color: var(--color-ink-soft);
+  font-size: 0.72rem;
+  padding: 2px 8px;
+}
+
 .episode-search {
   display: flex;
   align-items: center;
