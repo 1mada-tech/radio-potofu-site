@@ -2793,21 +2793,11 @@ a.episode-tag:hover {
   transform: translate(-50%, -50%) scale(0.36);
 }
 
-/* 鍋の中のキャラにマウスオーバーした時と同じ.pot__tooltipを、アイコンの
-   真上に出す。.pot__tooltip自体にはtop/leftの指定がない(鍋の中では
-   JS側で%指定している)ので、ここでは常にアイコンの上中央に出るよう固定する。 */
+/* 鍋の中のキャラにマウスオーバーした時と同じ.pot__tooltipを出す。
+   記録リストはスクロール枠(overflow:auto)の中にあるので、普通の
+   position:absoluteだと枠からはみ出た部分が切り取られて見えなくなる。
+   position:fixedで画面基準の座標(JS側でアイコンの位置から計算)に
+   置くことでスクロール枠の影響を受けないようにしている。 */
 .pot-log-item__tooltip {
-  top: 0;
-  left: 50%;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.15s ease;
-}
-
-.pot-log-item__face-wrap:hover .pot-log-item__tooltip,
-.pot-log-item__face-wrap:focus .pot-log-item__tooltip,
-.pot-log-item__face-wrap:focus-within .pot-log-item__tooltip,
-.pot-log-item__face-wrap--open .pot-log-item__tooltip {
-  opacity: 1;
-  visibility: visible;
+  position: fixed;
 }
