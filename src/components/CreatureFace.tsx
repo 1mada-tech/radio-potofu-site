@@ -2,8 +2,14 @@ import { deriveAppearance } from "@/lib/creature";
 
 // キャラの見た目(本体・耳・目・口)だけを描画する部分。
 // 鍋の中の本体(Creature.tsx)と、ツールチップ内のミニプレビューの両方から使う。
-export default function CreatureFace({ poem }: { poem: string }) {
-  const appearance = deriveAppearance(poem);
+export default function CreatureFace({
+  poem,
+  createdAt,
+}: {
+  poem: string;
+  createdAt?: string;
+}) {
+  const appearance = deriveAppearance(poem, createdAt);
 
   return (
     <>
@@ -38,13 +44,35 @@ export default function CreatureFace({ poem }: { poem: string }) {
       {appearance.earType === "antenna" && (
         <span className="creature__antenna" style={{ background: appearance.bodyColor }} />
       )}
+      {appearance.earType === "long" && (
+        <>
+          <span
+            className="creature__ear creature__ear--left creature__ear--long"
+            style={{ background: appearance.bodyColor, borderRadius: "50%" }}
+          />
+          <span
+            className="creature__ear creature__ear--right creature__ear--long"
+            style={{ background: appearance.bodyColor, borderRadius: "50%" }}
+          />
+        </>
+      )}
+      {appearance.earType === "small" && (
+        <>
+          <span
+            className="creature__ear creature__ear--left creature__ear--small"
+            style={{ background: appearance.bodyColor, borderRadius: "50%" }}
+          />
+          <span
+            className="creature__ear creature__ear--right creature__ear--small"
+            style={{ background: appearance.bodyColor, borderRadius: "50%" }}
+          />
+        </>
+      )}
       <span className="creature__eyes">
-        <span className={`creature__eye${appearance.eyeType === "sleepy" ? " creature__eye--sleepy" : ""}`} />
-        <span className={`creature__eye${appearance.eyeType === "sleepy" ? " creature__eye--sleepy" : ""}`} />
+        <span className={`creature__eye creature__eye--${appearance.eyeType}`} />
+        <span className={`creature__eye creature__eye--${appearance.eyeType}`} />
       </span>
-      {appearance.mouthType === "smile" && <span className="creature__mouth creature__mouth--smile" />}
-      {appearance.mouthType === "o" && <span className="creature__mouth creature__mouth--o" />}
-      {appearance.mouthType === "line" && <span className="creature__mouth creature__mouth--line" />}
+      <span className={`creature__mouth creature__mouth--${appearance.mouthType}`} />
     </>
   );
 }

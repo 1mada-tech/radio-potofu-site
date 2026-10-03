@@ -25,6 +25,12 @@ export default function Creature({
   const name = deriveName(poem, createdAt);
   const wiggleDelay = deriveWiggleDelay(poem);
 
+  // 鍋の下の方(手前側、top%が大きい方)のキャラは、頭の上にラベルを出すと
+  // さらに奥(上の方)にいる別のキャラの顔を隠してしまう。下の方のキャラ
+  // だけ、ラベルを頭の上ではなく顎のあたりに出すことでこれを避ける。
+  const labelBelow = top > 50;
+  const labelOffsetPx = labelBelow ? 46 + labelLevel * 14 : -18 - labelLevel * 14;
+
   return (
     <button
       type="button"
@@ -46,13 +52,10 @@ export default function Creature({
     >
       <span className="creature__scale-wrap" style={{ transform: `scaleY(0.72) scale(${scale})` }}>
         <span className="creature__inner" style={{ animationDelay: `${wiggleDelay}s` }}>
-          <CreatureFace poem={poem} />
+          <CreatureFace poem={poem} createdAt={createdAt} />
         </span>
       </span>
-      <span
-        className="creature__name-tag"
-        style={labelLevel > 0 ? { top: `${-18 - labelLevel * 14}px` } : undefined}
-      >
+      <span className="creature__name-tag" style={{ top: `${labelOffsetPx}px` }}>
         {name}
       </span>
     </button>

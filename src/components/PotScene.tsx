@@ -191,7 +191,7 @@ export default function PotScene({
           >
             <div className="pot__tooltip-head">
               <span className="pot__tooltip-face" aria-hidden="true">
-                <CreatureFace poem={hovered.creature.poem} />
+                <CreatureFace poem={hovered.creature.poem} createdAt={hovered.creature.createdAt} />
               </span>
               <p className="pot__tooltip-name">
                 {deriveName(hovered.creature.poem, hovered.creature.createdAt)}
@@ -215,7 +215,7 @@ export default function PotScene({
             {waiting.map((creature) => (
               <li key={creature.id} className="pot__queue-item">
                 <span className="pot__queue-face" aria-hidden="true">
-                  <CreatureFace poem={creature.poem} />
+                  <CreatureFace poem={creature.poem} createdAt={creature.createdAt} />
                 </span>
                 <span className="pot__queue-name">
                   {deriveName(creature.poem, creature.createdAt)}

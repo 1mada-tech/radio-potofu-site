@@ -97,6 +97,15 @@ export function buildPotEvents(creatures: PotCreature[]): PotEvent[] {
   return events.sort((a, b) => b.at - a.at);
 }
 
+// 鍋が稼働してからの経過時間(最初の投稿日時から、時間単位)。
+// 稼働してまだ日が浅いうちは「◯日」だと変化が分かりにくいため、
+// 鍋の記録のキャプションにはこちらを使っている。
+export function potAgeHours(creatures: PotCreature[]): number {
+  if (creatures.length === 0) return 0;
+  const startedAt = new Date(creatures[0].createdAt).getTime();
+  return Math.floor((Date.now() - startedAt) / (60 * 60 * 1000));
+}
+
 // 鍋が稼働してからの経過日数(最初の投稿日から)。
 export function potAgeDays(creatures: PotCreature[]): number {
   if (creatures.length === 0) return 0;

@@ -24,9 +24,22 @@ const BODY_COLORS = [
   "#fbdcb8", // アクセントソフト
 ];
 
-const EAR_TYPES = ["round", "pointy", "antenna", "none"] as const;
-const EYE_TYPES = ["dot", "sleepy"] as const;
-const MOUTH_TYPES = ["smile", "o", "line"] as const;
+// 見た目のバリエーションを増やした日時。敬称の追加と同じ考え方で、
+// これより前に鍋に入ったキャラの見た目が変わらないよう、
+// 元のラインナップ(ORIGINAL)と追加後のラインナップ(すべて)を分けている。
+const APPEARANCE_EXPANSION_AT = new Date("2026-10-04T00:00:00+09:00").getTime();
+
+const EAR_TYPES_ORIGINAL = ["round", "pointy", "antenna", "none"] as const;
+const EAR_TYPES_ADDED = ["long", "small"] as const;
+const EAR_TYPES = [...EAR_TYPES_ORIGINAL, ...EAR_TYPES_ADDED];
+
+const EYE_TYPES_ORIGINAL = ["dot", "sleepy"] as const;
+const EYE_TYPES_ADDED = ["wide", "closed"] as const;
+const EYE_TYPES = [...EYE_TYPES_ORIGINAL, ...EYE_TYPES_ADDED];
+
+const MOUTH_TYPES_ORIGINAL = ["smile", "o", "line"] as const;
+const MOUTH_TYPES_ADDED = ["wavy", "smirk"] as const;
+const MOUTH_TYPES = [...MOUTH_TYPES_ORIGINAL, ...MOUTH_TYPES_ADDED];
 
 export type CreatureAppearance = {
   bodyColor: string;
@@ -54,16 +67,25 @@ function makeRng(seed: number) {
   };
 }
 
-export function deriveAppearance(poem: string): CreatureAppearance {
+// createdAtを渡すと、見た目バリエーション追加より前に入ったキャラは
+// 元のラインナップから選ぶ(追加後にプールが変わっても、投入時の見た目が
+// 変わらないようにするため)。
+export function deriveAppearance(poem: string, createdAt?: string): CreatureAppearance {
   const rng = makeRng(hashString(poem) || 1);
+  const isBeforeExpansion =
+    createdAt !== undefined && new Date(createdAt).getTime() < APPEARANCE_EXPANSION_AT;
+  const earPool = isBeforeExpansion ? EAR_TYPES_ORIGINAL : EAR_TYPES;
+  const eyePool = isBeforeExpansion ? EYE_TYPES_ORIGINAL : EYE_TYPES;
+  const mouthPool = isBeforeExpansion ? MOUTH_TYPES_ORIGINAL : MOUTH_TYPES;
+
   const bodyColor = BODY_COLORS[Math.floor(rng() * BODY_COLORS.length)];
   const rx1 = 45 + Math.floor(rng() * 15);
   const rx2 = 100 - rx1;
   const ry1 = 45 + Math.floor(rng() * 15);
   const ry2 = 100 - ry1;
-  const earType = EAR_TYPES[Math.floor(rng() * EAR_TYPES.length)];
-  const eyeType = EYE_TYPES[Math.floor(rng() * EYE_TYPES.length)];
-  const mouthType = MOUTH_TYPES[Math.floor(rng() * MOUTH_TYPES.length)];
+  const earType = earPool[Math.floor(rng() * earPool.length)];
+  const eyeType = eyePool[Math.floor(rng() * eyePool.length)];
+  const mouthType = mouthPool[Math.floor(rng() * mouthPool.length)];
 
   return {
     bodyColor,
@@ -265,9 +287,13 @@ const HONORIFIC_EXPANSION_AT = new Date("2026-10-03T00:00:00+09:00").getTime();
 // なければ末尾の数文字をフォールバックとして使う。
 // さらに、くん/ちゃん/にゃん等の敬称を文字列ごとに決定論的に割り振る。
 // createdAtを渡すと、敬称追加より前に入ったキャラは元のラインナップから選ぶ。
-export function deriveName(poem: string, createdAt?: string): string {
+// (本体+敬称をそれぞれ別で使いたい箇所があるため分けて返す)
+export function deriveNameParts(
+  poem: string,
+  createdAt?: string,
+): { base: string; honorific: string } {
   const trimmed = poem.trim();
-  if (!trimmed) return "なまえなし";
+  if (!trimmed) return { base: "なまえなし", honorific: "" };
 
   let base = "";
   const katakanaMatches = trimmed.match(KATAKANA_RUN);
@@ -285,5 +311,10 @@ export function deriveName(poem: string, createdAt?: string): string {
     createdAt !== undefined && new Date(createdAt).getTime() < HONORIFIC_EXPANSION_AT;
   const pool = isBeforeExpansion ? ORIGINAL_HONORIFICS : HONORIFICS;
   const honorific = pool[Math.floor(rng() * pool.length)];
+  return { base, honorific };
+}
+
+export function deriveName(poem: string, createdAt?: string): string {
+  const { base, honorific } = deriveNameParts(poem, createdAt);
   return `${base}${honorific}`;
 }

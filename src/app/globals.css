@@ -2550,6 +2550,21 @@ a.episode-tag:hover {
   border-radius: 2px;
 }
 
+/* 2026-10-04以降に追加した見た目バリエーション。 */
+.creature__eye--wide {
+  width: 9px;
+  height: 9px;
+}
+
+.creature__eye--closed {
+  width: 7px;
+  height: 4px;
+  border-radius: 7px 7px 0 0;
+  border: 2px solid #211a15;
+  border-bottom: none;
+  background: none;
+}
+
 .creature__mouth {
   position: absolute;
   top: 39px;
@@ -2579,6 +2594,23 @@ a.episode-tag:hover {
   border-radius: 2px;
 }
 
+/* 2026-10-04以降に追加した見た目バリエーション。 */
+.creature__mouth--wavy {
+  width: 10px;
+  height: 4px;
+  border-top: 2px dotted #211a15;
+}
+
+.creature__mouth--smirk {
+  width: 7px;
+  height: 3px;
+  border: 2px solid #211a15;
+  border-top: none;
+  border-right: none;
+  border-radius: 0 0 0 8px;
+  transform: translateX(-50%) rotate(-8deg);
+}
+
 .creature__ear {
   position: absolute;
   top: -8px;
@@ -2594,6 +2626,18 @@ a.episode-tag:hover {
 .creature__ear--right {
   right: 8px;
   transform: rotate(15deg);
+}
+
+/* 2026-10-04以降に追加した見た目バリエーション。 */
+.creature__ear--long {
+  top: -20px;
+  height: 29px;
+}
+
+.creature__ear--small {
+  top: -4px;
+  width: 10px;
+  height: 9px;
 }
 
 .creature__antenna {
@@ -2800,4 +2844,181 @@ a.episode-tag:hover {
    置くことでスクロール枠の影響を受けないようにしている。 */
 .pot-log-item__tooltip {
   position: fixed;
+}
+
+/* 鍋内のひととき: ボタンを押すと、鍋の面々のアイコン一覧+自動生成の
+   会話がポップアップで出る。 */
+.pot-chat {
+  margin-top: 56px;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+}
+
+.pot-chat__trigger {
+  padding: 14px 28px;
+  background: var(--color-ink);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.pot-chat__trigger:hover {
+  transform: translateY(-2px);
+}
+
+.pot-chat-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(33, 26, 21, 0.6);
+}
+
+.pot-chat-modal {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 32px;
+  background: var(--color-bg);
+  border: 2px solid var(--color-ink);
+  text-align: left;
+}
+
+.pot-chat-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 1px solid var(--color-border);
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+}
+
+.pot-chat-modal__heading {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 1.3rem;
+}
+
+.pot-chat-modal__timestamp {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-ink-soft);
+}
+
+.pot-chat-modal__caption {
+  margin: 0 0 20px;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+
+.pot-chat-modal__actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.pot-chat-modal__reroll {
+  padding: 10px 20px;
+  background: none;
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid var(--color-accent);
+  cursor: pointer;
+}
+
+.pot-chat-modal__close-text {
+  padding: 10px 20px;
+  background: none;
+  color: var(--color-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+}
+
+.pot-chat__roster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 0 0 28px;
+  padding: 16px;
+  list-style: none;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+}
+
+.pot-chat__roster-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 72px;
+}
+
+/* CreatureFaceは66x66px前提の絶対配置なので、箱のサイズはそのままに
+   少しだけ縮小して一覧用のアイコンにする。 */
+.pot-chat__roster-face {
+  position: relative;
+  width: 66px;
+  height: 66px;
+  transform: scale(0.8);
+}
+
+.pot-chat__roster-name {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.pot-chat__log {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pot-chat__line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.pot-chat__line-speaker {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.pot-chat__line-text {
+  color: var(--color-ink);
+}
+
+.pot-chat__line-link {
+  color: var(--color-accent);
+  text-decoration: underline;
 }

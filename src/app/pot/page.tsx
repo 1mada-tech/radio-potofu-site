@@ -4,6 +4,7 @@ import { getPotContent } from "@/lib/potContent";
 import PotScene from "@/components/PotScene";
 import PotForm from "@/components/PotForm";
 import PotLog from "@/components/PotLog";
+import PotChat from "@/components/PotChat";
 
 export const metadata: Metadata = {
   title: "川柳ポトフ鍋",
@@ -31,6 +32,7 @@ export default async function PotPage() {
         submitLabel={content.formSubmitLabel}
       />
       <PotScene creatures={creatures} tooltipLifespanTemplate={content.tooltipLifespanTemplate} />
+      <PotChat creatures={creatures} />
       <PotLog
         creatures={allCreatures}
         heading={content.logHeading}

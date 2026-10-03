@@ -1,4 +1,4 @@
-import { buildPotEvents, potAgeDays, type PotEventType } from "@/lib/potLog";
+import { buildPotEvents, potAgeHours, type PotEventType } from "@/lib/potLog";
 import { formatDateTime } from "@/lib/date";
 import type { PotCreature } from "@/lib/potCreatures";
 import PotLogFaceTooltip from "@/components/PotLogFaceTooltip";
@@ -22,7 +22,9 @@ export default function PotLog({
   tooltipLifespanTemplate: string;
 }) {
   const events = buildPotEvents(creatures);
-  const ageDays = potAgeDays(creatures);
+  const ageHoursTotal = potAgeHours(creatures);
+  const ageDaysPart = Math.floor(ageHoursTotal / 24);
+  const ageHoursPart = ageHoursTotal % 24;
   const creatureById = new Map(creatures.map((c) => [String(c.id), c]));
 
   // event.id は "enter-123" "milestone-123" "melt-123" "flavor-3" の形。
@@ -36,11 +38,11 @@ export default function PotLog({
   }
 
   return (
-    <section className="pot-log">
+    <section className="pot-log" id="pot-log">
       <h2 className="pot-log__heading">{heading}</h2>
       <p className="pot-log__caption">
         {creatures.length > 0
-          ? captionTemplate.replace(/\d+日/, `${ageDays}日`)
+          ? captionTemplate.replace(/\d+日/, `${ageDaysPart}日と${ageHoursPart}時間`)
           : "まだ鍋は動いていません。最初の一匹を投稿してみませんか？"}
       </p>
       {events.length > 0 ? (

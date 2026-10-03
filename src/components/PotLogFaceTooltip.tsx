@@ -80,7 +80,7 @@ export default function PotLogFaceTooltip({
       onBlur={() => setOpen(false)}
     >
       <span className="pot-log-item__face" aria-hidden="true">
-        <CreatureFace poem={poem} />
+        <CreatureFace poem={poem} createdAt={createdAt} />
       </span>
       {/* 鍋の中のキャラにマウスオーバーした時と同じ内容のツールチップ。 */}
       {open && coords && (
@@ -91,7 +91,7 @@ export default function PotLogFaceTooltip({
         >
           <div className="pot__tooltip-head">
             <span className="pot__tooltip-face" aria-hidden="true">
-              <CreatureFace poem={poem} />
+              <CreatureFace poem={poem} createdAt={createdAt} />
             </span>
             <p className="pot__tooltip-name">{deriveName(poem, createdAt)}</p>
           </div>
