@@ -30,6 +30,7 @@ const navGroups = [
       { href: "/note", label: "ひみつノート" },
       { href: "/history", label: "年表" },
       { href: LISTENER_FORM_URL, label: "おたよりを送る", external: true },
+      { href: "/note-articles", label: "note" },
     ],
   },
 ];
