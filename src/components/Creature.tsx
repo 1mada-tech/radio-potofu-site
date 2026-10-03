@@ -29,7 +29,7 @@ export default function Creature({
   // さらに奥(上の方)にいる別のキャラの顔を隠してしまう。下の方のキャラ
   // だけ、ラベルを頭の上ではなく顎のあたりに出すことでこれを避ける。
   const labelBelow = top > 50;
-  const labelOffsetPx = labelBelow ? 46 + labelLevel * 14 : -18 - labelLevel * 14;
+  const labelOffsetPx = labelBelow ? 58 + labelLevel * 6 : -8 - labelLevel * 6;
 
   return (
     <button
