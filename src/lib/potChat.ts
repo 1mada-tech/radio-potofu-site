@@ -14,7 +14,7 @@
 // {EP}は最新エピソードのタイトル、{NOTE}は最新note記事のタイトルに
 // 置き換わる(どちらも使う時はrequiresに両方書く)。該当データが
 // 取得できなかった場合、そのテンプレートは自動的に使われない。
-type Topic = "episode" | "note";
+type Topic = "episode" | "note" | "waiting";
 type SoloLine = { type: "solo"; text: string; requires?: Topic[] };
 type ExchangeLine = { type: "exchange"; a: string; b: string; requires?: Topic[] };
 type Group3Line = { type: "group3"; a: string; b: string; c: string; requires?: Topic[] };
@@ -32,7 +32,7 @@ const LINE_BANK: LineTemplate[] = [
   { type: "solo", text: "…寝てた" },
   { type: "solo", text: "……{SUFFIX}、ってなんだよ" },
   { type: "solo", text: "自分で選んだわけじゃないんだけど、{SUFFIX}って呼ばれてる" },
-  { type: "solo", text: "待機列にいた頃の方が涼しかった" },
+  { type: "solo", text: "待機列にいた頃の方が涼しかった", requires: ["waiting"] },
   { type: "solo", text: "そろそろダシになる頃合いかもしれない" },
   { type: "solo", text: "溶けるのは怖くない。ただ名残惜しい" },
   { type: "solo", text: "今日の句会、自分の番あったかな" },
@@ -74,7 +74,12 @@ const LINE_BANK: LineTemplate[] = [
   { type: "exchange", a: "となりの{B}、静かだね", b: "寝てるだけだよ" },
   { type: "exchange", a: "鍋の記録、読まれてるらしいよ", b: "恥ずかしいこと言ってないよね" },
   { type: "exchange", a: "{B}はどんな川柳から生まれたの？", b: "忘れた。たぶん面白くなかった" },
-  { type: "exchange", a: "待機列にいる子たち、元気かな", b: "こっちはこっちで大変なんだよ" },
+  {
+    type: "exchange",
+    a: "待機列にいる子たち、元気かな",
+    b: "こっちはこっちで大変なんだよ",
+    requires: ["waiting"],
+  },
   { type: "exchange", a: "溶けるの、{B}は怖くない？", b: "怖いけど、それもいいかなって" },
   { type: "exchange", a: "{B}、今日はよく喋るね", b: "湯気にあてられたのかも" },
   { type: "exchange", a: "さっきからずっと静かだけど大丈夫？", b: "{B}こそ喋りすぎじゃない？" },
@@ -158,46 +163,47 @@ const LINE_BANK: LineTemplate[] = [
     c: "急に名前出さないでよ",
   },
 
-  // 番組の「最近」を使った話題。
-  { type: "solo", text: "最新回「{EP}」、もう聴いた", requires: ["episode"] },
-  { type: "solo", text: "外では「{EP}」の話で持ちきりみたいだよ", requires: ["episode"] },
-  { type: "solo", text: "noteの新着「{NOTE}」ってタイトル、気になる", requires: ["note"] },
-  { type: "solo", text: "「{EP}」のタイトル、何度見ても面白い", requires: ["episode"] },
-  { type: "solo", text: "noteの「{NOTE}」、読む時間あるかな", requires: ["note"] },
-  { type: "solo", text: "「{EP}」を聴いた感想、誰かに言いたい", requires: ["episode"] },
+  // 番組のエピソード/note記事を使った話題。最新に限らず過去のものも
+  // 話題に挙がる(pickTopicItemで重み付けランダムに選ぶ)。
+  { type: "solo", text: "{EP}、もう聴いた", requires: ["episode"] },
+  { type: "solo", text: "外では{EP}の話で持ちきりみたいだよ", requires: ["episode"] },
+  { type: "solo", text: "noteの{NOTE}、内容が気になる", requires: ["note"] },
+  { type: "solo", text: "{EP}、内容がどんな話か気になる", requires: ["episode"] },
+  { type: "solo", text: "noteの{NOTE}、読む時間あるかな", requires: ["note"] },
+  { type: "solo", text: "{EP}を聴いた感想、誰かに言いたい", requires: ["episode"] },
   {
     type: "exchange",
-    a: "{B}、最新回「{EP}」聴いた？",
+    a: "{B}、{EP}聴いた？",
     b: "まだなんだ。あとで聴く",
     requires: ["episode"],
   },
   {
     type: "exchange",
-    a: "noteに「{NOTE}」って記事が出てたね",
+    a: "noteに{NOTE}って記事が出てたね",
     b: "{B}、もう読んだの？",
     requires: ["note"],
   },
   {
     type: "exchange",
-    a: "「{EP}」、{B}はどう思った？",
+    a: "{EP}、{B}はどう思った？",
     b: "鍋の中にいると、外の話って実感わかないな",
     requires: ["episode"],
   },
   {
     type: "exchange",
-    a: "「{EP}」のタイトル、{B}はどう思う？",
+    a: "{EP}の内容、{B}はどう思う？",
     b: "正直、まだピンと来てない",
     requires: ["episode"],
   },
   {
     type: "exchange",
-    a: "noteの「{NOTE}」、{B}は読んだ？",
+    a: "noteの{NOTE}、{B}は読んだ？",
     b: "まだ。気になってはいる",
     requires: ["note"],
   },
   {
     type: "exchange",
-    a: "{B}、「{EP}」の話、外でもしてた？",
+    a: "{B}、{EP}の話、外でもしてた？",
     b: "鍋の中までは届かないよ",
     requires: ["episode"],
   },
@@ -258,18 +264,39 @@ function makeRng(seed: number) {
 
 export type PotChatLine = { speaker: string; text: string };
 
+export type PotChatTopicItem = { title: string; url: string };
+
 export type PotChatTopics = {
-  latestEpisodeTitle?: string;
-  latestEpisodeUrl?: string;
-  latestNoteTitle?: string;
-  latestNoteUrl?: string;
+  // 新しい順(先頭が最新)。最新だけでなく過去のものも話題に挙がる。
+  episodes?: PotChatTopicItem[];
+  notes?: PotChatTopicItem[];
+  hasWaitingQueue?: boolean;
 };
 
-// {EP}/{NOTE}を実際の話題データに置き換える。
-function fillTopics(text: string, topics: PotChatTopics): string {
-  return text
-    .replaceAll("{EP}", topics.latestEpisodeTitle ?? "")
-    .replaceAll("{NOTE}", topics.latestNoteTitle ?? "");
+// 新しい順のリストから、最新を重めに・過去のものも控えめに選ぶ。
+// (索引が若い=新しいほど重みが大きい、調和級数的な重み付け)
+function pickTopicItem(list: PotChatTopicItem[] | undefined, rng: () => number): string {
+  if (!list || list.length === 0) return "";
+  const weights = list.map((_, i) => 1 / (i + 1));
+  const total = weights.reduce((a, b) => a + b, 0);
+  let r = rng() * total;
+  for (let i = 0; i < list.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return list[i].title;
+  }
+  return list[list.length - 1].title;
+}
+
+// {EP}/{NOTE}を実際の話題データ(重み付けでランダムに選んだ1件)に置き換える。
+function fillTopics(text: string, topics: PotChatTopics, rng: () => number): string {
+  let result = text;
+  if (result.includes("{EP}")) {
+    result = result.replaceAll("{EP}", pickTopicItem(topics.episodes, rng));
+  }
+  if (result.includes("{NOTE}")) {
+    result = result.replaceAll("{NOTE}", pickTopicItem(topics.notes, rng));
+  }
+  return result;
 }
 
 export type PotChatRosterMember = { name: string; honorific: string };
@@ -304,8 +331,9 @@ export function generatePotChat(
   }
 
   const availableTopics = new Set<Topic>();
-  if (topics.latestEpisodeTitle) availableTopics.add("episode");
-  if (topics.latestNoteTitle) availableTopics.add("note");
+  if (topics.episodes && topics.episodes.length > 0) availableTopics.add("episode");
+  if (topics.notes && topics.notes.length > 0) availableTopics.add("note");
+  if (topics.hasWaitingQueue) availableTopics.add("waiting");
 
   // 1匹しかいない時に2人・3人の会話テンプレートを選ぶと、自分自身と
   // 喋っているように見えて不自然なので、使えるテンプレートの種類を
@@ -343,7 +371,7 @@ export function generatePotChat(
 
     if (template.type === "solo") {
       const speaker = pickName(prevSpeaker ? [prevSpeaker] : []);
-      const text = fillOwnSuffix(fillTopics(template.text, topics), speaker);
+      const text = fillOwnSuffix(fillTopics(template.text, topics, rng), speaker);
       if (alreadySaid(text)) continue;
       result.push({ speaker, text });
       markSaid(text);
@@ -351,11 +379,11 @@ export function generatePotChat(
       const speakerA = pickName(prevSpeaker ? [prevSpeaker] : []);
       const speakerB = pickName([speakerA]);
       const textA = fillOwnSuffix(
-        fillTopics(template.a, topics).replaceAll("{B}", speakerB),
+        fillTopics(template.a, topics, rng).replaceAll("{B}", speakerB),
         speakerA,
       );
       const textB = fillOwnSuffix(
-        fillTopics(template.b, topics).replaceAll("{B}", speakerA),
+        fillTopics(template.b, topics, rng).replaceAll("{B}", speakerA),
         speakerB,
       );
       if (alreadySaid(textA)) continue;
@@ -373,7 +401,7 @@ export function generatePotChat(
       const speakerC = pickName([speakerA, speakerB]);
       const sub = (s: string, speaker: string) =>
         fillOwnSuffix(
-          fillTopics(s, topics)
+          fillTopics(s, topics, rng)
             .replaceAll("{A}", speakerA)
             .replaceAll("{B}", speakerB)
             .replaceAll("{C}", speakerC),

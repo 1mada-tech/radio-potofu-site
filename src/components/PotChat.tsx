@@ -4,9 +4,15 @@ import { getNoteArticles } from "@/lib/noteFeed";
 import type { PotCreature } from "@/lib/potCreatures";
 import PotChatModal from "@/components/PotChatModal";
 
+// 話題にする過去分の件数。最新だけでなく、少しさかのぼった分も
+// 候補に入れる(実際にどれが選ばれるかはpotChat.ts側で最新重視の
+// 重み付けランダム)。
+const TOPIC_HISTORY_COUNT = 6;
+
 // 「鍋内のひととき」: ボタンを押すと、今鍋の中にいるキャラのアイコン
 // 一覧と、その面々の会話(自動生成・文字起こし体)をポップアップで見せる。
-// 最新エピソード/note記事のタイトルも、話題として会話に混ぜている。
+// エピソード/note記事のタイトルも、話題として会話に混ぜている
+// (最新のものを中心に、過去のものもたまに登場する)。
 export default async function PotChat({ creatures }: { creatures: PotCreature[] }) {
   // 鍋の中に実際に見えている面々(待機列は含めない)。
   const inPot = creatures.slice(0, COMFORTABLE_COUNT);
@@ -18,21 +24,25 @@ export default async function PotChat({ creatures }: { creatures: PotCreature[] 
   });
 
   const [{ contents: episodes }, noteArticles] = await Promise.all([
-    getEpisodes(1),
+    getEpisodes(TOPIC_HISTORY_COUNT),
     getNoteArticles(),
   ]);
-  const latestEpisode = episodes[0];
-  const latestNote = noteArticles[0];
+
+  const episodeTopics = episodes
+    .map((e) => ({ title: e.title, url: e.spotifyUrl ?? e.appleUrl }))
+    .filter((e): e is { title: string; url: string } => Boolean(e.url));
+  const noteTopics = noteArticles
+    .slice(0, TOPIC_HISTORY_COUNT)
+    .map((n) => ({ title: n.title, url: n.link }));
 
   return (
     <div className="pot-chat">
       <PotChatModal
         roster={roster}
         topics={{
-          latestEpisodeTitle: latestEpisode?.title,
-          latestEpisodeUrl: latestEpisode?.spotifyUrl ?? latestEpisode?.appleUrl,
-          latestNoteTitle: latestNote?.title,
-          latestNoteUrl: latestNote?.link,
+          episodes: episodeTopics,
+          notes: noteTopics,
+          hasWaitingQueue: creatures.length > COMFORTABLE_COUNT,
         }}
       />
     </div>

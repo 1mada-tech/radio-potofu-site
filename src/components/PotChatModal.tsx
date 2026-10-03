@@ -28,17 +28,13 @@ export default function PotChatModal({
   const [chat, setChat] = useState<PotChatLine[]>([]);
   const [generatedAt, setGeneratedAt] = useState<number | null>(null);
 
-  // 最新エピソード/note記事は、タイトル自体ではなくタイトル部分に
-  // 直接リンクを張る(「最新回」「note」という単語の方には張らない)。
-  const dynamicLinks: (SectionLink | null)[] = [
-    topics.latestEpisodeTitle && topics.latestEpisodeUrl
-      ? { label: topics.latestEpisodeTitle, href: topics.latestEpisodeUrl, external: true }
-      : null,
-    topics.latestNoteTitle && topics.latestNoteUrl
-      ? { label: topics.latestNoteTitle, href: topics.latestNoteUrl, external: true }
-      : null,
+  // エピソード/note記事は、タイトル自体に直接リンクを張る
+  // (「最新回」「note」という単語の方には張らない)。会話には最新に
+  // 限らず過去のものも登場しうるので、候補全件分のリンクを用意する。
+  const resolvedDynamicLinks: SectionLink[] = [
+    ...(topics.episodes ?? []).map((e) => ({ label: e.title, href: e.url, external: true })),
+    ...(topics.notes ?? []).map((n) => ({ label: n.title, href: n.url, external: true })),
   ];
-  const resolvedDynamicLinks = dynamicLinks.filter((l): l is SectionLink => l !== null);
 
   function reroll() {
     setChat(generatePotChat(roster, 8, topics));
