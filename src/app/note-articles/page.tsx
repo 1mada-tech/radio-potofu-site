@@ -16,7 +16,7 @@ export default async function NoteArticlesPage() {
     <div className="container page">
       <div className="page-heading">
         <h1>note</h1>
-        <p className="page-subtitle">Note</p>
+        <p className="page-subtitle">On note</p>
       </div>
       <p className="page-caption">
         ラジオポトフのnote（
