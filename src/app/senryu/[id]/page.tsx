@@ -33,7 +33,9 @@ export default async function SenryuDetailPage({
   return (
     <article className="container page page--article">
       <p className="article__date">
-        {formatDateJa(essay.publishDate)}
+        {/* 公開前の下書きプレビューではpublishDateが未設定でクラッシュするため、
+            その場合はcreatedAtにフォールバックする。 */}
+        {formatDateJa(essay.publishDate || essay.createdAt)}
         {essay.author ? ` / ${essay.author}` : ""}
       </p>
       <h1>{essay.title}</h1>

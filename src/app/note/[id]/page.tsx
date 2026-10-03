@@ -43,7 +43,7 @@ export default async function ZatsubunDetailPage({
           dangerouslySetInnerHTML={{ __html: essay.body }}
         />
         <p className="article__date article__date--footer">
-          {formatDateJa(essay.publishDate)}
+          {formatDateJa(essay.publishDate || essay.createdAt)}
           {essay.author ? ` / ${essay.author}` : ""}
         </p>
       </article>
