@@ -28,6 +28,34 @@ export default function PotChatModal({
   const [chat, setChat] = useState<PotChatLine[]>([]);
   const [generatedAt, setGeneratedAt] = useState<number | null>(null);
 
+  // 「もう一度盗み聞きする」を連打すると同じセリフに当たりやすいので、
+  // 直近数回分で使ったセリフをブラウザに覚えておいて避ける。
+  // (サーバー側の状態ではなく、あくまでこの端末だけのちょっとした
+  // 工夫なのでlocalStorageで十分。読み書きに失敗しても動作に支障が
+  // 出ないようtry/catchで囲む。)
+  const RECENT_KEYS_STORAGE_KEY = "potChatRecentKeys";
+  const RECENT_KEYS_LIMIT = 24; // 直近3回分(8行×3)程度を覚えておく
+
+  function readRecentKeys(): string[] {
+    try {
+      const raw = localStorage.getItem(RECENT_KEYS_STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as string[]) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function writeRecentKeys(keys: string[]) {
+    try {
+      localStorage.setItem(
+        RECENT_KEYS_STORAGE_KEY,
+        JSON.stringify(keys.slice(-RECENT_KEYS_LIMIT)),
+      );
+    } catch {
+      // 保存できなくても(プライベートモード等)動作には影響しない
+    }
+  }
+
   // エピソード/note記事は、タイトル自体に直接リンクを張る
   // (「最新回」「note」という単語の方には張らない)。会話には最新に
   // 限らず過去のものも登場しうるので、候補全件分のリンクを用意する。
@@ -37,8 +65,11 @@ export default function PotChatModal({
   ];
 
   function reroll() {
-    setChat(generatePotChat(roster, 8, topics));
+    const recentKeys = readRecentKeys();
+    const { lines, usedKeys } = generatePotChat(roster, 8, topics, new Set(recentKeys));
+    setChat(lines);
     setGeneratedAt(Date.now());
+    writeRecentKeys([...recentKeys, ...usedKeys]);
   }
 
   function handleOpen() {

@@ -63,6 +63,27 @@ const LINE_BANK: LineTemplate[] = [
   { type: "solo", text: "誰かに名前を呼ばれた気がした" },
   { type: "solo", text: "味変わったの、自分だけじゃないよね" },
   { type: "solo", text: "静かに揺られているのが好き" },
+  { type: "solo", text: "今日はいつもよりちょっと静かな気がする" },
+  { type: "solo", text: "誰かの句会の結果が気になる" },
+  { type: "solo", text: "湯気の中にいると、時間の流れ方が違う気がする" },
+  { type: "solo", text: "この鍋、意外と広い" },
+  { type: "solo", text: "隣の子の寝息が聞こえる" },
+  { type: "solo", text: "味が馴染むまでって、どのくらいかかるんだろう" },
+  { type: "solo", text: "今日は誰も喋らない日かもしれない" },
+  { type: "solo", text: "鍋のふちに座ってみたい" },
+  { type: "solo", text: "自分の色、最初とちょっと違う気がする" },
+  { type: "solo", text: "湯気越しに見る景色が好き" },
+  { type: "solo", text: "今、何時くらいだろう" },
+  { type: "solo", text: "溶けるまでの時間、意外と長い" },
+  { type: "solo", text: "誰かがため息ついた気がする" },
+  { type: "solo", text: "今日の火加減、ちょうどいい" },
+  { type: "solo", text: "鍋の底の方、静かでいいよね" },
+  { type: "solo", text: "自分がどんな川柳だったか、思い出せなくなってきた" },
+  { type: "solo", text: "この匂い、好きになってきた" },
+  { type: "solo", text: "誰かに名前を褒められた気がする" },
+  { type: "solo", text: "今日はやけに揺れる" },
+  { type: "solo", text: "ふと我に返る瞬間がある" },
+  { type: "solo", text: "隣の子、今日はよく笑ってる" },
 
   { type: "exchange", a: "{B}、休みの日は何してるの？", b: "煮込まれてる" },
   { type: "exchange", a: "{B}、良い具材っぷりだね", b: "褒めてる？" },
@@ -107,6 +128,25 @@ const LINE_BANK: LineTemplate[] = [
   { type: "exchange", a: "静かだと、逆に落ち着かない", b: "{B}はにぎやかな方が好きなんだね" },
   { type: "exchange", a: "{B}、自分の番が来たらどうする？", b: "まだ考えてない" },
   { type: "exchange", a: "この鍋、意外と快適じゃない？", b: "{B}がそう思うなら、そうなのかも" },
+  { type: "exchange", a: "{B}、今日元気ないね", b: "ちょっと煮詰まってるだけだよ" },
+  { type: "exchange", a: "{B}はいつまでここにいると思う？", b: "さあ、考えたことなかった" },
+  { type: "exchange", a: "湯気、今日は多くない？", b: "{B}、気のせいじゃない？" },
+  { type: "exchange", a: "{B}、自分の匂い分かる？", b: "分からないけど、{B}のは分かるよ" },
+  { type: "exchange", a: "隣で動いてるの{B}？", b: "違うよ、気のせいだと思う" },
+  { type: "exchange", a: "{B}、さっき何か言った？", b: "ううん、独り言" },
+  { type: "exchange", a: "鍋の底、{B}は行ったことある？", b: "ないし、行きたくもないかな" },
+  { type: "exchange", a: "{B}、今日はよく動くね", b: "なんか落ち着かなくて" },
+  { type: "exchange", a: "{B}はここの居心地どう？", b: "悪くはないよ" },
+  { type: "exchange", a: "さっきの揺れ、{B}も感じた？", b: "感じた。なんだったんだろう" },
+  { type: "exchange", a: "{B}、昨日のこと覚えてる？", b: "昨日ってあったっけ" },
+  { type: "exchange", a: "{B}、ここに来てから何日目か分かる？", b: "正直、途中から数えてない" },
+  { type: "exchange", a: "{B}、今の気分どう？", b: "悪くはないよ、たぶん" },
+  { type: "exchange", a: "隣の{B}、静かだと思ったら寝てた", b: "聞こえてるよ、それ" },
+  { type: "exchange", a: "{B}、溶けるのが先か気になる？", b: "考えないようにしてる" },
+  { type: "exchange", a: "{B}、今日の味どう思う？", b: "いつもよりまろやかな気がする" },
+  { type: "exchange", a: "{B}、ここにいる意味って考えたことある？", b: "たまにね。{B}は？" },
+  { type: "exchange", a: "さっき誰か笑ってなかった？", b: "{B}かと思った" },
+  { type: "exchange", a: "{B}、もし外に出られたらどうする？", b: "考えたことなかったな" },
 
   {
     type: "group3",
@@ -162,6 +202,36 @@ const LINE_BANK: LineTemplate[] = [
     b: "まあね",
     c: "急に名前出さないでよ",
   },
+  {
+    type: "group3",
+    a: "{B}、{C}の匂い分かる？",
+    b: "分からないかも",
+    c: "ひどいな",
+  },
+  {
+    type: "group3",
+    a: "この3人、揺れ方が似てる気がする",
+    b: "{C}もそう思う？",
+    c: "考えすぎじゃない？",
+  },
+  {
+    type: "group3",
+    a: "{B}と{C}、どっちが先にここに来たんだっけ",
+    b: "たぶん{C}の方が先",
+    c: "いや{B}の方が先だったと思う",
+  },
+  {
+    type: "group3",
+    a: "{B}、{C}と喋るとき緊張する？",
+    b: "しないよ",
+    c: "{A}、それ本当？",
+  },
+  {
+    type: "group3",
+    a: "{B}と{C}、息ぴったりだね",
+    b: "そう見える？",
+    c: "{A}の勘違いだと思う",
+  },
 
   // 番組のエピソード/note記事を使った話題。最新に限らず過去のものも
   // 話題に挙がる(pickTopicItemで重み付けランダムに選ぶ)。
@@ -171,6 +241,14 @@ const LINE_BANK: LineTemplate[] = [
   { type: "solo", text: "{EP}、内容がどんな話か気になる", requires: ["episode"] },
   { type: "solo", text: "noteの{NOTE}、読む時間あるかな", requires: ["note"] },
   { type: "solo", text: "{EP}を聴いた感想、誰かに言いたい", requires: ["episode"] },
+  { type: "solo", text: "{EP}が出た日は、鍋が心なしか揺れた気がする", requires: ["episode"] },
+  { type: "solo", text: "noteの{NOTE}、誰が読んでるんだろう", requires: ["note"] },
+  { type: "solo", text: "{EP}を聴いたら、鍋の話が出てきそうで怖い", requires: ["episode"] },
+  { type: "solo", text: "{EP}、聴いてる途中で寝落ちした", requires: ["episode"] },
+  { type: "solo", text: "noteの{NOTE}、読み終わったら感想言いたい", requires: ["note"] },
+  { type: "solo", text: "{EP}の話、鍋の中でも広まってる気がする", requires: ["episode"] },
+  { type: "solo", text: "noteの{NOTE}、内容を少しずつ読んでる", requires: ["note"] },
+  { type: "solo", text: "{EP}、何度か聴き返したくなる話だった", requires: ["episode"] },
   {
     type: "exchange",
     a: "{B}、{EP}聴いた？",
@@ -205,6 +283,63 @@ const LINE_BANK: LineTemplate[] = [
     type: "exchange",
     a: "{B}、{EP}の話、外でもしてた？",
     b: "鍋の中までは届かないよ",
+    requires: ["episode"],
+  },
+  {
+    type: "exchange",
+    a: "noteの{NOTE}、{B}はどう思った？",
+    b: "まだ全部読めてないんだよね",
+    requires: ["note"],
+  },
+  {
+    type: "exchange",
+    a: "{B}、{EP}の内容覚えてる？",
+    b: "なんとなくだけど",
+    requires: ["episode"],
+  },
+  {
+    type: "group3",
+    a: "{EP}、{B}と{C}はもう聴いた？",
+    b: "聴いたよ",
+    c: "まだなんだよな",
+    requires: ["episode"],
+  },
+  {
+    type: "group3",
+    a: "noteの{NOTE}、{B}は読んだ？",
+    b: "読んだ。{C}は？",
+    c: "気になってはいるんだけど",
+    requires: ["note"],
+  },
+  {
+    type: "exchange",
+    a: "{B}、{EP}の感想ある？",
+    b: "まだ整理できてないんだよね",
+    requires: ["episode"],
+  },
+  {
+    type: "exchange",
+    a: "noteの{NOTE}、{B}はどこまで読んだ？",
+    b: "まだ途中だよ",
+    requires: ["note"],
+  },
+  {
+    type: "exchange",
+    a: "{EP}、{B}は覚えてる話あった？",
+    b: "ちょっとだけね",
+    requires: ["episode"],
+  },
+  {
+    type: "exchange",
+    a: "{B}、noteの{NOTE}の話してた？",
+    b: "してないけど、気になってはいる",
+    requires: ["note"],
+  },
+  {
+    type: "group3",
+    a: "{EP}、{B}と{C}はどう思った？",
+    b: "良かったと思う",
+    c: "{A}はどうだったの？",
     requires: ["episode"],
   },
 
@@ -276,6 +411,33 @@ const LINE_BANK: LineTemplate[] = [
     b: "してないよ",
     c: "{A}の聞き間違いじゃない？",
   },
+  { type: "solo", text: "きょうのあなたに、自分におすすめの回を教えてくれるんだよな" },
+  { type: "solo", text: "ネットプリント、まだ試したことないんだよな" },
+  { type: "solo", text: "テーマ募集、次はどんなお題が来るのかな" },
+  { type: "solo", text: "年表を読むと、ノベルティがステッカーの印刷権だった回があるらしい" },
+  { type: "solo", text: "鍋の記録、下まで読むと長いよね" },
+  { type: "solo", text: "ひみつノート、更新されてるか気になる" },
+  { type: "solo", text: "おたよりを送る、送ったら読まれるのかな" },
+  { type: "solo", text: "年表、ベストバイ企画の回があるって書いてあった" },
+  { type: "exchange", a: "{B}、きょうのあなたにやってみた？", b: "やった。当たってるようなそうでもないような" },
+  { type: "exchange", a: "ネットプリント、{B}は印刷したことある？", b: "まだないんだよね" },
+  { type: "exchange", a: "テーマ募集、{B}は考えたことある？", b: "あるけど出せてない" },
+  { type: "exchange", a: "年表、{B}はどこまで読んだ？", b: "まだ最初の方だけ" },
+  { type: "exchange", a: "鍋の記録、{B}は全部読んでる？", b: "ところどころだけだよ" },
+  { type: "exchange", a: "ひみつノート、{B}は読んでる？", b: "たまにね" },
+  { type: "exchange", a: "おたよりを送る、{B}は使ったことある？", b: "ないけど気にはなってる" },
+  {
+    type: "group3",
+    a: "{B}と{C}、テーマ募集に送ったことある？",
+    b: "ないかも",
+    c: "{A}はあるの？",
+  },
+  {
+    type: "group3",
+    a: "年表、{B}と{C}は見た？",
+    b: "見たよ",
+    c: "まだなんだよな",
+  },
 ];
 
 function makeRng(seed: number) {
@@ -331,12 +493,22 @@ export type PotChatRosterMember = { name: string; honorific: string };
 // (ページを開き直すたびに別の会話が見られるようにするため)。
 // topicsを渡すと、最新エピソード/note記事のタイトルを使った
 // セリフも候補に入る(渡さない/取得できなかった分は自動で除外)。
+export type PotChatResult = { lines: PotChatLine[]; usedKeys: string[] };
+
+// テンプレートの中身(文言)から一意なキーを作る。LINE_BANKの並び順が
+// 変わっても同じ文言なら同じキーになるので、直近の出力を覚えておいて
+// 避ける用途(avoidKeys)にそのまま使える。
+function templateKey(t: LineTemplate): string {
+  return t.type === "solo" ? `solo:${t.text}` : `${t.type}:${t.a}`;
+}
+
 export function generatePotChat(
   roster: PotChatRosterMember[],
   lineCount = 8,
   topics: PotChatTopics = {},
-): PotChatLine[] {
-  if (roster.length === 0) return [];
+  avoidKeys?: Set<string>,
+): PotChatResult {
+  if (roster.length === 0) return { lines: [], usedKeys: [] };
 
   const names = roster.map((r) => r.name);
   const honorificByName = new Map(roster.map((r) => [r.name, r.honorific]));
@@ -370,11 +542,18 @@ export function generatePotChat(
       : names.length === 2
         ? ["solo", "exchange"]
         : ["solo"];
-  const pool = LINE_BANK.filter(
+  const basePool = LINE_BANK.filter(
     (t) =>
       availableTypes.includes(t.type) &&
       (t.requires?.every((topic) => availableTopics.has(topic)) ?? true),
   );
+  // 直近の出力で使ったセリフは、プールに十分な余裕がある限り避ける。
+  // 避けた結果プールが空になってしまう(候補が少ない構成の時)場合は、
+  // 無視して通常通りbasePoolを使う。
+  const filteredPool = avoidKeys
+    ? basePool.filter((t) => !avoidKeys.has(templateKey(t)))
+    : basePool;
+  const pool = filteredPool.length > 0 ? filteredPool : basePool;
 
   // 話者が違っても、1回の出力の中で全く同じセリフが2回出ると
   // (特にセリフ自体に名前が入っていない場合に)不自然に見えるので、
@@ -386,10 +565,12 @@ export function generatePotChat(
   };
 
   const result: PotChatLine[] = [];
+  const usedKeys: string[] = [];
   let guard = 0;
   while (result.length < lineCount && guard < lineCount * 30) {
     guard += 1;
     const template = pool[Math.floor(rng() * pool.length)];
+    const beforeLength = result.length;
     // 1つ前のセリフの話者と、この固まりの最初の話者が同じだと、
     // 同じキャラが2連続で喋っているように見えて不自然なので避ける。
     const prevSpeaker = result[result.length - 1]?.speaker;
@@ -445,7 +626,11 @@ export function generatePotChat(
         markSaid(line.text);
       }
     }
+
+    if (result.length > beforeLength) {
+      usedKeys.push(templateKey(template));
+    }
   }
 
-  return result.slice(0, lineCount);
+  return { lines: result.slice(0, lineCount), usedKeys };
 }
