@@ -29,7 +29,14 @@ export default function Creature({
   // さらに奥(上の方)にいる別のキャラの顔を隠してしまう。下の方のキャラ
   // だけ、ラベルを頭の上ではなく顎のあたりに出すことでこれを避ける。
   const labelBelow = top > 50;
-  const labelOffsetPx = labelBelow ? 58 + labelLevel * 6 : -8 - labelLevel * 6;
+  // .creature__scale-wrapはtransform-origin: bottom centerで縮むため、
+  // 煮込まれて小さくなっても顔の底辺(あご側)の位置はほとんど動かない。
+  // そのため下側ラベルのオフセットはscaleを反映せず固定のままにする
+  // (反映すると逆に顔へ食い込んでしまう)。一方、上側ラベルは縮むほど
+  // 頭のてっぺんがあご側に近づいてくるので、scaleに合わせて縮める。
+  const labelOffsetPx = labelBelow
+    ? 58 + labelLevel * 6
+    : (-8 - labelLevel * 6) * Math.max(scale, 0.6);
 
   return (
     <button

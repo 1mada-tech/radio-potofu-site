@@ -1,4 +1,4 @@
-import { deriveName, POT_LIFESPAN_DAYS } from "@/lib/creature";
+import { deriveName, hashString, makeRng, POT_LIFESPAN_DAYS } from "@/lib/creature";
 import type { PotCreature } from "@/lib/potCreatures";
 
 export type PotEventType = "enter" | "milestone" | "melt" | "flavor";
@@ -12,6 +12,27 @@ export type PotEvent = {
 
 const MILESTONE_STEP = 10;
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+// ダシになる(=鍋から卒業する)瞬間の、最後のひとこと。
+// キャラごとに同じ川柳からは常に同じ一言になるよう、poemをもとに
+// 決定的に選ぶ(deriveName等と同じ流儀)。
+const LAST_WORDS = [
+  "ここにいられて、悪くなかったよ",
+  "スープになるの、思ったより怖くなかった",
+  "次の子によろしく",
+  "あ、今ちょっと名残惜しいかも",
+  "……あっさり系だった方がよかったかな",
+  "最後まで、自分の味がよく分からなかったな",
+  "みんな、ありがとう",
+  "そろそろかなとは思ってたんだ",
+  "また別の形で会えたらいいな",
+  "この鍋、最後まで悪くなかったよ",
+];
+
+function pickLastWords(poem: string): string {
+  const rng = makeRng(hashString(`${poem}::lastwords`) || 1);
+  return LAST_WORDS[Math.floor(rng() * LAST_WORDS.length)];
+}
 
 // 鍋が稼働してからの経過日数で、スープの煮詰まり具合を表すフレーバー。
 const FLAVOR_CHECKPOINTS = [
@@ -77,7 +98,7 @@ export function buildPotEvents(creatures: PotCreature[]): PotEvent[] {
         id: `melt-${creature.id}`,
         type: "melt",
         at: meltAt,
-        message: `${name}が鍋のダシになりました`,
+        message: `${name}が完全に溶け、鍋のダシになりました。「${pickLastWords(creature.poem)}」`,
       });
     }
   });

@@ -49,7 +49,7 @@ export type CreatureAppearance = {
   mouthType: (typeof MOUTH_TYPES)[number];
 };
 
-function hashString(text: string): number {
+export function hashString(text: string): number {
   let h = 0;
   for (let i = 0; i < text.length; i++) {
     h = (h * 31 + text.charCodeAt(i)) % 1000000007;
@@ -58,7 +58,7 @@ function hashString(text: string): number {
 }
 
 // hash値を種にした簡易な擬似乱数ジェネレータ(0以上1未満)。
-function makeRng(seed: number) {
+export function makeRng(seed: number) {
   let state = seed % 2147483647;
   if (state <= 0) state += 2147483646;
   return () => {
