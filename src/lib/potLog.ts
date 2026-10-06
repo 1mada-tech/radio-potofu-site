@@ -29,7 +29,7 @@ const LAST_WORDS = [
   "この鍋、最後まで悪くなかったよ",
 ];
 
-function pickLastWords(poem: string): string {
+export function pickLastWords(poem: string): string {
   const rng = makeRng(hashString(`${poem}::lastwords`) || 1);
   return LAST_WORDS[Math.floor(rng() * LAST_WORDS.length)];
 }

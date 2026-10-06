@@ -5,6 +5,7 @@ import PotScene from "@/components/PotScene";
 import PotForm from "@/components/PotForm";
 import PotLog from "@/components/PotLog";
 import PotChat from "@/components/PotChat";
+import DashiList from "@/components/DashiList";
 
 export const metadata: Metadata = {
   title: "川柳ポトフ鍋",
@@ -39,6 +40,7 @@ export default async function PotPage() {
         captionTemplate={content.logCaptionTemplate}
         tooltipLifespanTemplate={content.tooltipLifespanTemplate}
       />
+      <DashiList />
     </div>
   );
 }
