@@ -14,7 +14,7 @@
 // {EP}は最新エピソードのタイトル、{NOTE}は最新note記事のタイトルに
 // 置き換わる(どちらも使う時はrequiresに両方書く)。該当データが
 // 取得できなかった場合、そのテンプレートは自動的に使われない。
-type Topic = "episode" | "note" | "waiting";
+type Topic = "episode" | "note" | "waiting" | "melted";
 type SoloLine = { type: "solo"; text: string; requires?: Topic[] };
 type ExchangeLine = { type: "exchange"; a: string; b: string; requires?: Topic[] };
 type Group3Line = { type: "group3"; a: string; b: string; c: string; requires?: Topic[] };
@@ -102,6 +102,27 @@ const LINE_BANK: LineTemplate[] = [
     requires: ["waiting"],
   },
   { type: "exchange", a: "溶けるの、{B}は怖くない？", b: "怖いけど、それもいいかなって" },
+  { type: "solo", text: "{MELTED}のこと、たまに思い出す", requires: ["melted"] },
+  { type: "solo", text: "{MELTED}がいた場所、まだちょっと空いてる気がする", requires: ["melted"] },
+  {
+    type: "exchange",
+    a: "{B}、{MELTED}のこと覚えてる？",
+    b: "覚えてるよ。元気にしてるかな",
+    requires: ["melted"],
+  },
+  {
+    type: "exchange",
+    a: "{MELTED}、最後になんて言ってたっけ",
+    b: "{B}、さあ。聞いてなかったな",
+    requires: ["melted"],
+  },
+  {
+    type: "group3",
+    a: "{B}、{MELTED}のこと覚えてる？",
+    b: "覚えてる。{C}は？",
+    c: "名前だけなら",
+    requires: ["melted"],
+  },
   { type: "exchange", a: "{B}、今日はよく喋るね", b: "湯気にあてられたのかも" },
   { type: "exchange", a: "さっきからずっと静かだけど大丈夫？", b: "{B}こそ喋りすぎじゃない？" },
   { type: "exchange", a: "鍋の記録、下の方までちゃんと読まれてるのかな", b: "全部読まれてたら恥ずかしいな" },
@@ -458,23 +479,29 @@ export type PotChatTopics = {
   episodes?: PotChatTopicItem[];
   notes?: PotChatTopicItem[];
   hasWaitingQueue?: boolean;
+  // 溶けてダシになった(過去の)キャラの名前。新しい順。
+  meltedNames?: string[];
 };
 
 // 新しい順のリストから、最新を重めに・過去のものも控えめに選ぶ。
 // (索引が若い=新しいほど重みが大きい、調和級数的な重み付け)
-function pickTopicItem(list: PotChatTopicItem[] | undefined, rng: () => number): string {
-  if (!list || list.length === 0) return "";
+function pickWeightedRecent<T>(list: T[] | undefined, rng: () => number): T | undefined {
+  if (!list || list.length === 0) return undefined;
   const weights = list.map((_, i) => 1 / (i + 1));
   const total = weights.reduce((a, b) => a + b, 0);
   let r = rng() * total;
   for (let i = 0; i < list.length; i++) {
     r -= weights[i];
-    if (r <= 0) return list[i].title;
+    if (r <= 0) return list[i];
   }
-  return list[list.length - 1].title;
+  return list[list.length - 1];
 }
 
-// {EP}/{NOTE}を実際の話題データ(重み付けでランダムに選んだ1件)に置き換える。
+function pickTopicItem(list: PotChatTopicItem[] | undefined, rng: () => number): string {
+  return pickWeightedRecent(list, rng)?.title ?? "";
+}
+
+// {EP}/{NOTE}/{MELTED}を実際の話題データ(重み付けでランダムに選んだ1件)に置き換える。
 function fillTopics(text: string, topics: PotChatTopics, rng: () => number): string {
   let result = text;
   if (result.includes("{EP}")) {
@@ -482,6 +509,9 @@ function fillTopics(text: string, topics: PotChatTopics, rng: () => number): str
   }
   if (result.includes("{NOTE}")) {
     result = result.replaceAll("{NOTE}", pickTopicItem(topics.notes, rng));
+  }
+  if (result.includes("{MELTED}")) {
+    result = result.replaceAll("{MELTED}", pickWeightedRecent(topics.meltedNames, rng) ?? "");
   }
   return result;
 }
@@ -531,6 +561,7 @@ export function generatePotChat(
   if (topics.episodes && topics.episodes.length > 0) availableTopics.add("episode");
   if (topics.notes && topics.notes.length > 0) availableTopics.add("note");
   if (topics.hasWaitingQueue) availableTopics.add("waiting");
+  if (topics.meltedNames && topics.meltedNames.length > 0) availableTopics.add("melted");
 
   // 1匹しかいない時に2人・3人の会話テンプレートを選ぶと、自分自身と
   // 喋っているように見えて不自然なので、使えるテンプレートの種類を

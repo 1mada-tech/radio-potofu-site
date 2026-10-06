@@ -1,6 +1,7 @@
-import { deriveNameParts, COMFORTABLE_COUNT } from "@/lib/creature";
+import { deriveName, deriveNameParts, COMFORTABLE_COUNT } from "@/lib/creature";
 import { getEpisodes } from "@/lib/podcast";
 import { getNoteArticles } from "@/lib/noteFeed";
+import { getMeltedCreatures } from "@/lib/potCreatures";
 import type { PotCreature } from "@/lib/potCreatures";
 import PotChatModal from "@/components/PotChatModal";
 
@@ -23,9 +24,10 @@ export default async function PotChat({ creatures }: { creatures: PotCreature[] 
     return { poem: c.poem, name: `${base}${honorific}`, honorific, createdAt: c.createdAt };
   });
 
-  const [{ contents: episodes }, noteArticles] = await Promise.all([
+  const [{ contents: episodes }, noteArticles, meltedCreatures] = await Promise.all([
     getEpisodes(TOPIC_HISTORY_COUNT),
     getNoteArticles(),
+    getMeltedCreatures(),
   ]);
 
   const episodeTopics = episodes
@@ -34,6 +36,11 @@ export default async function PotChat({ creatures }: { creatures: PotCreature[] 
   const noteTopics = noteArticles
     .slice(0, TOPIC_HISTORY_COUNT)
     .map((n) => ({ title: n.title, url: n.link }));
+  // 溶けてダシになった(過去の)キャラたちも、現在の面々の会話の話題に
+  // 挙がるようにする。新しく溶けた子ほど話題に出やすい(新しい順)。
+  const meltedNames = meltedCreatures
+    .slice(0, TOPIC_HISTORY_COUNT)
+    .map((c) => deriveName(c.poem, c.createdAt));
 
   return (
     <div className="pot-chat">
@@ -43,6 +50,7 @@ export default async function PotChat({ creatures }: { creatures: PotCreature[] 
           episodes: episodeTopics,
           notes: noteTopics,
           hasWaitingQueue: creatures.length > COMFORTABLE_COUNT,
+          meltedNames,
         }}
       />
     </div>

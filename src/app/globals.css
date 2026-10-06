@@ -1291,6 +1291,10 @@ a.episode-tag:hover {
   content: "投稿: ";
 }
 
+.dashi-card__date::before {
+  content: "投入日: ";
+}
+
 .episode-search {
   display: flex;
   align-items: center;
