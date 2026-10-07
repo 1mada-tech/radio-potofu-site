@@ -3,11 +3,13 @@ import { getEssaysByType, ESSAY_TYPE_NOTE } from "@/lib/microcms";
 import { getSimpleCaption } from "@/lib/pageCaption";
 import { formatDate } from "@/lib/date";
 import NoteSidebar from "@/components/NoteSidebar";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "ひみつノート",
   description: "ラジオポトフのひみつのノート。ひみつです。",
-};
+  path: "/note",
+});
 
 const NOTE_CAPTION_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1J_fSVe7sqRQaeelc2A9ocQhAbxXqB6OHpv0BxW6CbEk/export?format=csv&gid=1563106714";

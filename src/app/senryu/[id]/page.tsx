@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getEssay } from "@/lib/microcms";
 import { formatDateJa } from "@/lib/date";
 import { excerptFromHtml } from "@/lib/excerpt";
+import { pageMetadata } from "@/lib/pageMetadata";
 
 export async function generateMetadata({
   params,
@@ -12,10 +13,11 @@ export async function generateMetadata({
   const { id } = await params;
   const essay = await getEssay(id);
   if (!essay) return {};
-  return {
+  return pageMetadata({
     title: essay.title,
     description: excerptFromHtml(essay.body),
-  };
+    path: `/senryu/${id}`,
+  });
 }
 
 export default async function SenryuDetailPage({

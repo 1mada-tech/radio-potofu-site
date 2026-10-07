@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { getEpisodes } from "@/lib/podcast";
 import { getPickConfig } from "@/lib/pickConfig";
 import PickDraw from "@/components/PickDraw";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "きょうのあなたへ",
   description: "きょうのあなたへおすすめしたい回を紹介します。",
-};
+  path: "/pick",
+});
 export const revalidate = 60;
 
 export default async function PickPage() {

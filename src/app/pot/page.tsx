@@ -6,11 +6,13 @@ import PotForm from "@/components/PotForm";
 import PotLog from "@/components/PotLog";
 import PotChat from "@/components/PotChat";
 import DashiList from "@/components/DashiList";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "川柳ポトフ鍋",
   description: "投稿された現代川柳がキャラになり、鍋で煮込まれます。",
-};
+  path: "/pot",
+});
 export const revalidate = 0;
 
 export default async function PotPage() {

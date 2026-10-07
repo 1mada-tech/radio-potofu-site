@@ -4,6 +4,7 @@ import { getEssay, getEssaysByType, ESSAY_TYPE_NOTE } from "@/lib/microcms";
 import { formatDateJa } from "@/lib/date";
 import { excerptFromHtml } from "@/lib/excerpt";
 import NoteSidebar from "@/components/NoteSidebar";
+import { pageMetadata } from "@/lib/pageMetadata";
 
 export async function generateMetadata({
   params,
@@ -13,10 +14,11 @@ export async function generateMetadata({
   const { id } = await params;
   const essay = await getEssay(id);
   if (!essay) return {};
-  return {
+  return pageMetadata({
     title: essay.title,
     description: excerptFromHtml(essay.body),
-  };
+    path: `/note/${id}`,
+  });
 }
 
 export default async function ZatsubunDetailPage({

@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { getThemePosts } from "@/lib/themes";
 import { getSimpleCaption } from "@/lib/pageCaption";
 import ThemeBoard from "@/components/ThemeBoard";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "テーマ募集",
   description: "ラジオポトフへのお題・テーマ募集ページです。",
-};
+  path: "/themes",
+});
 export const revalidate = 0;
 
 const THEMES_CAPTION_CSV_URL =

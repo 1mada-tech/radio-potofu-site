@@ -2,13 +2,15 @@ import { Fragment } from "react";
 import type { Metadata } from "next";
 import { getEpisodes, EPISODE_EXTRAS_CSV_URL, FEED_URL, type Episode } from "@/lib/podcast";
 import { getSimpleCaption } from "@/lib/pageCaption";
+import { pageMetadata } from "@/lib/pageMetadata";
 import Pagination from "@/components/Pagination";
 import EpisodeTableRow from "@/components/EpisodeTableRow";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "これまでの配信",
   description: "ポッドキャスト「ラジオポトフ」のこれまでの配信一覧です。",
-};
+  path: "/episodes",
+});
 export const revalidate = 60;
 
 const PER_PAGE = 30;
@@ -89,7 +91,8 @@ export default async function EpisodesPage({
     contents = contents.filter(
       (e) =>
         e.title.toLowerCase().includes(lowerQuery) ||
-        e.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)),
+        e.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery)) ||
+        e.autoTopics?.some((topic) => topic.toLowerCase().includes(lowerQuery)),
     );
     totalCount = contents.length;
   }

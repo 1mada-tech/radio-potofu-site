@@ -4,11 +4,13 @@ import { getEssaysByType, ESSAY_TYPE_SENRYU } from "@/lib/microcms";
 import { getSenryuCaption } from "@/lib/caption";
 import Pagination from "@/components/Pagination";
 import SenryuHeading from "@/components/SenryuHeading";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "現代川柳",
   description: "ラジオポトフが送る現代川柳のコーナーです。",
-};
+  path: "/senryu",
+});
 
 const PER_PAGE = 12;
 

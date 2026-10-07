@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { getNoteArticles, NOTE_FEED_URL } from "@/lib/noteFeed";
 import { formatDate } from "@/lib/date";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "note",
   description: "ラジオポトフのnoteの更新一覧です。",
-};
+  path: "/note-articles",
+});
 export const revalidate = 300;
 
 export default async function NoteArticlesPage() {

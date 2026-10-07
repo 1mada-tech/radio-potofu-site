@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { getNetprintIssues, NETPRINT_CSV_URL } from "@/lib/netprint";
 import { getSimpleCaption } from "@/lib/pageCaption";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "ネットプリント",
   description: "ラジオポトフのネットプリント発行情報です。",
-};
+  path: "/netprint",
+});
 export const revalidate = 60;
 
 const DEFAULT_CAPTION =
