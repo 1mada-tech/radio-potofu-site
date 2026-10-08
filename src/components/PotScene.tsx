@@ -68,6 +68,18 @@ export default function PotScene({
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const potRef = useRef<HTMLDivElement>(null);
 
+  // 待機列は、鍋が横に並ぶ画面(PC)では奥行きのある斜めの列、
+  // 鍋の下に落ちる画面(スマホ、はしごのCSSと同じ800px基準)では
+  // はしごの下端から横一列に並べる見せ方に切り替える。
+  const [isNarrowQueue, setIsNarrowQueue] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 800px)");
+    const update = () => setIsNarrowQueue(mql.matches);
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
+
   // タップで開いている間、鍋の外側(ページのどこでも)をタップ/クリックしたら
   // 閉じる。.pot-sceneのonClickだけだと、鍋の外の別のセクションをタップ
   // した時に閉じられないため、documentレベルで見ている。
@@ -208,23 +220,51 @@ export default function PotScene({
         )}
       </div>
 
-      {waiting.length > 0 && (
-        <div className="pot__queue" aria-label="鍋に入るのを待っているキャラたち">
-          <p className="pot__queue-heading">鍋の横で順番待ち中</p>
-          <ul className="pot__queue-list">
-            {waiting.map((creature) => (
-              <li key={creature.id} className="pot__queue-item">
-                <span className="pot__queue-face" aria-hidden="true">
-                  <CreatureFace poem={creature.poem} createdAt={creature.createdAt} />
-                </span>
-                <span className="pot__queue-name">
-                  {deriveName(creature.poem, creature.createdAt)}
-                </span>
-              </li>
-            ))}
-          </ul>
+      <div className="pot__queue" aria-label="鍋に入るのを待っているキャラたち">
+        {/* 先頭(次に鍋に入る子)が手前(下)のはしごのそばに立ち、
+            そこから右奥(上)へ斜めに小さくなりながら列が伸びていく、
+            クオータービュー風の見せ方。待機列が0匹でも、はしご自体は
+            常に表示しておく。
+            「順番待ち中」の見出しと「次は○○」のラベルは、いったん
+            非表示にしてある(表示するにはJSXを戻すだけでよい)。 */}
+        <div className="pot__queue-stage">
+          <span className="pot__ladder" aria-hidden="true">
+            <span className="pot__ladder-rungs" />
+          </span>
+          {waiting.length > 0 && (
+            <ul className="pot__queue-line">
+              {waiting.map((creature, i) => {
+                // PCは奥行き表現として徐々に縮小、スマホは横一列なので
+                // 全員同じ大きさにする。
+                const scale = isNarrowQueue ? 1 : Math.max(0.42, 1 - i * 0.11);
+                // PC: 手前(下)→奥(右上)へ斜めに小さくなる列。
+                // スマホ: はしごの下端のあたりに先頭を置き、そこから
+                // 右→左へ横一列に並べる(鍋が上に積まれるレイアウトでは
+                // 斜めの奥行きがうまく読めないため)。
+                const left = isNarrowQueue ? 242 - i * 26 : 30 + i * 10;
+                const bottom = isNarrowQueue ? 118 : 16 + i * 14;
+                return (
+                  <li
+                    key={creature.id}
+                    className="pot__queue-line-item"
+                    style={{
+                      left: `${left}px`,
+                      bottom: `${bottom}px`,
+                      transform: `scale(${scale})`,
+                      zIndex: waiting.length - i,
+                    }}
+                    aria-label={deriveName(creature.poem, creature.createdAt)}
+                  >
+                    <span className="pot__queue-face" aria-hidden="true">
+                      <CreatureFace poem={creature.poem} createdAt={creature.createdAt} />
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -2183,34 +2183,78 @@ a.episode-tag:hover {
   height: 380px;
 }
 
-/* 鍋がいっぱいの時に、入りきらなかったキャラが並ぶ待機列。鍋の横に表示する。 */
+/* 鍋がいっぱいの時に、入りきらなかったキャラが並ぶ待機列。鍋の横に表示する。
+   枠は付けず、鍋のシーンに溶け込ませる。 */
 .pot__queue {
-  width: 180px;
+  position: relative;
+  /* .potはposition:relativeのみでz-indexを持たない(=独立した重なり
+     文脈を作らない)ため、.pot内の子要素(.pot__openingのz-index:2等)が
+     そのままこの階層で比較される。はしごを確実に鍋の上に出すため、
+     それらより大きい値にしておく。 */
+  z-index: 5;
+  width: 220px;
   flex: none;
   padding: 14px 16px;
-  border: 1px solid var(--color-border);
-  background: var(--color-bg-alt);
+  overflow: visible;
 }
 
+/* 最後尾(一番奥)の少し上に置くので、位置はJS側でleft/bottom指定する。 */
 .pot__queue-heading {
-  margin: 0 0 10px;
+  position: absolute;
+  margin: 0;
   font-size: 0.78rem;
   color: var(--color-ink-soft);
+  white-space: nowrap;
 }
 
-.pot__queue-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* 待機列の舞台。はしごを左端(鍋側)に立て、先頭をその根元に置き、
+   奥(右上)に向かって重なりながら小さくなっていく列を伸ばす
+   クオータービュー風の見せ方。 */
+.pot__queue-stage {
+  position: relative;
+  min-height: 300px;
+}
+
+/* はしごは鍋側に傾け、下端はそのまま・上端は鍋のふちあたりまで
+   届くよう長くする。 */
+.pot__ladder {
+  position: absolute;
+  bottom: 0;
+  left: 2px;
+  width: 22px;
+  height: 225px;
+  transform: rotate(-23deg);
+  transform-origin: bottom center;
+  border-left: 3px solid #fff;
+  border-right: 3px solid #fff;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.25));
+}
+
+.pot__ladder-rungs {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 205px;
+  background: repeating-linear-gradient(to bottom, #fff 0, #fff 3px, transparent 3px, transparent 22px);
+  background-position: left bottom;
+  background-repeat: repeat-y;
+}
+
+.pot__queue-line {
+  position: absolute;
+  inset: 0;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.pot__queue-item {
+.pot__queue-line-item {
+  position: absolute;
   display: flex;
   align-items: center;
   gap: 6px;
+  transform-origin: bottom left;
 }
 
 /* CreatureFaceは66x66pxのボックス前提の絶対配置なので、箱のサイズはそのままに
@@ -2224,10 +2268,60 @@ a.episode-tag:hover {
   margin: -19px -19px -19px -15px;
 }
 
-.pot__queue-name {
+/* 先頭キャラの名前ラベル。列の真下ではなく、やや右下にずらして
+   赤い矢印で先頭キャラを指すようにする。 */
+.pot__queue-next-label {
+  position: absolute;
+  left: 66px;
+  bottom: -16px;
+  margin: 0;
   font-size: 0.78rem;
   font-weight: 700;
   color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.pot__queue-next-arrow {
+  display: inline-block;
+  margin-right: 2px;
+  color: var(--color-red);
+  font-weight: 700;
+}
+
+.pot__queue-name-next {
+  color: var(--color-red);
+}
+
+/* .pot(480px)+gap+.pot__queue(220px)は合計すると画面幅800px前後より
+   狭いと折り返し、待機列が鍋の下に落ちる。その時、はしごが鍋に向けて
+   傾いている前提(左に鍋がある)が崩れて画面の外にはみ出してしまうため、
+   傾きを控えめにする。 */
+@media (max-width: 800px) {
+  /* 折り返して待機列が鍋の下に落ちる時は、鍋とくっつけて表示する
+     (縦に積んだ時、舞台の上に大きな空白ができるのを防ぐ)。
+     はしごの上端は鍋の下側の縁にかかるくらいまで伸ばす。 */
+  .pot-scene {
+    gap: 4px;
+  }
+
+  .pot__queue {
+    padding-top: 0;
+  }
+
+  .pot__queue-stage {
+    min-height: 150px;
+  }
+
+  .pot__ladder {
+    left: 260px;
+    bottom: 140px;
+    height: 190px;
+    transform: rotate(-5deg);
+  }
+
+  .pot__ladder-rungs {
+    height: 170px;
+  }
 }
 
 @media (max-width: 560px) {
