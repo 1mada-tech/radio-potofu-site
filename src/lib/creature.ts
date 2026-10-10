@@ -301,6 +301,29 @@ const HONORIFICS = [...ORIGINAL_HONORIFICS, ...ADDED_HONORIFICS];
 // 敬称が変わらないようにするため)。
 const HONORIFIC_EXPANSION_AT = new Date("2026-10-03T00:00:00+09:00").getTime();
 
+// 末尾フォールバック(カタカナの連続が無い川柳で、末尾の数文字をそのまま
+// 名前にする処理)の改善日時。「埋めた？」+「閣下」→「埋めた？閣下」、
+// 「の師範代」+「先生」→「の師範代先生」のように、文の区切りを無視して
+// 機械的に切るせいで不自然な名前になることがあったため、句読点の除去と
+// 助詞始まりの調整を加えた。これより前に投入済みのキャラの名前は変えない。
+const NAME_FALLBACK_IMPROVED_AT = new Date("2026-10-10T00:00:00+09:00").getTime();
+
+// 末尾の句読点・記号(？、。！…など)。フォールバックの切り出し前に除去する。
+const TRAILING_PUNCTUATION = /[。、！？!?…,.\s]+$/;
+// 末尾フォールバックの先頭にこれらの助詞が来た場合、名前として不自然なので
+// 削っていく(最低2文字は残す)。
+const LEADING_PARTICLES = new Set([
+  "の", "を", "が", "に", "は", "で", "と", "も", "へ", "や", "か", "よ", "ね", "な",
+]);
+
+function trimLeadingParticles(s: string): string {
+  let result = s;
+  while (result.length > 2 && LEADING_PARTICLES.has(result[0])) {
+    result = result.slice(1);
+  }
+  return result;
+}
+
 // 川柳の文字列から名前を抜き出す。カタカナの連続部分があればそれを、
 // なければ末尾の数文字をフォールバックとして使う。
 // さらに、くん/ちゃん/にゃん等の敬称を文字列ごとに決定論的に割り振る。
@@ -313,15 +336,23 @@ export function deriveNameParts(
   const trimmed = poem.trim();
   if (!trimmed) return { base: "なまえなし", honorific: "" };
 
+  const isBeforeNameFallbackImproved =
+    createdAt !== undefined && new Date(createdAt).getTime() < NAME_FALLBACK_IMPROVED_AT;
+
   let base = "";
   const katakanaMatches = trimmed.match(KATAKANA_RUN);
   if (katakanaMatches) {
     const longest = katakanaMatches.reduce((a, b) => (b.length > a.length ? b : a));
     if (longest.length >= 2) base = longest;
   }
-  if (!base) {
+  if (!base && isBeforeNameFallbackImproved) {
     const tailLength = Math.min(4, trimmed.length);
     base = trimmed.slice(-tailLength);
+  }
+  if (!base) {
+    const cleaned = trimmed.replace(TRAILING_PUNCTUATION, "") || trimmed;
+    const tailLength = Math.min(4, cleaned.length);
+    base = trimLeadingParticles(cleaned.slice(-tailLength));
   }
 
   const rng = makeRng(hashString(`${trimmed}::honorific`) || 1);
