@@ -11,7 +11,7 @@ export default async function DashiList() {
 
   return (
     <section className="pot-log">
-      <h2 className="pot-log__heading">溶けてダシになったキャラたち</h2>
+      <h2 className="pot-log__heading">鍋に溶けこんだキャラたち</h2>
       <ul className="dashi-list">
         {creatures.map((creature) => {
           const name = deriveName(creature.poem, creature.createdAt);
