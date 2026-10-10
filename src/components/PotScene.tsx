@@ -220,11 +220,17 @@ export default function PotScene({
         )}
       </div>
 
-      <div className="pot__queue" aria-label="鍋に入るのを待っているキャラたち">
+      <div
+        className={`pot__queue${waiting.length === 0 ? " pot__queue--empty" : ""}`}
+        aria-label="鍋に入るのを待っているキャラたち"
+      >
         {/* 先頭(次に鍋に入る子)が手前(下)のはしごのそばに立ち、
             そこから右奥(上)へ斜めに小さくなりながら列が伸びていく、
             クオータービュー風の見せ方。待機列が0匹でも、はしご自体は
-            常に表示しておく。
+            常に表示しておく。待機0匹の間は列の幅ぶんの余白が無駄に
+            広く見えるため、.pot__queue--empty で幅を切り詰める
+            (はしご自体はoverflow:visibleなので、幅を切り詰めても
+            はみ出し表示が壊れることはない)。
             「順番待ち中」の見出しと「次は○○」のラベルは、いったん
             非表示にしてある(表示するにはJSXを戻すだけでよい)。 */}
         <div className="pot__queue-stage">

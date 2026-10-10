@@ -2174,7 +2174,7 @@ a.episode-tag:hover {
   justify-content: center;
   align-items: flex-start;
   gap: 24px;
-  margin-top: 56px;
+  margin-top: 36px;
 }
 
 .pot {
@@ -2196,6 +2196,19 @@ a.episode-tag:hover {
   flex: none;
   padding: 14px 16px;
   overflow: visible;
+}
+
+/* 待機0匹の間は、列ぶんの幅を確保したままだと鍋の横に無駄な余白が
+   できて間延びして見えるため、はしごが収まる最低限の幅まで切り詰める。
+   (はしご自体はoverflow:visibleの上で絶対配置なので、幅を切り詰めても
+   はみ出し表示は崩れない。) 800px以下は待機列が鍋の下に落ちるレイアウトに
+   切り替わり、はしごの位置をpxの絶対値(left:260px等)で指定しているため、
+   ここでの幅変更は適用しない(適用すると折り返し判定がずれる)。 */
+@media (min-width: 801px) {
+  .pot__queue--empty {
+    width: 90px;
+    padding-right: 0;
+  }
 }
 
 /* 最後尾(一番奥)の少し上に置くので、位置はJS側でleft/bottom指定する。 */
@@ -2512,7 +2525,10 @@ a.episode-tag:hover {
   box-shadow:
     0 8px 0 #7a4a22,
     inset 0 8px 16px rgba(0, 0, 0, 0.25);
-  z-index: 2;
+  /* position+z-indexの組み合わせでスタッキングコンテキストができるため、
+     中のキャラの名前ラベルも含めてこの値で.pot__queue(はしご、z-index:5)
+     と前後が決まる。はしごより手前に出るよう、それを上回る値にしておく。 */
+  z-index: 6;
 }
 
 .pot__empty {
@@ -2880,7 +2896,9 @@ a.episode-tag:hover {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
   padding: 1px 5px;
   white-space: nowrap;
-  /* 他のキャラの本体より必ず手前に出し、ラベルが読めなくなるのを防ぐ。 */
+  /* 他のキャラの本体より必ず手前に出し、ラベルが読めなくなるのを防ぐ。
+     (.pot__opening自体のz-indexがスタッキングコンテキストの境界に
+     なるため、はしごとの前後関係はここではなく.pot__opening側で決まる。) */
   z-index: 2;
 }
 
@@ -2941,8 +2959,8 @@ a.episode-tag:hover {
 }
 
 .pot-log {
-  margin-top: 56px;
-  padding-top: 32px;
+  margin-top: 36px;
+  padding-top: 20px;
   border-top: 1px solid var(--color-border);
 }
 
@@ -3053,8 +3071,8 @@ a.episode-tag:hover {
 /* 鍋内のひととき: ボタンを押すと、鍋の面々のアイコン一覧+自動生成の
    会話がポップアップで出る。 */
 .pot-chat {
-  margin-top: 56px;
-  padding-top: 32px;
+  margin-top: 36px;
+  padding-top: 20px;
   border-top: 1px solid var(--color-border);
   text-align: center;
 }
