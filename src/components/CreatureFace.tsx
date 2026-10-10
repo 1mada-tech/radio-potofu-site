@@ -73,6 +73,16 @@ export default function CreatureFace({
         <span className={`creature__eye creature__eye--${appearance.eyeType}`} />
       </span>
       <span className={`creature__mouth creature__mouth--${appearance.mouthType}`} />
+      {appearance.blushType !== "none" && (
+        <>
+          <span
+            className={`creature__blush creature__blush--left creature__blush--${appearance.blushType}`}
+          />
+          <span
+            className={`creature__blush creature__blush--right creature__blush--${appearance.blushType}`}
+          />
+        </>
+      )}
     </>
   );
 }

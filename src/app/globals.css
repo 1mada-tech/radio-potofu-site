@@ -2831,6 +2831,34 @@ a.episode-tag:hover {
   transform: translateX(-50%) rotate(-8deg);
 }
 
+/* 2026-10-10以降に追加した見た目バリエーション。耳・目・口とは独立した
+   要素として、見た目の組み合わせ数を増やすために追加(鍋の匹数が増えると
+   既存4要素だけでは完全に同じ見た目が出やすくなるため)。 */
+.creature__blush {
+  position: absolute;
+  top: 32px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  opacity: 0.55;
+}
+
+.creature__blush--left {
+  left: 10px;
+}
+
+.creature__blush--right {
+  right: 10px;
+}
+
+.creature__blush--pink {
+  background: #ff6f91;
+}
+
+.creature__blush--peach {
+  background: #ff9a4d;
+}
+
 .creature__ear {
   position: absolute;
   top: -8px;

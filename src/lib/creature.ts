@@ -41,12 +41,22 @@ const MOUTH_TYPES_ORIGINAL = ["smile", "o", "line"] as const;
 const MOUTH_TYPES_ADDED = ["wavy", "smirk"] as const;
 const MOUTH_TYPES = [...MOUTH_TYPES_ORIGINAL, ...MOUTH_TYPES_ADDED];
 
+// 見た目の組み合わせ数が少なく、匹数が増えると「全く同じ見た目」が
+// 目立って出てしまうため追加した要素。耳・目・口と違って独立した
+// 掛け算要因になるよう、既存の4要素とは無関係に選ぶ。
+// EXPANSION同様、これより前に鍋に入ったキャラの見た目は変わらないよう
+// "none"固定のプールを使う(rng()は消費するが結果は常にnone)。
+const BLUSH_EXPANSION_AT = new Date("2026-10-10T00:00:00+09:00").getTime();
+const BLUSH_TYPES_ORIGINAL = ["none"] as const;
+const BLUSH_TYPES = ["none", "pink", "peach"] as const;
+
 export type CreatureAppearance = {
   bodyColor: string;
   bodyRadius: string;
   earType: (typeof EAR_TYPES)[number];
   eyeType: (typeof EYE_TYPES)[number];
   mouthType: (typeof MOUTH_TYPES)[number];
+  blushType: (typeof BLUSH_TYPES)[number];
 };
 
 export function hashString(text: string): number {
@@ -77,6 +87,9 @@ export function deriveAppearance(poem: string, createdAt?: string): CreatureAppe
   const earPool = isBeforeExpansion ? EAR_TYPES_ORIGINAL : EAR_TYPES;
   const eyePool = isBeforeExpansion ? EYE_TYPES_ORIGINAL : EYE_TYPES;
   const mouthPool = isBeforeExpansion ? MOUTH_TYPES_ORIGINAL : MOUTH_TYPES;
+  const isBeforeBlush =
+    createdAt !== undefined && new Date(createdAt).getTime() < BLUSH_EXPANSION_AT;
+  const blushPool = isBeforeBlush ? BLUSH_TYPES_ORIGINAL : BLUSH_TYPES;
 
   const bodyColor = BODY_COLORS[Math.floor(rng() * BODY_COLORS.length)];
   const rx1 = 45 + Math.floor(rng() * 15);
@@ -86,6 +99,10 @@ export function deriveAppearance(poem: string, createdAt?: string): CreatureAppe
   const earType = earPool[Math.floor(rng() * earPool.length)];
   const eyeType = eyePool[Math.floor(rng() * eyePool.length)];
   const mouthType = mouthPool[Math.floor(rng() * mouthPool.length)];
+  // 既存4要素のどの選択結果とも無関係な、独立した掛け算要因として
+  // 一番最後に引く(既存キャラの耳・目・口の抽選結果に影響しないよう、
+  // これより前の抽選順序は変えない)。
+  const blushType = blushPool[Math.floor(rng() * blushPool.length)];
 
   return {
     bodyColor,
@@ -93,6 +110,7 @@ export function deriveAppearance(poem: string, createdAt?: string): CreatureAppe
     earType,
     eyeType,
     mouthType,
+    blushType,
   };
 }
 
