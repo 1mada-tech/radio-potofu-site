@@ -888,6 +888,28 @@ p.hero__poem-title {
   content: none;
 }
 
+/* ホバー/タップで、その回のドットと日付を少し強調する(常時アニメーションは
+   しない方針なので、あくまでhover/focus時の一瞬の反応に留める)。 */
+.history-item__dotcol::before {
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.history-item:hover .history-item__dotcol::before,
+.history-item:focus-within .history-item__dotcol::before {
+  transform: translateX(-50%) scale(1.4);
+  background: var(--color-red);
+}
+
+.history-item__date {
+  transition: color 0.15s ease;
+}
+
+.history-item:hover .history-item__date,
+.history-item:focus-within .history-item__date {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
 .history-item__content {
   flex: 1;
   min-width: 0;
@@ -1067,6 +1089,7 @@ p.hero__poem-title {
   font-size: 0.85em;
   color: var(--color-ink-soft);
 }
+
 
 .episode-table th {
   color: var(--color-ink-soft);
