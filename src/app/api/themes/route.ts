@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createThemePost } from "@/lib/themes";
+import { sendNotificationEmail } from "@/lib/notify";
 
 export async function POST(request: Request) {
   const data = await request.json();
@@ -21,5 +22,9 @@ export async function POST(request: Request) {
   const authorName = typeof data.authorName === "string" ? data.authorName : null;
 
   await createThemePost({ parentId, authorName, body });
+  await sendNotificationEmail(
+    parentId ? "【ラジオポトフ】テーマ募集に返信がありました" : "【ラジオポトフ】テーマ募集に投稿がありました",
+    `投稿者: ${authorName || "名無し"}\n本文: ${body}`,
+  );
   return NextResponse.json({ ok: true });
 }

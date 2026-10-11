@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createPotCreature } from "@/lib/potCreatures";
+import { sendNotificationEmail } from "@/lib/notify";
 
 export async function POST(request: Request) {
   const data = await request.json();
@@ -17,5 +18,9 @@ export async function POST(request: Request) {
   const authorName = typeof data.authorName === "string" ? data.authorName : "";
 
   await createPotCreature({ authorName, poem });
+  await sendNotificationEmail(
+    "【ラジオポトフ】鍋に川柳が投入されました",
+    `投稿者: ${authorName || "名無し"}\n川柳: ${poem}`,
+  );
   return NextResponse.json({ ok: true });
 }
