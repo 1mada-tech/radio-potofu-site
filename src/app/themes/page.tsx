@@ -8,6 +8,7 @@ export const metadata: Metadata = pageMetadata({
   title: "テーマ募集",
   description: "ラジオポトフへのお題・テーマ募集ページです。",
   path: "/themes",
+  image: "/images/og-themes.jpg",
 });
 export const revalidate = 0;
 

@@ -7,6 +7,7 @@ export const metadata: Metadata = pageMetadata({
   title: "年表",
   description: "ラジオポトフのこれまでの歩みをまとめた年表です。",
   path: "/history",
+  image: "/images/og-history.jpg",
 });
 export const revalidate = 60;
 

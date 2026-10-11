@@ -7,6 +7,7 @@ export const metadata: Metadata = pageMetadata({
   title: "ネットプリント",
   description: "ラジオポトフのネットプリント発行情報です。",
   path: "/netprint",
+  image: "/images/og-netprint.jpg",
 });
 export const revalidate = 60;
 

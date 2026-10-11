@@ -12,6 +12,7 @@ export const metadata: Metadata = pageMetadata({
   title: "川柳ポトフ鍋",
   description: "投稿された現代川柳がキャラになり、鍋で煮込まれます。",
   path: "/pot",
+  image: "/images/og-pot.jpg",
 });
 export const revalidate = 0;
 

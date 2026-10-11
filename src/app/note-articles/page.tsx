@@ -7,6 +7,7 @@ export const metadata: Metadata = pageMetadata({
   title: "note",
   description: "ラジオポトフのnoteの更新一覧です。",
   path: "/note-articles",
+  image: "/images/og-note-articles.jpg",
 });
 export const revalidate = 300;
 

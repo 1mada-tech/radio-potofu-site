@@ -8,6 +8,7 @@ export const metadata: Metadata = pageMetadata({
   title: "きょうのあなたへ",
   description: "きょうのあなたへおすすめしたい回を紹介します。",
   path: "/pick",
+  image: "/images/og-pick.jpg",
 });
 export const revalidate = 60;
 

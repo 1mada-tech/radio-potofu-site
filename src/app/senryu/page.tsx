@@ -10,6 +10,7 @@ export const metadata: Metadata = pageMetadata({
   title: "現代川柳",
   description: "ラジオポトフが送る現代川柳のコーナーです。",
   path: "/senryu",
+  image: "/images/og-senryu.jpg",
 });
 
 const PER_PAGE = 12;

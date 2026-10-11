@@ -10,6 +10,7 @@ export const metadata: Metadata = pageMetadata({
   title: "これまでの配信",
   description: "ポッドキャスト「ラジオポトフ」のこれまでの配信一覧です。",
   path: "/episodes",
+  image: "/images/og-episodes.jpg",
 });
 export const revalidate = 60;
 

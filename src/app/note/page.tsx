@@ -9,6 +9,7 @@ export const metadata: Metadata = pageMetadata({
   title: "ひみつノート",
   description: "ラジオポトフのひみつのノート。ひみつです。",
   path: "/note",
+  image: "/images/og-note.jpg",
 });
 
 const NOTE_CAPTION_CSV_URL =
