@@ -3023,6 +3023,31 @@ a.episode-tag:hover {
   color: var(--color-accent);
 }
 
+.share-creature-button {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-ink);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  /* ツールチップは pointer-events:none なので、ボタンだけ有効化する。 */
+  pointer-events: auto;
+}
+
+.share-creature-button:hover {
+  background: var(--color-ink);
+  color: #fff;
+}
+
+.share-creature-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .pot-log {
   margin-top: 36px;
   padding-top: 20px;

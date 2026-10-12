@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Creature from "@/components/Creature";
 import CreatureFace from "@/components/CreatureFace";
+import ShareCreatureButton from "@/components/ShareCreatureButton";
 import {
   derivePositions,
   deriveLabelLevels,
@@ -216,6 +217,11 @@ export default function PotScene({
             <p className="pot__tooltip-lifespan">
               {tooltipLifespanTemplate.replace("x日", `${daysLeft(hovered.creature.createdAt)}日`)}
             </p>
+            <ShareCreatureButton
+              poem={hovered.creature.poem}
+              createdAt={hovered.creature.createdAt}
+              authorName={hovered.creature.authorName}
+            />
           </div>
         )}
       </div>
