@@ -27,6 +27,9 @@ export function pageMetadata({
   return {
     title,
     description,
+    // 重複URL(クエリ付き等)がある場合に、どれが正とするURLかを検索エンジンに
+    // 伝える。pathを渡さないページ(ホームはlayout.tsx側で別途設定)では省略。
+    ...(url ? { alternates: { canonical: url } } : {}),
     openGraph: {
       type: "website",
       ...(url ? { url } : {}),

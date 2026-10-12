@@ -10,6 +10,7 @@ import {
 } from "@/lib/microcms";
 import { getEpisodes } from "@/lib/podcast";
 import { getMembers, type Member } from "@/lib/members";
+import { podcastSeriesJsonLd, websiteJsonLd } from "@/lib/jsonld";
 
 export const revalidate = 60;
 
@@ -111,6 +112,24 @@ export default async function HomePage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            podcastSeriesJsonLd({ url: "https://www.radio-potofu.com", episodes: episodesRes.contents }),
+          ),
+        }}
+      />
+      {/* トップページには見出しとして意味を持つ<h1>が無く、検索エンジンが
+          ページの主題を把握しづらい状態だったため追加する。ヒーローの
+          デザイン(ロゴ画像+詩)はそのまま活かしたいので、視覚的には
+          表示せず(sr-only)スクリーンリーダー・検索エンジン向けにのみ出す。 */}
+      <h1 className="sr-only">ラジオポトフ ― 現代川柳のポッドキャスト</h1>
+
       <div className="container hero-cta">
         <a
           href={LISTENER_FORM_URL}

@@ -38,7 +38,7 @@ const vt323 = VT323({
 
 const siteUrl = "https://www.radio-potofu.com";
 const siteTitle = "ラジオポトフ";
-const siteDescription = "ポッドキャスト「ラジオポトフ」公式サイト";
+const siteDescription = "現代川柳のポッドキャスト「ラジオポトフ」公式サイト";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -47,6 +47,7 @@ export const metadata: Metadata = {
     template: "%s | ラジオポトフ",
   },
   description: siteDescription,
+  alternates: { canonical: siteUrl },
   openGraph: {
     type: "website",
     url: siteUrl,
