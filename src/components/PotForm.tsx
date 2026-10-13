@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CreatureFace from "@/components/CreatureFace";
 import ShareCreatureButton from "@/components/ShareCreatureButton";
 import { deriveName } from "@/lib/creature";
@@ -12,6 +12,33 @@ type CreatedCreature = {
   poem: string;
   createdAt: string;
 };
+
+// スマホでは、他アプリ(X/写真アプリ等)に一度切り替えて戻ってくると、
+// ブラウザがタブを裏で再読み込みしてしまうことがあり、その場合この
+// 「投稿した直後」の案内(Reactのstate)が消えてしまう。ユーザー操作で
+// 閉じたわけではないのに消えるのは意図しない挙動なので、
+// sessionStorageにも残しておき、再読み込み後も復元できるようにする。
+const JUST_POSTED_KEY = "radio-potofu-pot-just-posted";
+
+function loadJustPosted(): CreatedCreature | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(JUST_POSTED_KEY);
+    return raw ? (JSON.parse(raw) as CreatedCreature) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveJustPosted(creature: CreatedCreature | null) {
+  if (typeof window === "undefined") return;
+  try {
+    if (creature) sessionStorage.setItem(JUST_POSTED_KEY, JSON.stringify(creature));
+    else sessionStorage.removeItem(JUST_POSTED_KEY);
+  } catch {
+    /* プライベートブラウズ等で使えなくても、表示自体は問題なく動く */
+  }
+}
 
 async function postJson(url: string, body: unknown) {
   const res = await fetch(url, {
@@ -37,7 +64,18 @@ export default function PotForm({
   const [poem, setPoem] = useState("");
   const [website, setWebsite] = useState(""); // honeypot
   const [submitting, setSubmitting] = useState(false);
-  const [justPosted, setJustPosted] = useState<CreatedCreature | null>(null);
+  const [justPosted, setJustPostedState] = useState<CreatedCreature | null>(null);
+
+  // マウント時、sessionStorageに残っていれば復元する(タブの裏側リロード対策)。
+  useEffect(() => {
+    const restored = loadJustPosted();
+    if (restored) setJustPostedState(restored);
+  }, []);
+
+  const setJustPosted = (creature: CreatedCreature | null) => {
+    setJustPostedState(creature);
+    saveJustPosted(creature);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
