@@ -1321,13 +1321,20 @@ a.episode-tag:hover {
 /* CreatureFaceの子要素(目・耳・口など)は、親が66x66pxであることを
    前提にposition: absoluteで配置されている。40px幅に収めるため、
    いったん66x66の箱として作ってからまとめてscaleで縮める
-   (個々の要素を別々に縮めると配置計算がずれて顔が崩れる)。 */
+   (個々の要素を別々に縮めると配置計算がずれて顔が崩れる)。
+   触角(antenna)・ロング耳(long)は66x66の箱の上端よりさらに上
+   (最大-20px)にはみ出す位置にあるため、0.606倍のままだと
+   親の overflow: hidden で見切れて消えてしまっていた。
+   -20px〜66pxの全範囲(縦86px)が40pxの箱に収まる縮小率(0.465)に
+   変更し、その分top/leftで位置を調整して中央に収める。 */
 .dashi-card__face-inner {
   display: block;
   position: relative;
+  top: 9px;
+  left: 5px;
   width: 66px;
   height: 66px;
-  transform: scale(0.606);
+  transform: scale(0.465);
   transform-origin: top left;
 }
 
