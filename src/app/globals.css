@@ -822,6 +822,47 @@ p.hero__poem-title {
   font-size: 0.9rem;
 }
 
+/* 年表冒頭の「歩みのサマリー」。開始からの年数・配信回数を数字で見せる。
+   数字がみっちり1行に収まっているのが面白いポイントなので、折り返させず、
+   画面幅が狭いときはclamp()でフォントサイズごと縮めて対応する。 */
+.history-summary {
+  display: flex;
+  gap: clamp(8px, 3vw, 32px);
+  margin: 24px 0 36px;
+}
+
+.history-summary__item {
+  text-align: center;
+  min-width: 0;
+}
+
+.history-summary__number {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(1.3rem, 8.5vw, 2.6rem);
+  font-weight: 900;
+  color: var(--color-accent);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.history-summary__label {
+  margin: 6px 0 0;
+  font-size: clamp(0.64rem, 2.6vw, 0.78rem);
+  color: var(--color-ink-soft);
+  /* 「配信回数」等が画面が狭いと文字の途中で折り返ってしまうのを防ぐ。
+     ラベルの横幅が数字側(white-space:nowrap)より長くなる場合は、
+     行ごと折り返す(wordとして崩さない)。 */
+  white-space: nowrap;
+}
+
+.history-summary__note {
+  margin: 2px 0 0;
+  font-size: clamp(0.58rem, 2.2vw, 0.68rem);
+  color: var(--color-ink-soft);
+  opacity: 0.8;
+}
+
 /* History timeline */
 .history-year-group {
   position: relative;
@@ -2203,6 +2244,48 @@ a.episode-tag:hover {
   margin: 6px 0 0;
   font-size: 0.72rem;
   color: var(--color-ink-soft);
+}
+
+/* 投稿直後、鍋に入った自分のキャラをその場でシェアできるように出す案内。 */
+.pot-form__posted {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 420px;
+  margin-top: 14px;
+  padding: 18px 20px;
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-accent);
+  text-align: center;
+}
+
+.pot-form__posted-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  border: none;
+  background: none;
+  color: var(--color-ink-soft);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.pot-form__posted-face {
+  position: relative;
+  width: 66px;
+  height: 66px;
+  flex: none;
+}
+
+.pot-form__posted-message {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-ink);
 }
 
 .pot-scene {

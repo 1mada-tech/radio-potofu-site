@@ -55,13 +55,14 @@ export async function getAllPotCreatures(): Promise<PotCreature[]> {
 export async function createPotCreature(params: {
   authorName: string;
   poem: string;
-}): Promise<void> {
+}): Promise<PotCreature | null> {
   const authorName = params.authorName.trim().slice(0, 50) || null;
   const poem = params.poem.trim().slice(0, 200);
-  if (!poem) return;
+  if (!poem) return null;
 
-  await pool.query(
-    "INSERT INTO pot_creatures (author_name, poem) VALUES ($1, $2)",
+  const { rows } = await pool.query<Row>(
+    "INSERT INTO pot_creatures (author_name, poem) VALUES ($1, $2) RETURNING id, author_name, poem, created_at",
     [authorName, poem],
   );
+  return toCreature(rows[0]);
 }
