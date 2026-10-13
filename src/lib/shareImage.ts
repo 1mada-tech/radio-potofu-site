@@ -73,6 +73,17 @@ export function drawCreatureShareImage(
   ctx.fill();
   ctx.restore();
 
+  // 鍋の中にいるときは、.creature__scale-wrap(transform-origin: bottom
+  // center)の scaleY(0.72) で縦に少しつぶれた楕円っぽい見た目になる。
+  // カードでも同じ見た目にするため、顔のパーツ一式(耳〜口)を描く間だけ
+  // 底辺を基準に縦方向だけ縮める。
+  const FACE_SQUASH_Y = 0.72;
+  const faceBottom = bodyY + bodySize;
+  ctx.save();
+  ctx.translate(cx, faceBottom);
+  ctx.scale(1, FACE_SQUASH_Y);
+  ctx.translate(-cx, -faceBottom);
+
   // 耳・アンテナ(本体より先に描いて、本体の下に少し隠れるようにする)
   ctx.fillStyle = appearance.bodyColor;
   if (appearance.earType === "round" || appearance.earType === "long" || appearance.earType === "small") {
@@ -207,6 +218,8 @@ export function drawCreatureShareImage(
     ctx.stroke();
   }
   ctx.restore();
+
+  ctx.restore(); // FACE_SQUASH_Yの変形を元に戻す
 
   // --- テキスト ---
   const textTop = bodyY + bodySize + 70;
