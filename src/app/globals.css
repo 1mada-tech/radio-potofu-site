@@ -3059,7 +3059,9 @@ a.episode-tag:hover {
   background: var(--color-bg);
   border: 1px solid var(--color-ink);
   text-align: center;
-  pointer-events: none;
+  /* 「画像を保存」ボタンをクリックできるよう、ツールチップ自体も
+     ポインタイベントを受け取れるようにする(閉じる判定はPotScene側の
+     タイマーで行っており、ここをnoneにする必要はない)。 */
 }
 
 .pot__tooltip-head {
@@ -3117,8 +3119,6 @@ a.episode-tag:hover {
   font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
-  /* ツールチップは pointer-events:none なので、ボタンだけ有効化する。 */
-  pointer-events: auto;
 }
 
 .share-creature-button:hover {

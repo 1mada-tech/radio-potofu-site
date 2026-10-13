@@ -68,6 +68,24 @@ export default function PotScene({
 }) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const potRef = useRef<HTMLDivElement>(null);
+  // キャラからツールチップ(「画像を保存」ボタン等)へポインタを移動する間、
+  // キャラ本体からは一旦外れるため、即座に閉じるとボタンまで辿り着けない。
+  // 少し待ってから閉じることで、その間にツールチップ側へポインタが入れば
+  // cancelCloseでキャンセルされ、開いたままになる。
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cancelClose = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+  const scheduleClose = (id: number) => {
+    cancelClose();
+    closeTimerRef.current = setTimeout(() => {
+      setHoveredId((current) => (current === id ? null : current));
+    }, 200);
+  };
+  useEffect(() => cancelClose, []);
 
   // 待機列は、鍋が横に並ぶ画面(PC)では奥行きのある斜めの列、
   // 鍋の下に落ちる画面(スマホ、はしごのCSSと同じ800px基準)では
@@ -181,8 +199,11 @@ export default function PotScene({
                 left={left}
                 scale={creatureScale(creature.createdAt)}
                 labelLevel={labelLevel}
-                onHoverStart={() => setHoveredId(creature.id)}
-                onHoverEnd={() => setHoveredId((id) => (id === creature.id ? null : id))}
+                onHoverStart={() => {
+                  cancelClose();
+                  setHoveredId(creature.id);
+                }}
+                onHoverEnd={() => scheduleClose(creature.id)}
                 // タップ時、先にonHoverStart(onMouseEnter由来)がhoveredIdを
                 // セットしてしまっていることがあるため、ここでは常に開く
                 // (トグルにすると直後に閉じてしまうことがある)。
@@ -201,6 +222,8 @@ export default function PotScene({
               top: `${(hovered.top * 150) / 380}%`,
               left: `${hovered.left}%`,
             }}
+            onMouseEnter={cancelClose}
+            onMouseLeave={() => scheduleClose(hovered.creature.id)}
           >
             <div className="pot__tooltip-head">
               <span className="pot__tooltip-face" aria-hidden="true">
