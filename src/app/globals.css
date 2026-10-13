@@ -2288,6 +2288,13 @@ a.episode-tag:hover {
   color: var(--color-ink);
 }
 
+.pot-form__posted-hint {
+  margin: 8px 0 12px;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--color-ink-soft);
+}
+
 .pot-scene {
   display: flex;
   flex-wrap: wrap;

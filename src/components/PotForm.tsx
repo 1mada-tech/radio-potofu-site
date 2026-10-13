@@ -143,6 +143,12 @@ export default function PotForm({
           <p className="pot-form__posted-message">
             「{deriveName(justPosted.poem, justPosted.createdAt)}」が鍋に入りました!
           </p>
+          <p className="pot-form__posted-hint">
+            下のボタンを押すと、この子の画像が保存できます。
+            <br />
+            保存した画像をXやInstagramなどに「投稿」してもらえると、
+            ラジオポトフを知らない人にも届いて嬉しいです!
+          </p>
           <ShareCreatureButton
             poem={justPosted.poem}
             createdAt={justPosted.createdAt}
