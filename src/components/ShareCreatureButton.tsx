@@ -30,11 +30,13 @@ export default function ShareCreatureButton({
   authorName?: string | null;
 }) {
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleClick = (event: React.MouseEvent) => {
     // 親要素(ツールチップ)のクリックで閉じる処理に巻き込まれないようにする。
     event.stopPropagation();
     setSaving(true);
+    setError(false);
     try {
       const canvas = document.createElement("canvas");
       drawCreatureShareImage(canvas, { poem, createdAt, authorName });
@@ -44,40 +46,68 @@ export default function ShareCreatureButton({
       const file = new File([blob], fileName, { type: "image/png" });
 
       // スマホ(特にiOS Safari)は<a download>のデータURL保存が効かないことが
-      // 多いため、対応していれば端末標準の共有シートを優先する(保存はもちろん、
-      // そのままSNSにも渡せて一石二鳥)。非対応環境(主にPC)では従来通り
-      // ファイルを直接ダウンロードする。
+      // 多いため、対応していれば端末標準の共有シートを優先する。ただし
+      // WindowsのPC(Edge/Chrome)もnavigator.share自体には対応しており、
+      // そちらだと「近くのデバイスに送る」「Outlookで送る」等のOS共有UIが
+      // 開いてしまい、PC本体への保存という目的には合わない。タッチ操作が
+      // 主な端末(スマホ・タブレット)のときだけ共有シートを使う。
+      const isTouchPrimary =
+        typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
       const canShare =
+        isTouchPrimary &&
         typeof navigator !== "undefined" &&
         "share" in navigator &&
         "canShare" in navigator &&
         navigator.canShare({ files: [file] });
 
-      if (canShare) {
-        navigator.share({ files: [file], title: name }).catch(() => {
-          /* 共有シートをキャンセルしただけの場合もあるので、エラー表示はしない */
-        });
-      } else {
+      const downloadDirectly = () => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
         link.download = fileName;
         link.click();
         setTimeout(() => URL.revokeObjectURL(url), 10000);
+      };
+
+      if (canShare) {
+        try {
+          // HTTPS以外(secureContextでない)環境だとnavigator.share()自体が
+          // 同期的に例外を投げることがある。捕まえ損ねると「押しても何も
+          // 起きない」ように見えてしまうため、失敗時は直接ダウンロードに
+          // フォールバックする。
+          navigator.share({ files: [file], title: name }).catch(() => {
+            /* 共有シートをキャンセルしただけの場合もあるので、エラー表示はしない */
+          });
+        } catch {
+          downloadDirectly();
+        }
+      } else {
+        downloadDirectly();
       }
+    } catch {
+      // 想定外の失敗(古いブラウザでのcanvas API非対応等)。
+      // ボタンを押しても無反応に見えるのが一番困るので、必ず見える形で知らせる。
+      setError(true);
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <button
-      type="button"
-      className="share-creature-button"
-      onClick={handleClick}
-      disabled={saving}
-    >
-      {saving ? "保存中…" : "画像を保存"}
-    </button>
+    <>
+      <button
+        type="button"
+        className="share-creature-button"
+        onClick={handleClick}
+        disabled={saving}
+      >
+        {saving ? "保存中…" : "画像を保存"}
+      </button>
+      {error && (
+        <p className="share-creature-button__error">
+          保存に失敗しました。お使いのブラウザでは対応していないかもしれません。
+        </p>
+      )}
+    </>
   );
 }

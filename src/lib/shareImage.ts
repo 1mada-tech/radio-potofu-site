@@ -9,6 +9,28 @@ export const SHARE_IMAGE_SIZE = 1080;
 
 const BODY_BOX = 66; // CreatureFace.tsxの基準サイズ(px)
 
+// CanvasRenderingContext2D.roundRect()は比較的新しいAPI(Chrome 99+/
+// Safari 16+相当)で、古めのモバイルブラウザだと存在せず、呼び出すと
+// 例外になってしまう(ボタンを押しても何も起きないように見える不具合の
+// 原因になった)。arcToは昔からあるAPIなので、角丸矩形はそちらで描く。
+function pathRoundedRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  radius: number,
+) {
+  const r = Math.min(radius, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
 function drawRoundedSquare(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -16,9 +38,7 @@ function drawRoundedSquare(
   size: number,
   radius: number,
 ) {
-  ctx.beginPath();
-  ctx.roundRect(x, y, size, size, radius);
-  ctx.closePath();
+  pathRoundedRect(ctx, x, y, size, size, radius);
 }
 
 export function drawCreatureShareImage(
@@ -141,8 +161,7 @@ export function drawCreatureShareImage(
       ctx.arc(eyeCx, eyeY, 4.5 * scale, 0, Math.PI * 2);
       ctx.fill();
     } else if (appearance.eyeType === "sleepy") {
-      ctx.beginPath();
-      ctx.roundRect(eyeCx - 4 * scale, eyeY - 1.5 * scale, 8 * scale, 3 * scale, 2 * scale);
+      pathRoundedRect(ctx, eyeCx - 4 * scale, eyeY - 1.5 * scale, 8 * scale, 3 * scale, 2 * scale);
       ctx.fill();
     } else if (appearance.eyeType === "closed") {
       ctx.save();
@@ -170,8 +189,7 @@ export function drawCreatureShareImage(
     ctx.arc(cx, mouthY + 2 * scale, 2.5 * scale, 0, Math.PI * 2);
     ctx.fill();
   } else if (appearance.mouthType === "line") {
-    ctx.beginPath();
-    ctx.roundRect(cx - 4 * scale, mouthY, 8 * scale, 3 * scale, 1.5 * scale);
+    pathRoundedRect(ctx, cx - 4 * scale, mouthY, 8 * scale, 3 * scale, 1.5 * scale);
     ctx.fill();
   } else if (appearance.mouthType === "wavy") {
     ctx.lineWidth = 2 * scale;
