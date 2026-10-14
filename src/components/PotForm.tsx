@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import CreatureFace from "@/components/CreatureFace";
 import ShareCreatureButton from "@/components/ShareCreatureButton";
-import { deriveName } from "@/lib/creature";
+import { deriveName, deriveGreeting } from "@/lib/creature";
 
 type CreatedCreature = {
   id: number;
@@ -140,6 +140,7 @@ export default function PotForm({
           <span className="pot-form__posted-face" aria-hidden="true">
             <CreatureFace poem={justPosted.poem} createdAt={justPosted.createdAt} />
           </span>
+          <p className="pot-form__posted-greeting">{deriveGreeting(justPosted.poem)}</p>
           <p className="pot-form__posted-message">
             「{deriveName(justPosted.poem, justPosted.createdAt)}」が鍋に入りました!
           </p>

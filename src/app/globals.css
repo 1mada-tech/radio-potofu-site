@@ -1302,13 +1302,24 @@ a.episode-tag:hover {
 }
 
 .dashi-card {
+  position: relative;
   display: grid;
   grid-template-columns: 40px 1fr;
   align-items: center;
   column-gap: 10px;
-  padding: 10px 12px;
+  padding: 10px 12px 10px 20px;
   background: var(--color-bg-alt);
   border-left: 3px solid var(--color-accent);
+}
+
+.dashi-card__number {
+  position: absolute;
+  top: 8px;
+  left: 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  line-height: 1;
 }
 
 .dashi-card__face {
@@ -2286,6 +2297,12 @@ a.episode-tag:hover {
   width: 66px;
   height: 66px;
   flex: none;
+}
+
+.pot-form__posted-greeting {
+  margin: -4px 0 0;
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
 }
 
 .pot-form__posted-message {

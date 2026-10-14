@@ -13,10 +13,13 @@ export default async function DashiList() {
     <section className="pot-log">
       <h2 className="pot-log__heading">鍋に溶けこんだキャラたち</h2>
       <ul className="dashi-list">
-        {creatures.map((creature) => {
+        {creatures.map((creature, index) => {
           const name = deriveName(creature.poem, creature.createdAt);
           return (
             <li key={creature.id} className="dashi-card">
+              <span className="dashi-card__number" aria-hidden="true">
+                {creatures.length - index}.
+              </span>
               <span className="dashi-card__face" aria-hidden="true">
                 <span className="dashi-card__face-inner">
                   <CreatureFace poem={creature.poem} createdAt={creature.createdAt} />

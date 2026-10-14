@@ -367,3 +367,23 @@ export function deriveName(poem: string, createdAt?: string): string {
   const { base, honorific } = deriveNameParts(poem, createdAt);
   return `${base}${honorific}`;
 }
+
+// 投入直後のカードにだけ出すひとこと。過去のキャラに再表示することはないため、
+// 見た目や名前と違って日付での出し分けは不要(常にこのプールから選ぶ)。
+const POSTED_GREETINGS = [
+  "よろしくね!",
+  "鍋の中、あったかいね",
+  "しばらくここで過ごすよ",
+  "いいにおいがする…",
+  "みんなと仲良くできるかな",
+  "ぷかぷか浮いてる気分",
+  "川柳から生まれました",
+  "今日からここの住人です",
+  "よろしくおねがいします",
+  "鍋デビューです!",
+];
+
+export function deriveGreeting(poem: string): string {
+  const rng = makeRng(hashString(`greeting:${poem}`) || 1);
+  return POSTED_GREETINGS[Math.floor(rng() * POSTED_GREETINGS.length)];
+}
