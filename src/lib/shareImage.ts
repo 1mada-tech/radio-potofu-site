@@ -31,14 +31,37 @@ function pathRoundedRect(
   ctx.closePath();
 }
 
-function drawRoundedSquare(
+// CreatureFace.tsxの本体は、ただの角丸ではなくborder-radiusの8値
+// ショートハンド(角ごとに横/縦で別半径の楕円)で、ほぼ円に近い有機的な
+// ブロブ形になっている(deriveAppearanceのbodyCorners参照)。これを
+// 単純な角丸四角で近似すると、鍋の中・チップでは丸いのにカードだけ
+// 四角っぽく見えてしまう。角ごとに楕円弧を使って同じ形を再現する。
+function pathBlobSquare(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   size: number,
-  radius: number,
+  corners: { rx1: number; rx2: number; ry1: number; ry2: number },
 ) {
-  pathRoundedRect(ctx, x, y, size, size, radius);
+  const { rx1, rx2, ry1, ry2 } = corners;
+  // CSS: border-radius: rx1% rx2% ry2% ry1% / ry1% ry2% rx2% rx1%
+  // → 左上(横rx1,縦ry1) 右上(横rx2,縦ry2) 右下(横ry2,縦rx2) 左下(横ry1,縦rx1)
+  const tl = { h: (rx1 / 100) * size, v: (ry1 / 100) * size };
+  const tr = { h: (rx2 / 100) * size, v: (ry2 / 100) * size };
+  const br = { h: (ry2 / 100) * size, v: (rx2 / 100) * size };
+  const bl = { h: (ry1 / 100) * size, v: (rx1 / 100) * size };
+
+  ctx.beginPath();
+  ctx.moveTo(x + tl.h, y);
+  ctx.lineTo(x + size - tr.h, y);
+  ctx.ellipse(x + size - tr.h, y + tr.v, tr.h, tr.v, 0, -Math.PI / 2, 0);
+  ctx.lineTo(x + size, y + size - br.v);
+  ctx.ellipse(x + size - br.h, y + size - br.v, br.h, br.v, 0, 0, Math.PI / 2);
+  ctx.lineTo(x + bl.h, y + size);
+  ctx.ellipse(x + bl.h, y + size - bl.v, bl.h, bl.v, 0, Math.PI / 2, Math.PI);
+  ctx.lineTo(x, y + tl.v);
+  ctx.ellipse(x + tl.h, y + tl.v, tl.h, tl.v, 0, Math.PI, Math.PI * 1.5);
+  ctx.closePath();
 }
 
 export function drawCreatureShareImage(
@@ -134,7 +157,7 @@ export function drawCreatureShareImage(
   ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
   ctx.shadowOffsetY = 3 * scale;
   ctx.fillStyle = appearance.bodyColor;
-  drawRoundedSquare(ctx, bodyX, bodyY, bodySize, bodySize * 0.32);
+  pathBlobSquare(ctx, bodyX, bodyY, bodySize, appearance.bodyCorners);
   ctx.fill();
   ctx.restore();
 

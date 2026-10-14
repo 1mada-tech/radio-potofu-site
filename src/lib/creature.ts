@@ -53,6 +53,10 @@ const BLUSH_TYPES = ["none", "pink", "peach"] as const;
 export type CreatureAppearance = {
   bodyColor: string;
   bodyRadius: string;
+  // bodyRadius(CSS用の文字列)と同じ抽選結果を数値でも持たせたもの。
+  // canvasで本体を描く際、CSS border-radiusの8値ショートハンドを
+  // 文字列から逆算するのは面倒なので、生成時の数値をそのまま使えるようにする。
+  bodyCorners: { rx1: number; rx2: number; ry1: number; ry2: number };
   earType: (typeof EAR_TYPES)[number];
   eyeType: (typeof EYE_TYPES)[number];
   mouthType: (typeof MOUTH_TYPES)[number];
@@ -107,6 +111,7 @@ export function deriveAppearance(poem: string, createdAt?: string): CreatureAppe
   return {
     bodyColor,
     bodyRadius: `${rx1}% ${rx2}% ${ry2}% ${ry1}% / ${ry1}% ${ry2}% ${rx2}% ${rx1}%`,
+    bodyCorners: { rx1, rx2, ry1, ry2 },
     earType,
     eyeType,
     mouthType,
