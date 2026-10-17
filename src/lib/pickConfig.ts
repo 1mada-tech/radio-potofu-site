@@ -20,7 +20,7 @@ const fallback: PickConfig = {
 
 export async function getPickConfig(): Promise<PickConfig> {
   try {
-    const res = await fetch(PICK_CONFIG_CSV_URL, { cache: "no-store" });
+    const res = await fetch(PICK_CONFIG_CSV_URL, { next: { revalidate: 60 } });
     const text = await res.text();
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     const map = new Map(rows.map((row) => [row[0]?.trim(), row[1]?.trim()]));

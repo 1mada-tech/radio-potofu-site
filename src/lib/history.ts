@@ -39,7 +39,7 @@ function parseLinks(linkTextCell: string, linkUrlCell: string): HistoryLink[] {
 
 export async function getHistoryCaption(): Promise<string | null> {
   try {
-    const res = await fetch(HISTORY_CSV_URL, { cache: "no-store" });
+    const res = await fetch(HISTORY_CSV_URL, { next: { revalidate: 60 } });
     const text = await res.text();
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     const found = rows.slice(1).find((row) => row[0]?.trim());
@@ -61,7 +61,7 @@ export function getPlayCount(): { count: number; lastUpdated: string } {
 
 export async function getHistoryEntries(): Promise<HistoryEntry[]> {
   try {
-    const res = await fetch(HISTORY_CSV_URL, { cache: "no-store" });
+    const res = await fetch(HISTORY_CSV_URL, { next: { revalidate: 60 } });
     const text = await res.text();
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     const entries = rows

@@ -16,7 +16,7 @@ export type NetprintIssue = {
 
 export async function getNetprintIssues(): Promise<NetprintIssue[]> {
   try {
-    const res = await fetch(NETPRINT_CSV_URL, { cache: "no-store" });
+    const res = await fetch(NETPRINT_CSV_URL, { next: { revalidate: 60 } });
     const text = await res.text();
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     const issues = rows

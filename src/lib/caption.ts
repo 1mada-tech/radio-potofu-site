@@ -20,7 +20,7 @@ export type SenryuCaption = {
 
 export async function getSenryuCaption(): Promise<SenryuCaption | null> {
   try {
-    const res = await fetch(SENRYU_CAPTION_CSV_URL, { cache: "no-store" });
+    const res = await fetch(SENRYU_CAPTION_CSV_URL, { next: { revalidate: 60 } });
     const text = await res.text();
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     const dataRows = rows.slice(1);

@@ -4,7 +4,7 @@ import { parse } from "csv-parse/sync";
 // 最初に入力されているキャプション文を1つ取得する汎用関数。
 export async function getSimpleCaption(csvUrl: string): Promise<string | null> {
   try {
-    const res = await fetch(csvUrl, { cache: "no-store" });
+    const res = await fetch(csvUrl, { next: { revalidate: 60 } });
     const text = await res.text();
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     const header = rows[0] ?? [];

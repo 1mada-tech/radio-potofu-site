@@ -53,7 +53,7 @@ type AppleLookupResult = {
 async function fetchAppleUrlsByDate(): Promise<Map<string, string>> {
   const map = new Map<string, string>();
   try {
-    const res = await fetch(APPLE_LOOKUP_URL, { cache: "no-store" });
+    const res = await fetch(APPLE_LOOKUP_URL, { next: { revalidate: 60 } });
     const data: { results: AppleLookupResult[] } = await res.json();
     for (const result of data.results) {
       if (result.wrapperType !== "podcastEpisode" || !result.trackId || !result.releaseDate) {
@@ -93,7 +93,7 @@ function formatRecommendation(raw: string): string {
 async function fetchEpisodeExtrasByNumber(): Promise<Map<number, EpisodeExtras>> {
   const map = new Map<number, EpisodeExtras>();
   try {
-    const res = await fetch(EPISODE_EXTRAS_CSV_URL, { cache: "no-store" });
+    const res = await fetch(EPISODE_EXTRAS_CSV_URL, { next: { revalidate: 60 } });
     const text = await res.text();
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     for (const row of rows.slice(1)) {

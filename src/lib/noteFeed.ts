@@ -39,7 +39,7 @@ const parser: Parser<object, NoteFeedItem> = new Parser({
 
 export async function getNoteArticles(): Promise<NoteArticle[]> {
   try {
-    const res = await fetch(NOTE_FEED_URL, { cache: "no-store" });
+    const res = await fetch(NOTE_FEED_URL, { next: { revalidate: 300 } });
     const xml = await res.text();
     const feed = await parser.parseString(xml);
 

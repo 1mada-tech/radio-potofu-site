@@ -23,7 +23,7 @@ export type Member = {
 
 export async function getMembers(): Promise<Member[]> {
   try {
-    const res = await fetch(MEMBERS_CSV_URL, { cache: "no-store" });
+    const res = await fetch(MEMBERS_CSV_URL, { next: { revalidate: 60 } });
     const text = await res.text();
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     if (rows.length === 0) return [];

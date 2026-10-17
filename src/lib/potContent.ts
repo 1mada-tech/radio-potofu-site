@@ -30,7 +30,10 @@ const DEFAULT_CONTENT: PotContent = {
 
 export async function getPotContent(): Promise<PotContent> {
   try {
-    const res = await fetch(POT_CONTENT_CSV_URL, { cache: "no-store" });
+    // /pot自体は鍋の中身を常に最新にするためrevalidate:0(フル動的)だが、
+    // ここで取っているのは滅多に変わらない文言なので、フェッチ単位では
+    // キャッシュして毎回スプレッドシートを叩かないようにする。
+    const res = await fetch(POT_CONTENT_CSV_URL, { next: { revalidate: 300 } });
     const text = await res.text();
     const rows: string[][] = parse(text, { skip_empty_lines: true });
     const header = rows[0] ?? [];
