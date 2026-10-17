@@ -2,7 +2,6 @@ import { Pool } from "pg";
 
 // テーマ募集掲示板用のPostgres接続(Neon, Vercel Storage経由)。
 declare global {
-  // eslint-disable-next-line no-var
   var __pgPool: Pool | undefined;
 }
 

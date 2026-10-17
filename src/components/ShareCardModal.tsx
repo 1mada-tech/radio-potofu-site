@@ -68,6 +68,9 @@ export default function ShareCardModal({
           ×
         </button>
         {dataUrl ? (
+          // canvasから生成したdata: URLなので、next/imageの最適化(リモート画像の
+          // リサイズ・再エンコード)は効かず意味がない。
+          // eslint-disable-next-line @next/next/no-img-element
           <img src={dataUrl} alt={`${name}の鍋カード(住民票)`} className="share-card-modal__image" />
         ) : (
           <div className="share-card-modal__loading">画像を生成中…</div>
