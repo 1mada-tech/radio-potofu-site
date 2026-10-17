@@ -55,6 +55,26 @@ function pathRoundedRect(
   ctx.closePath();
 }
 
+// CTAバッジをフッター帯から生えた「タブ」のように見せるための、
+// 上2角だけ丸めた矩形(下端は直線なので、フッターの上辺と地続きになる)。
+function pathTopRoundedRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  radius: number,
+) {
+  const r = Math.min(radius, w / 2, h);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.lineTo(x + w, y + h);
+  ctx.lineTo(x, y + h);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
 // CreatureFace.tsxの本体は、ただの角丸ではなくborder-radiusの8値
 // ショートハンド(角ごとに横/縦で別半径の楕円)で、ほぼ円に近い有機的な
 // ブロブ形になっている(deriveAppearanceのbodyCorners参照)。これを
@@ -833,6 +853,29 @@ export function drawCreatureShareImage(
   // --- フッター(ブランディング。カード下端の丸みに合わせて収める) ---
   const footerHeight = 84;
   const footerTop = H - margin - cardPad - footerHeight;
+
+  // --- CTA(カードを見た人への参加の呼びかけ)。フッター帯から生えた
+  // 「タブ」のように、フッターと同じ色・地続きの上辺なしの形で重ねて
+  // 描くことで、フッターの一部であるかのように見せる ---
+  ctx.save();
+  const ctaText = "あなたの川柳からキャラが生まれる";
+  ctx.font = "700 24px 'Noto Sans JP', sans-serif";
+  ctx.textAlign = "center";
+  const ctaTextWidth = ctx.measureText(ctaText).width;
+  const ctaPadX = 26;
+  const ctaPadY = 14;
+  const ctaTabWidth = ctaTextWidth + ctaPadX * 2;
+  const ctaTabHeight = 24 + ctaPadY * 2;
+  const ctaTabBottom = footerTop + 10; // フッター帯に少し食い込ませて継ぎ目を消す
+  const ctaTabTop = ctaTabBottom - ctaTabHeight;
+  const ctaTabLeft = cardLeft + 40; // フッターの「ラジオポトフ公式サイト」と同じ左端に揃える
+  ctx.fillStyle = accentColor;
+  pathTopRoundedRect(ctx, ctaTabLeft, ctaTabTop, ctaTabWidth, ctaTabHeight, ctaTabHeight / 2);
+  ctx.fill();
+  ctx.fillStyle = "rgba(255, 255, 255, 0.95)";
+  ctx.fillText(ctaText, ctaTabLeft + ctaTabWidth / 2, ctaTabTop + ctaPadY + 18);
+  ctx.restore();
+
   ctx.save();
   pathRoundedRect(ctx, cardLeft, margin + cardPad, cardWidth, H - margin * 2 - cardPad * 2, frameRadius - 10);
   ctx.clip();
