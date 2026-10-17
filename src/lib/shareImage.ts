@@ -732,14 +732,25 @@ export function drawCreatureShareImage(
   ctx.restore(); // FACE_SQUASH_Yの変形を元に戻す
 
   // --- 川柳本文(攻撃技の説明文のような、フレーバーテキストの枠) ---
+  // 引用符だけだと、カードが単体でシェアされた時に何の引用か伝わらない
+  // ため、句の作者欄と同じ見出しスタイルの「元の川柳」ラベルを添える。
+  // 句そのものは枠の真ん中からほんの少し下に置き、ラベルはそれによって
+  // 上に空いた分のスペースに収める(枠の上下余白自体は詰めてある)。
   ctx.font = "italic 400 32px 'Noto Sans JP', sans-serif";
   const maxWidth = artWidth - 64;
-  const quoted = `「${params.poem}」`;
-  const poemLines = wrapTextChars(ctx, quoted, maxWidth, 3, "…」");
+  // ラベルで「引用である」ことが伝わるようになったので、「」は不要。
+  const poemText = params.poem;
+  // ラベル分の高さを確保した上でフッターと衝突しないよう、引用文は最大2行
+  // (投稿フォーム自体は最大200文字まで許容しているため、本来の川柳の
+  // 長さを超えて長文が来ても安全な上限として2行に制限している)。
+  const poemLines = wrapTextChars(ctx, poemText, maxWidth, 2, "…");
   const poemLineHeight = 46;
-  const poemPadY = 32;
   const poemBoxTop = artY + artHeight + 26;
-  const poemBoxHeight = poemPadY * 2 + poemLines.length * poemLineHeight - 10;
+  const poemPadY = 20; // 枠の上下余白(詰めた)
+  const poemLabelHeight = 20;
+  const poemLabelGap = 10; // ラベルと句の間の余白(詰めた)
+  const poemBoxHeight =
+    poemPadY * 2 + poemLabelHeight + poemLabelGap + poemLines.length * poemLineHeight - 10;
   ctx.save();
   ctx.fillStyle = "rgba(33, 26, 21, 0.03)";
   pathRoundedRect(ctx, artX, poemBoxTop, artWidth, poemBoxHeight, 18);
@@ -750,10 +761,17 @@ export function drawCreatureShareImage(
   ctx.stroke();
   ctx.restore();
 
+  ctx.font = "700 20px 'Noto Sans JP', sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillStyle = accentColor;
+  ctx.fillText("元の川柳", W / 2, poemBoxTop + poemPadY + poemLabelHeight * 0.75);
+
+  const poemQuoteFirstBaseline = poemBoxTop + poemPadY + poemLabelHeight + poemLabelGap + 24;
+  ctx.font = "italic 400 32px 'Noto Sans JP', sans-serif";
   ctx.textAlign = "center";
   ctx.fillStyle = "#4a4136";
   poemLines.forEach((l, i) => {
-    ctx.fillText(l, W / 2, poemBoxTop + poemPadY + 24 + i * poemLineHeight);
+    ctx.fillText(l, W / 2, poemQuoteFirstBaseline + i * poemLineHeight);
   });
 
   // --- ステータス行(ポケカの弱点/抵抗力/にげるのような3カラム) ---

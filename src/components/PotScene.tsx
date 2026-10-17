@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Creature from "@/components/Creature";
 import CreatureFace from "@/components/CreatureFace";
 import ShareCreatureButton from "@/components/ShareCreatureButton";
+import ShareCardModal from "@/components/ShareCardModal";
 import {
   derivePositions,
   deriveLabelLevels,
@@ -67,6 +68,11 @@ export default function PotScene({
   tooltipLifespanTemplate: string;
 }) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  // ホバーが外れてツールチップ(hoveredId)自体は閉じても、プレビューは
+  // 出したままにしたいので、鍋カード内容ごとここに保持しておく
+  // (ツールチップのJSXは{hovered && ...}で丸ごと外れるため、その中に
+  // 状態を置くとプレビューも一緒に消えてしまう)。
+  const [previewCreature, setPreviewCreature] = useState<PotCreature | null>(null);
   const potRef = useRef<HTMLDivElement>(null);
   // キャラからツールチップ(「画像を保存」ボタン等)へポインタを移動する間、
   // キャラ本体からは一旦外れるため、即座に閉じるとボタンまで辿り着けない。
@@ -250,10 +256,23 @@ export default function PotScene({
               poetName={hovered.creature.poetName}
               entryNumber={hovered.creature.entryNumber}
               note={hovered.creature.note}
+              onRequestPreview={() => setPreviewCreature(hovered.creature)}
             />
           </div>
         )}
       </div>
+
+      {previewCreature && previewCreature.note && (
+        <ShareCardModal
+          poem={previewCreature.poem}
+          createdAt={previewCreature.createdAt}
+          authorName={previewCreature.authorName}
+          poetName={previewCreature.poetName}
+          entryNumber={previewCreature.entryNumber}
+          note={previewCreature.note}
+          onClose={() => setPreviewCreature(null)}
+        />
+      )}
 
       <div
         className={`pot__queue${waiting.length === 0 ? " pot__queue--empty" : ""}`}

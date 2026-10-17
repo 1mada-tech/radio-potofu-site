@@ -3194,6 +3194,82 @@ a.episode-tag:hover {
   color: var(--color-red);
 }
 
+.share-card-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(33, 26, 21, 0.6);
+}
+
+.share-card-modal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 32px 24px 24px;
+  background: var(--color-bg);
+  border: 2px solid var(--color-ink);
+}
+
+.share-card-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 1px solid var(--color-border);
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+}
+
+.share-card-modal__image {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--color-border);
+}
+
+.share-card-modal__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
+.share-card-modal__save {
+  width: 100%;
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: 1px solid var(--color-ink);
+  background: var(--color-ink);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.share-card-modal__save:hover {
+  opacity: 0.85;
+}
+
+.share-card-modal__save:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .pot-log {
   margin-top: 36px;
   padding-top: 20px;
