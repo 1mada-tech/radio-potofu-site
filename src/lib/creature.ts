@@ -277,6 +277,11 @@ export function deriveWiggleDelay(poem: string): number {
 }
 
 const KATAKANA_RUN = /[ァ-ヶー]{2,}/g;
+// 半角/全角どちらの英字にもマッチ(例: "FIRE"も"ＦＩＲＥ"も拾える)。
+const LATIN_RUN = /[A-Za-zＡ-Ｚａ-ｚ]{2,}/g;
+// この日時より前に鍋に入ったキャラは、英単語を優先するルール追加前の
+// (カタカナ連続を優先する)元の抽選結果のままにする。
+const ENGLISH_NAME_PREFERENCE_AT = new Date("2026-10-14T20:00:00+09:00").getTime();
 
 // 敬称を追加する前からあった、元々のラインナップ。
 const ORIGINAL_HONORIFICS = ["くん", "ちゃん", "にゃん", "先生", "さん", "氏"];
@@ -305,6 +310,20 @@ const HONORIFICS = [...ORIGINAL_HONORIFICS, ...ADDED_HONORIFICS];
 // 選び直す(追加後にHONORIFICSの並びや長さが変わっても、投入時に付いていた
 // 敬称が変わらないようにするため)。
 const HONORIFIC_EXPANSION_AT = new Date("2026-10-03T00:00:00+09:00").getTime();
+
+// 2026-10-14に追加・修正したぶん。「ル」は「～る」に表記を直した(ADDED_HONORIFICS
+// 自体は過去のキャラの抽選結果を再現するために書き換えずそのまま残し、
+// ここで新しい配列として作り直している)。
+const HONORIFICS_V2 = [
+  ...ORIGINAL_HONORIFICS,
+  ...ADDED_HONORIFICS.map((h) => (h === "ル" ? "～る" : h)),
+  "ぽよ",
+  "りん",
+];
+
+// この日時より前に鍋に入ったキャラは、上の修正前のHONORIFICS(「ル」表記・
+// ぽよ/りん無し)から選び直す。
+const HONORIFIC_V2_EXPANSION_AT = new Date("2026-10-14T20:00:00+09:00").getTime();
 
 // 末尾フォールバック(カタカナの連続が無い川柳で、末尾の数文字をそのまま
 // 名前にする処理)の改善日時。「埋めた？」+「閣下」→「埋めた？閣下」、
@@ -345,10 +364,23 @@ export function deriveNameParts(
     createdAt !== undefined && new Date(createdAt).getTime() < NAME_FALLBACK_IMPROVED_AT;
 
   let base = "";
-  const katakanaMatches = trimmed.match(KATAKANA_RUN);
-  if (katakanaMatches) {
-    const longest = katakanaMatches.reduce((a, b) => (b.length > a.length ? b : a));
-    if (longest.length >= 2) base = longest;
+  // 川柳に英単語が混ざっているのは作者がこだわって入れたものである
+  // ことが多いので、カタカナの連続よりも優先して名前に使う。
+  const isBeforeEnglishPreference =
+    createdAt !== undefined && new Date(createdAt).getTime() < ENGLISH_NAME_PREFERENCE_AT;
+  if (!isBeforeEnglishPreference) {
+    const latinMatches = trimmed.match(LATIN_RUN);
+    if (latinMatches) {
+      const longest = latinMatches.reduce((a, b) => (b.length > a.length ? b : a));
+      if (longest.length >= 2) base = longest;
+    }
+  }
+  if (!base) {
+    const katakanaMatches = trimmed.match(KATAKANA_RUN);
+    if (katakanaMatches) {
+      const longest = katakanaMatches.reduce((a, b) => (b.length > a.length ? b : a));
+      if (longest.length >= 2) base = longest;
+    }
   }
   if (!base && isBeforeNameFallbackImproved) {
     const tailLength = Math.min(4, trimmed.length);
@@ -363,7 +395,9 @@ export function deriveNameParts(
   const rng = makeRng(hashString(`${trimmed}::honorific`) || 1);
   const isBeforeExpansion =
     createdAt !== undefined && new Date(createdAt).getTime() < HONORIFIC_EXPANSION_AT;
-  const pool = isBeforeExpansion ? ORIGINAL_HONORIFICS : HONORIFICS;
+  const isBeforeV2Expansion =
+    createdAt !== undefined && new Date(createdAt).getTime() < HONORIFIC_V2_EXPANSION_AT;
+  const pool = isBeforeExpansion ? ORIGINAL_HONORIFICS : isBeforeV2Expansion ? HONORIFICS : HONORIFICS_V2;
   const honorific = pool[Math.floor(rng() * pool.length)];
   return { base, honorific };
 }

@@ -32,6 +32,7 @@ export default async function PotPage() {
       <p className="page-caption">{content.caption}</p>
       <PotForm
         namePlaceholder={content.formNamePlaceholder}
+        poetNamePlaceholder={content.formPoetNamePlaceholder}
         poemPlaceholder={content.formPoemPlaceholder}
         submitLabel={content.formSubmitLabel}
       />

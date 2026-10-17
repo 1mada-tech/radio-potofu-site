@@ -1,6 +1,7 @@
 import { getMeltedCreatures } from "@/lib/potCreatures";
 import { deriveName } from "@/lib/creature";
 import CreatureFace from "@/components/CreatureFace";
+import ShareCreatureButton from "@/components/ShareCreatureButton";
 import { formatDateTime } from "@/lib/date";
 
 // 鍋で完全に溶けてダシになったキャラの一覧。独立ページにはせず、
@@ -28,11 +29,25 @@ export default async function DashiList() {
               <p className="dashi-card__name">{name}</p>
               <p className="dashi-card__poem">{creature.poem}</p>
               <div className="dashi-card__meta">
-                {creature.authorName && (
-                  <span className="dashi-card__author">{creature.authorName}</span>
+                {creature.poetName ? (
+                  <span className="dashi-card__author">
+                    作: {creature.poetName}(投稿: {creature.authorName || "名無し"})
+                  </span>
+                ) : (
+                  creature.authorName && (
+                    <span className="dashi-card__author">{creature.authorName}</span>
+                  )
                 )}
                 <span className="dashi-card__date">{formatDateTime(creature.createdAt)}</span>
               </div>
+              <ShareCreatureButton
+                poem={creature.poem}
+                createdAt={creature.createdAt}
+                authorName={creature.authorName}
+                poetName={creature.poetName}
+                entryNumber={creature.entryNumber}
+                note={creature.note}
+              />
             </li>
           );
         })}

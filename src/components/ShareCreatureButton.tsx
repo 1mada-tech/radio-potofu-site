@@ -24,13 +24,25 @@ export default function ShareCreatureButton({
   poem,
   createdAt,
   authorName,
+  poetName,
+  entryNumber,
+  note,
 }: {
   poem: string;
   createdAt?: string;
   authorName?: string | null;
+  poetName?: string | null;
+  entryNumber?: number;
+  note?: string | null;
 }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
+
+  // noteが入る(=鍋カードが発行される)まで、画像の保存・共有はさせない。
+  // ここで保存できてしまうと、汎用の仮文面のカードが広まってしまうため。
+  if (!note) {
+    return <span className="share-creature-button share-creature-button--pending">鍋カード(住民票)申請中</span>;
+  }
 
   const handleClick = (event: React.MouseEvent) => {
     // 親要素(ツールチップ)のクリックで閉じる処理に巻き込まれないようにする。
@@ -39,7 +51,7 @@ export default function ShareCreatureButton({
     setError(false);
     try {
       const canvas = document.createElement("canvas");
-      drawCreatureShareImage(canvas, { poem, createdAt, authorName });
+      drawCreatureShareImage(canvas, { poem, createdAt, authorName, poetName, entryNumber, noteOverride: note });
       const name = deriveName(poem, createdAt);
       const blob = dataUrlToBlob(canvas.toDataURL("image/png"));
       const fileName = `${name}.png`;
@@ -101,7 +113,7 @@ export default function ShareCreatureButton({
         onClick={handleClick}
         disabled={saving}
       >
-        {saving ? "保存中…" : "画像を保存"}
+        {saving ? "保存中…" : "鍋カード(住民票)を見る"}
       </button>
       {error && (
         <p className="share-creature-button__error">

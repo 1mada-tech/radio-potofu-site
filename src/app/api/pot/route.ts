@@ -16,11 +16,12 @@ export async function POST(request: Request) {
   }
 
   const authorName = typeof data.authorName === "string" ? data.authorName : "";
+  const poetName = typeof data.poetName === "string" ? data.poetName : "";
 
-  const creature = await createPotCreature({ authorName, poem });
+  const creature = await createPotCreature({ authorName, poetName, poem });
   await sendNotificationEmail(
     "【ラジオポトフ】鍋に川柳が投入されました",
-    `投稿者: ${authorName || "名無し"}\n川柳: ${poem}`,
+    `投稿者: ${authorName || "名無し"}\n作者: ${poetName || "(投稿者本人)"}\n川柳: ${poem}`,
   );
   return NextResponse.json({ ok: true, creature });
 }

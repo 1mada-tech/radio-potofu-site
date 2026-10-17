@@ -235,7 +235,10 @@ export default function PotScene({
             </div>
             <p className="pot__tooltip-poem">{hovered.creature.poem}</p>
             <p className="pot__tooltip-meta">
-              {hovered.creature.authorName || "名無し"} ・ {formatDate(hovered.creature.createdAt)}
+              {hovered.creature.poetName
+                ? `作: ${hovered.creature.poetName}(投稿: ${hovered.creature.authorName || "名無し"})`
+                : hovered.creature.authorName || "名無し"}{" "}
+              ・ {formatDate(hovered.creature.createdAt)}
             </p>
             <p className="pot__tooltip-lifespan">
               {tooltipLifespanTemplate.replace("x日", `${daysLeft(hovered.creature.createdAt)}日`)}
@@ -244,6 +247,9 @@ export default function PotScene({
               poem={hovered.creature.poem}
               createdAt={hovered.creature.createdAt}
               authorName={hovered.creature.authorName}
+              poetName={hovered.creature.poetName}
+              entryNumber={hovered.creature.entryNumber}
+              note={hovered.creature.note}
             />
           </div>
         )}

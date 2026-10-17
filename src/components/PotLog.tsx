@@ -6,7 +6,7 @@ import PotLogFaceTooltip from "@/components/PotLogFaceTooltip";
 const EVENT_LABEL: Record<PotEventType, string> = {
   enter: "投入",
   milestone: "節目",
-  melt: "完成",
+  melt: "溶け",
   flavor: "経過",
 };
 
@@ -58,7 +58,10 @@ export default function PotLog({
                   <PotLogFaceTooltip
                     poem={creature.poem}
                     authorName={creature.authorName}
+                    poetName={creature.poetName}
                     createdAt={creature.createdAt}
+                    entryNumber={creature.entryNumber}
+                    note={creature.note}
                     tooltipLifespanTemplate={tooltipLifespanTemplate}
                   />
                 )}

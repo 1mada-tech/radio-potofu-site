@@ -1391,6 +1391,12 @@ a.episode-tag:hover {
   content: "投入日: ";
 }
 
+.dashi-card .share-creature-button,
+.dashi-card .share-creature-button--pending {
+  grid-column: 1 / 3;
+  margin-top: 6px;
+}
+
 .episode-search {
   display: flex;
   align-items: center;
@@ -2216,6 +2222,15 @@ a.episode-tag:hover {
   color: var(--color-ink);
 }
 
+.pot-form__poet-name {
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
 .pot-form__poem {
   font-family: inherit;
   font-size: 0.9rem;
@@ -2274,8 +2289,8 @@ a.episode-tag:hover {
   max-width: 420px;
   margin-top: 14px;
   padding: 18px 20px;
-  background: var(--color-accent-soft);
-  border: 1px solid var(--color-accent);
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
   text-align: center;
 }
 
@@ -3160,6 +3175,17 @@ a.episode-tag:hover {
 .share-creature-button:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.share-creature-button--pending {
+  opacity: 0.6;
+  cursor: default;
+  text-align: center;
+}
+
+.share-creature-button--pending:hover {
+  background: var(--color-bg);
+  color: var(--color-ink);
 }
 
 .share-creature-button__error {

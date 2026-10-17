@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import CreatureFace from "@/components/CreatureFace";
+import ShareCreatureButton from "@/components/ShareCreatureButton";
 import { deriveName, daysLeft } from "@/lib/creature";
 import { formatDate } from "@/lib/date";
 
@@ -11,12 +12,18 @@ import { formatDate } from "@/lib/date";
 export default function PotLogFaceTooltip({
   poem,
   authorName,
+  poetName,
   createdAt,
+  entryNumber,
+  note,
   tooltipLifespanTemplate,
 }: {
   poem: string;
   authorName: string | null;
+  poetName: string | null;
   createdAt: string;
+  entryNumber: number;
+  note: string | null;
   tooltipLifespanTemplate: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -97,11 +104,20 @@ export default function PotLogFaceTooltip({
           </div>
           <p className="pot__tooltip-poem">{poem}</p>
           <p className="pot__tooltip-meta">
-            {authorName || "名無し"} ・ {formatDate(createdAt)}
+            {poetName ? `作: ${poetName}(投稿: ${authorName || "名無し"})` : authorName || "名無し"}{" "}
+            ・ {formatDate(createdAt)}
           </p>
           <p className="pot__tooltip-lifespan">
             {tooltipLifespanTemplate.replace("x日", `${daysLeft(createdAt)}日`)}
           </p>
+          <ShareCreatureButton
+            poem={poem}
+            createdAt={createdAt}
+            authorName={authorName}
+            poetName={poetName}
+            entryNumber={entryNumber}
+            note={note}
+          />
         </div>
       )}
     </span>
