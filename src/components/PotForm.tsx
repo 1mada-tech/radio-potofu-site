@@ -12,6 +12,7 @@ type CreatedCreature = {
   poem: string;
   createdAt: string;
   entryNumber: number;
+  honorific: string;
 };
 
 // スマホでは、他アプリ(X/写真アプリ等)に一度切り替えて戻ってくると、
@@ -157,7 +158,7 @@ export default function PotForm({
           </span>
           <p className="pot-form__posted-greeting">{deriveGreeting(justPosted.poem)}</p>
           <p className="pot-form__posted-message">
-            「{deriveName(justPosted.poem, justPosted.createdAt)}」が鍋に入りました。ようこそ!
+            「{deriveName(justPosted.poem, justPosted.createdAt, justPosted.honorific)}」が鍋に入りました。ようこそ!
           </p>
           <p className="pot-form__posted-hint">
             この子だけの「鍋カード(住民票)」を24時間以内に発行しますので、おひまな際にこのページに戻ってきて受け取ってください。XやInstagramなどでシェアしてもらえるとうれしいです!

@@ -348,14 +348,32 @@ function trimLeadingParticles(s: string): string {
   return result;
 }
 
+// 敬称プール(createdAtの時期に応じて選ぶ)と、そのプール内で
+// このキャラが優先的に選ぶ敬称の並び順(句のハッシュ値基準)を返す。
+// deriveNameParts(通常の敬称決定)とpickAvailableHonorific(同じ鍋に
+// いる面々との名前重複を避けるための代替候補探し)の両方から使う。
+function honorificCandidates(trimmedPoem: string, createdAt?: string): string[] {
+  const rng = makeRng(hashString(`${trimmedPoem}::honorific`) || 1);
+  const isBeforeExpansion =
+    createdAt !== undefined && new Date(createdAt).getTime() < HONORIFIC_EXPANSION_AT;
+  const isBeforeV2Expansion =
+    createdAt !== undefined && new Date(createdAt).getTime() < HONORIFIC_V2_EXPANSION_AT;
+  const pool = isBeforeExpansion ? ORIGINAL_HONORIFICS : isBeforeV2Expansion ? HONORIFICS : HONORIFICS_V2;
+  const startIndex = Math.floor(rng() * pool.length);
+  return pool.map((_, i) => pool[(startIndex + i) % pool.length]);
+}
+
 // 川柳の文字列から名前を抜き出す。カタカナの連続部分があればそれを、
 // なければ末尾の数文字をフォールバックとして使う。
 // さらに、くん/ちゃん/にゃん等の敬称を文字列ごとに決定論的に割り振る。
 // createdAtを渡すと、敬称追加より前に入ったキャラは元のラインナップから選ぶ。
+// honorificOverrideを渡すと、その敬称をそのまま使う(DBに保存済みの
+// 確定した敬称を使う場合。pickAvailableHonorificで選んだ結果など)。
 // (本体+敬称をそれぞれ別で使いたい箇所があるため分けて返す)
 export function deriveNameParts(
   poem: string,
   createdAt?: string,
+  honorificOverride?: string,
 ): { base: string; honorific: string } {
   const trimmed = poem.trim();
   if (!trimmed) return { base: "なまえなし", honorific: "" };
@@ -392,19 +410,35 @@ export function deriveNameParts(
     base = trimLeadingParticles(cleaned.slice(-tailLength));
   }
 
-  const rng = makeRng(hashString(`${trimmed}::honorific`) || 1);
-  const isBeforeExpansion =
-    createdAt !== undefined && new Date(createdAt).getTime() < HONORIFIC_EXPANSION_AT;
-  const isBeforeV2Expansion =
-    createdAt !== undefined && new Date(createdAt).getTime() < HONORIFIC_V2_EXPANSION_AT;
-  const pool = isBeforeExpansion ? ORIGINAL_HONORIFICS : isBeforeV2Expansion ? HONORIFICS : HONORIFICS_V2;
-  const honorific = pool[Math.floor(rng() * pool.length)];
+  const honorific = honorificOverride ?? honorificCandidates(trimmed, createdAt)[0];
   return { base, honorific };
 }
 
-export function deriveName(poem: string, createdAt?: string): string {
-  const { base, honorific } = deriveNameParts(poem, createdAt);
+export function deriveName(poem: string, createdAt?: string, honorificOverride?: string): string {
+  const { base, honorific } = deriveNameParts(poem, createdAt, honorificOverride);
   return `${base}${honorific}`;
+}
+
+// 新しく鍋に入るキャラの敬称を決める。通常は句のハッシュ値基準で一番
+// 優先度の高い敬称を使うが、それが同じ鍋にいる他の面々(takenNames)と
+// 名前が丸かぶりしてしまう場合は、次点の候補から順に、かぶらないものを
+// 探す。既存キャラの名前(base+honorific)は不変(この関数はDB挿入時に
+// 一度だけ呼ばれ、結果をhonorific列に保存する想定)。
+export function pickAvailableHonorific(
+  poem: string,
+  createdAt: string | undefined,
+  takenNames: string[],
+): string {
+  const trimmed = poem.trim();
+  const { base } = deriveNameParts(poem, createdAt);
+  const candidates = honorificCandidates(trimmed, createdAt);
+  const taken = new Set(takenNames);
+  for (const honorific of candidates) {
+    if (!taken.has(`${base}${honorific}`)) return honorific;
+  }
+  // 候補を全部試しても空きがない(プールの全敬称が埋まっている)という
+  // 極端なケースでは、諦めて最優先候補をそのまま使う。
+  return candidates[0];
 }
 
 // 投入直後のカードにだけ出すひとこと。過去のキャラに再表示することはないため、

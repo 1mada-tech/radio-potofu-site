@@ -60,6 +60,7 @@ export default function PotLog({
                     authorName={creature.authorName}
                     poetName={creature.poetName}
                     createdAt={creature.createdAt}
+                    honorific={creature.honorific}
                     entryNumber={creature.entryNumber}
                     note={creature.note}
                     tooltipLifespanTemplate={tooltipLifespanTemplate}

@@ -1,4 +1,6 @@
 import { deriveAppearance, deriveName, hashString, makeRng } from "@/lib/creature";
+import { pathRoundedRect, pathTopRoundedRect, readableAccent, wrapTextChars } from "@/lib/cardCanvas";
+import { drawCreatureFaceGlyph } from "@/lib/creatureFaceDraw";
 
 // 鍋のキャラをSNSに投稿しやすい正方形画像として書き出すための描画ロジック。
 // CreatureFace.tsx(CSS)の見た目(66px基準)を、同じ比率でcanvasに再現する。
@@ -9,149 +11,6 @@ import { deriveAppearance, deriveName, hashString, makeRng } from "@/lib/creatur
 // フィード内で見切れずに表示できる範囲でできるだけ縦長に寄せている)。
 export const SHARE_IMAGE_WIDTH = 1080;
 export const SHARE_IMAGE_HEIGHT = 1350;
-
-const BODY_BOX = 66; // CreatureFace.tsxの基準サイズ(px)
-
-// bodyColorの中には「アクセントソフト」(#fbdcb8)のような淡い色があり、
-// そのまま文字色やフッター帯の背景色(白文字用)に使うとコントラスト不足で
-// 読みにくくなる。本体の塗りには元の色をそのまま使うが、文字がらみの
-// 用途ではこの関数で暗めに補正した色を使う。
-function readableAccent(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  const luminance = (rr: number, gg: number, bb: number) => {
-    const srgb = [rr, gg, bb].map((v) => v / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
-    return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
-  };
-  let factor = 1;
-  while (luminance(r * factor, g * factor, b * factor) > 0.18 && factor > 0.05) {
-    factor -= 0.05;
-  }
-  const toHex = (v: number) =>
-    Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0");
-  return `#${toHex(r * factor)}${toHex(g * factor)}${toHex(b * factor)}`;
-}
-
-// CanvasRenderingContext2D.roundRect()は比較的新しいAPI(Chrome 99+/
-// Safari 16+相当)で、古めのモバイルブラウザだと存在せず、呼び出すと
-// 例外になってしまう(ボタンを押しても何も起きないように見える不具合の
-// 原因になった)。arcToは昔からあるAPIなので、角丸矩形はそちらで描く。
-function pathRoundedRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  radius: number,
-) {
-  const r = Math.min(radius, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-
-// CTAバッジをフッター帯から生えた「タブ」のように見せるための、
-// 上2角だけ丸めた矩形(下端は直線なので、フッターの上辺と地続きになる)。
-function pathTopRoundedRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  radius: number,
-) {
-  const r = Math.min(radius, w / 2, h);
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.lineTo(x + w, y + h);
-  ctx.lineTo(x, y + h);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
-
-// CreatureFace.tsxの本体は、ただの角丸ではなくborder-radiusの8値
-// ショートハンド(角ごとに横/縦で別半径の楕円)で、ほぼ円に近い有機的な
-// ブロブ形になっている(deriveAppearanceのbodyCorners参照)。これを
-// 単純な角丸四角で近似すると、鍋の中・チップでは丸いのにカードだけ
-// 四角っぽく見えてしまう。角ごとに楕円弧を使って同じ形を再現する。
-function pathBlobSquare(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  size: number,
-  corners: { rx1: number; rx2: number; ry1: number; ry2: number },
-) {
-  const { rx1, rx2, ry1, ry2 } = corners;
-  // CSS: border-radius: rx1% rx2% ry2% ry1% / ry1% ry2% rx2% rx1%
-  // → 左上(横rx1,縦ry1) 右上(横rx2,縦ry2) 右下(横ry2,縦rx2) 左下(横ry1,縦rx1)
-  const tl = { h: (rx1 / 100) * size, v: (ry1 / 100) * size };
-  const tr = { h: (rx2 / 100) * size, v: (ry2 / 100) * size };
-  const br = { h: (ry2 / 100) * size, v: (rx2 / 100) * size };
-  const bl = { h: (ry1 / 100) * size, v: (rx1 / 100) * size };
-
-  ctx.beginPath();
-  ctx.moveTo(x + tl.h, y);
-  ctx.lineTo(x + size - tr.h, y);
-  ctx.ellipse(x + size - tr.h, y + tr.v, tr.h, tr.v, 0, -Math.PI / 2, 0);
-  ctx.lineTo(x + size, y + size - br.v);
-  ctx.ellipse(x + size - br.h, y + size - br.v, br.h, br.v, 0, 0, Math.PI / 2);
-  ctx.lineTo(x + bl.h, y + size);
-  ctx.ellipse(x + bl.h, y + size - bl.v, bl.h, bl.v, 0, Math.PI / 2, Math.PI);
-  ctx.lineTo(x, y + tl.v);
-  ctx.ellipse(x + tl.h, y + tl.v, tl.h, tl.v, 0, Math.PI, Math.PI * 1.5);
-  ctx.closePath();
-}
-
-// 行頭に来ると読みにくい約物(閉じ括弧・句読点など)。行頭禁則処理で
-// 前の行の末尾に送る。
-const LINE_START_FORBIDDEN = new Set([
-  "、", "。", "，", "．", "！", "？", "!", "?", "…",
-  "」", "』", "）", "】", "〉", "》", "〕", "｝", "］", ")",
-]);
-
-// 指定フォント・幅で1文字ずつ詰める折り返し(行頭禁則のみ。ぶら下げ組みは
-// しない簡易版)。maxLinesを超えたら最終行を切り詰めて「…」を足す。
-function wrapTextChars(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  maxWidth: number,
-  maxLines: number,
-  truncateSuffix = "…",
-): string[] {
-  let line = "";
-  const lines: string[] = [];
-  for (const ch of text) {
-    const test = line + ch;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      lines.push(line);
-      line = ch;
-    } else {
-      line = test;
-    }
-  }
-  if (line) lines.push(line);
-
-  // 行頭禁則: 約物が行頭に来たら前の行の末尾に送る。
-  for (let i = 1; i < lines.length; i++) {
-    while (lines[i].length > 0 && LINE_START_FORBIDDEN.has(lines[i][0])) {
-      lines[i - 1] += lines[i][0];
-      lines[i] = lines[i].slice(1);
-    }
-  }
-  const nonEmpty = lines.filter((l) => l.length > 0);
-
-  const result = nonEmpty.slice(0, maxLines);
-  if (nonEmpty.length > maxLines) {
-    result[maxLines - 1] = result[maxLines - 1].slice(0, -1) + truncateSuffix;
-  }
-  return result;
-}
 
 // --- イラストウィンドウの背景パターン案(すべて川柳のハッシュから
 // 決定論的に生成。手描きイラスト素材が不要で、キャラが増えても
@@ -434,6 +293,7 @@ export function drawCreatureShareImage(
   params: {
     poem: string;
     createdAt?: string;
+    honorific?: string;
     authorName?: string | null;
     // 川柳の作者名(投稿者本人と異なる場合のみ)。指定があれば、カードに
     // 「なべ投入者: ○○」のクレジット行を足す(ステータス欄の「句の作者」は
@@ -453,7 +313,7 @@ export function drawCreatureShareImage(
   if (!ctx) return;
 
   const appearance = deriveAppearance(params.poem, params.createdAt);
-  const name = deriveName(params.poem, params.createdAt);
+  const name = deriveName(params.poem, params.createdAt, params.honorific);
   const accentColor = readableAccent(appearance.bodyColor);
 
   // --- 背景(カード台紙) ---
@@ -577,10 +437,8 @@ export function drawCreatureShareImage(
 
   // --- 顔(本体, 耳, 目, 口, ほっぺ) ---
   const bodySize = 300;
-  const scale = bodySize / BODY_BOX;
   const cx = artX + artWidth / 2;
   const bodyY = artY + (artHeight - bodySize) / 2 - 18;
-  const bodyX = cx - bodySize / 2;
   const badgeCy = bodyY + bodySize / 2 + 10;
   const badgeR = bodySize / 2 + 50;
 
@@ -603,153 +461,7 @@ export function drawCreatureShareImage(
   ctx.fill();
   ctx.restore();
 
-  // 鍋の中にいるときは、.creature__scale-wrap(transform-origin: bottom
-  // center)の scaleY(0.72) で縦に少しつぶれた楕円っぽい見た目になる。
-  // カードでも同じ見た目にするため、顔のパーツ一式(耳〜口)を描く間だけ
-  // 底辺を基準に縦方向だけ縮める。
-  const FACE_SQUASH_Y = 0.72;
-  const faceBottom = bodyY + bodySize;
-  ctx.save();
-  ctx.translate(cx, faceBottom);
-  ctx.scale(1, FACE_SQUASH_Y);
-  ctx.translate(-cx, -faceBottom);
-
-  // 耳・アンテナ(本体より先に描いて、本体の下に少し隠れるようにする)
-  ctx.fillStyle = appearance.bodyColor;
-  if (appearance.earType === "round" || appearance.earType === "long" || appearance.earType === "small") {
-    const h = appearance.earType === "long" ? 29 : appearance.earType === "small" ? 9 : 17;
-    const w = appearance.earType === "small" ? 10 : 14;
-    const top = appearance.earType === "long" ? -20 : appearance.earType === "small" ? -4 : -8;
-    for (const side of [-1, 1] as const) {
-      ctx.save();
-      const earCx = cx + side * (bodySize / 2 - (8 + w / 2) * scale);
-      const earCy = bodyY + (top + h / 2) * scale;
-      ctx.translate(earCx, earCy);
-      ctx.rotate(((side * 15) / 180) * Math.PI);
-      ctx.beginPath();
-      ctx.ellipse(0, 0, (w / 2) * scale, (h / 2) * scale, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
-    }
-  } else if (appearance.earType === "pointy") {
-    for (const side of [-1, 1] as const) {
-      ctx.save();
-      const earCx = cx + side * (bodySize / 2 - 15 * scale);
-      const earCy = bodyY - 0 * scale;
-      ctx.translate(earCx, earCy);
-      ctx.beginPath();
-      ctx.moveTo(0, 17 * scale);
-      ctx.lineTo(side * 7 * scale, -8 * scale);
-      ctx.lineTo(side * 14 * scale, 10 * scale);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-    }
-  } else if (appearance.earType === "antenna") {
-    ctx.save();
-    ctx.strokeStyle = appearance.bodyColor;
-    ctx.lineWidth = 3 * scale;
-    ctx.beginPath();
-    ctx.moveTo(cx, bodyY - 2 * scale);
-    ctx.lineTo(cx, bodyY - 14 * scale);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(cx, bodyY - 17 * scale, 3 * scale, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  // 本体
-  ctx.save();
-  ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
-  ctx.shadowOffsetY = 3 * scale;
-  ctx.fillStyle = appearance.bodyColor;
-  pathBlobSquare(ctx, bodyX, bodyY, bodySize, appearance.bodyCorners);
-  ctx.fill();
-  ctx.restore();
-
-  // ほっぺ
-  if (appearance.blushType !== "none") {
-    ctx.save();
-    ctx.globalAlpha = 0.55;
-    ctx.fillStyle = appearance.blushType === "pink" ? "#ff6f91" : "#ff9a4d";
-    for (const side of [-1, 1] as const) {
-      ctx.beginPath();
-      ctx.arc(
-        cx + side * (bodySize / 2 - (10 + 3.5) * scale),
-        bodyY + (32 + 3.5) * scale,
-        3.5 * scale,
-        0,
-        Math.PI * 2,
-      );
-      ctx.fill();
-    }
-    ctx.restore();
-  }
-
-  // 目
-  const eyeY = bodyY + 27 * scale + (appearance.eyeType === "wide" ? 4.5 * scale : 3 * scale);
-  const eyeGap = 11 * scale;
-  ctx.fillStyle = "#211a15";
-  for (const side of [-1, 1] as const) {
-    const eyeCx = cx + (side * eyeGap) / 2 + side * (3 * scale);
-    if (appearance.eyeType === "dot") {
-      ctx.beginPath();
-      ctx.arc(eyeCx, eyeY, 3 * scale, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (appearance.eyeType === "wide") {
-      ctx.beginPath();
-      ctx.arc(eyeCx, eyeY, 4.5 * scale, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (appearance.eyeType === "sleepy") {
-      pathRoundedRect(ctx, eyeCx - 4 * scale, eyeY - 1.5 * scale, 8 * scale, 3 * scale, 2 * scale);
-      ctx.fill();
-    } else if (appearance.eyeType === "closed") {
-      ctx.save();
-      ctx.strokeStyle = "#211a15";
-      ctx.lineWidth = 2 * scale;
-      ctx.beginPath();
-      ctx.arc(eyeCx, eyeY + 1 * scale, 3.5 * scale, Math.PI, 0);
-      ctx.stroke();
-      ctx.restore();
-    }
-  }
-
-  // 口
-  const mouthY = bodyY + 39 * scale;
-  ctx.save();
-  ctx.strokeStyle = "#211a15";
-  ctx.fillStyle = "#211a15";
-  if (appearance.mouthType === "smile") {
-    ctx.lineWidth = 2 * scale;
-    ctx.beginPath();
-    ctx.arc(cx, mouthY, 4 * scale, 0, Math.PI);
-    ctx.stroke();
-  } else if (appearance.mouthType === "o") {
-    ctx.beginPath();
-    ctx.arc(cx, mouthY + 2 * scale, 2.5 * scale, 0, Math.PI * 2);
-    ctx.fill();
-  } else if (appearance.mouthType === "line") {
-    pathRoundedRect(ctx, cx - 4 * scale, mouthY, 8 * scale, 3 * scale, 1.5 * scale);
-    ctx.fill();
-  } else if (appearance.mouthType === "wavy") {
-    ctx.lineWidth = 2 * scale;
-    ctx.setLineDash([2 * scale, 2 * scale]);
-    ctx.beginPath();
-    ctx.moveTo(cx - 5 * scale, mouthY + 2 * scale);
-    ctx.lineTo(cx + 5 * scale, mouthY + 2 * scale);
-    ctx.stroke();
-  } else if (appearance.mouthType === "smirk") {
-    ctx.lineWidth = 2 * scale;
-    ctx.translate(cx, mouthY + 1.5 * scale);
-    ctx.rotate((-8 / 180) * Math.PI);
-    ctx.beginPath();
-    ctx.arc(0, 0, 3.5 * scale, Math.PI * 0.5, Math.PI);
-    ctx.stroke();
-  }
-  ctx.restore();
-
-  ctx.restore(); // FACE_SQUASH_Yの変形を元に戻す
+  drawCreatureFaceGlyph(ctx, { cx, bodyTop: bodyY, bodySize, appearance });
 
   // --- 川柳本文(攻撃技の説明文のような、フレーバーテキストの枠) ---
   // 引用符だけだと、カードが単体でシェアされた時に何の引用か伝わらない

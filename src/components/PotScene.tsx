@@ -201,6 +201,7 @@ export default function PotScene({
                 key={creature.id}
                 poem={creature.poem}
                 createdAt={creature.createdAt}
+                honorific={creature.honorific}
                 top={top}
                 left={left}
                 scale={creatureScale(creature.createdAt)}
@@ -236,7 +237,7 @@ export default function PotScene({
                 <CreatureFace poem={hovered.creature.poem} createdAt={hovered.creature.createdAt} />
               </span>
               <p className="pot__tooltip-name">
-                {deriveName(hovered.creature.poem, hovered.creature.createdAt)}
+                {deriveName(hovered.creature.poem, hovered.creature.createdAt, hovered.creature.honorific)}
               </p>
             </div>
             <p className="pot__tooltip-poem">{hovered.creature.poem}</p>
@@ -252,6 +253,7 @@ export default function PotScene({
             <ShareCreatureButton
               poem={hovered.creature.poem}
               createdAt={hovered.creature.createdAt}
+              honorific={hovered.creature.honorific}
               authorName={hovered.creature.authorName}
               poetName={hovered.creature.poetName}
               entryNumber={hovered.creature.entryNumber}
@@ -266,6 +268,7 @@ export default function PotScene({
         <ShareCardModal
           poem={previewCreature.poem}
           createdAt={previewCreature.createdAt}
+          honorific={previewCreature.honorific}
           authorName={previewCreature.authorName}
           poetName={previewCreature.poetName}
           entryNumber={previewCreature.entryNumber}
@@ -313,7 +316,7 @@ export default function PotScene({
                       transform: `scale(${scale})`,
                       zIndex: waiting.length - i,
                     }}
-                    aria-label={deriveName(creature.poem, creature.createdAt)}
+                    aria-label={deriveName(creature.poem, creature.createdAt, creature.honorific)}
                   >
                     <span className="pot__queue-face" aria-hidden="true">
                       <CreatureFace poem={creature.poem} createdAt={creature.createdAt} />

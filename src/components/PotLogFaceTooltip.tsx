@@ -15,6 +15,7 @@ export default function PotLogFaceTooltip({
   authorName,
   poetName,
   createdAt,
+  honorific,
   entryNumber,
   note,
   tooltipLifespanTemplate,
@@ -23,6 +24,7 @@ export default function PotLogFaceTooltip({
   authorName: string | null;
   poetName: string | null;
   createdAt: string;
+  honorific: string;
   entryNumber: number;
   note: string | null;
   tooltipLifespanTemplate: string;
@@ -129,7 +131,7 @@ export default function PotLogFaceTooltip({
             <span className="pot__tooltip-face" aria-hidden="true">
               <CreatureFace poem={poem} createdAt={createdAt} />
             </span>
-            <p className="pot__tooltip-name">{deriveName(poem, createdAt)}</p>
+            <p className="pot__tooltip-name">{deriveName(poem, createdAt, honorific)}</p>
           </div>
           <p className="pot__tooltip-poem">{poem}</p>
           <p className="pot__tooltip-meta">
@@ -142,6 +144,7 @@ export default function PotLogFaceTooltip({
           <ShareCreatureButton
             poem={poem}
             createdAt={createdAt}
+            honorific={honorific}
             authorName={authorName}
             poetName={poetName}
             entryNumber={entryNumber}
@@ -154,6 +157,7 @@ export default function PotLogFaceTooltip({
         <ShareCardModal
           poem={poem}
           createdAt={createdAt}
+          honorific={honorific}
           authorName={authorName}
           poetName={poetName}
           entryNumber={entryNumber}

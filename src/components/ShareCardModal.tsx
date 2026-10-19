@@ -12,6 +12,7 @@ import { deriveName } from "@/lib/creature";
 export default function ShareCardModal({
   poem,
   createdAt,
+  honorific,
   authorName,
   poetName,
   entryNumber,
@@ -20,6 +21,7 @@ export default function ShareCardModal({
 }: {
   poem: string;
   createdAt?: string;
+  honorific?: string;
   authorName?: string | null;
   poetName?: string | null;
   entryNumber?: number;
@@ -29,12 +31,14 @@ export default function ShareCardModal({
   const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
-  const name = deriveName(poem, createdAt);
+  const name = deriveName(poem, createdAt, honorific);
 
   useEffect(() => {
-    setDataUrl(renderCreatureImageDataUrl({ poem, createdAt, authorName, poetName, entryNumber, note }));
+    setDataUrl(
+      renderCreatureImageDataUrl({ poem, createdAt, honorific, authorName, poetName, entryNumber, note }),
+    );
     // 開くたびに最新の内容で描き直す。依存配列はpropsそのまま。
-  }, [poem, createdAt, authorName, poetName, entryNumber, note]);
+  }, [poem, createdAt, honorific, authorName, poetName, entryNumber, note]);
 
   useEffect(() => {
     function handleKey(event: KeyboardEvent) {
@@ -48,7 +52,10 @@ export default function ShareCardModal({
     setSaving(true);
     setError(false);
     try {
-      saveOrShareCreatureImage({ poem, createdAt, authorName, poetName, entryNumber, note }, dataUrl ?? undefined);
+      saveOrShareCreatureImage(
+        { poem, createdAt, honorific, authorName, poetName, entryNumber, note },
+        dataUrl ?? undefined,
+      );
     } catch {
       setError(true);
     } finally {

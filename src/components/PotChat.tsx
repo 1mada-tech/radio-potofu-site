@@ -20,8 +20,8 @@ export default async function PotChat({ creatures }: { creatures: PotCreature[] 
   if (inPot.length === 0) return null;
 
   const roster = inPot.map((c) => {
-    const { base, honorific } = deriveNameParts(c.poem, c.createdAt);
-    return { poem: c.poem, name: `${base}${honorific}`, honorific, createdAt: c.createdAt };
+    const { base } = deriveNameParts(c.poem, c.createdAt, c.honorific);
+    return { poem: c.poem, name: `${base}${c.honorific}`, honorific: c.honorific, createdAt: c.createdAt };
   });
 
   const [{ contents: episodes }, noteArticles, meltedCreatures] = await Promise.all([
@@ -40,7 +40,7 @@ export default async function PotChat({ creatures }: { creatures: PotCreature[] 
   // 挙がるようにする。新しく溶けた子ほど話題に出やすい(新しい順)。
   const meltedNames = meltedCreatures
     .slice(0, TOPIC_HISTORY_COUNT)
-    .map((c) => deriveName(c.poem, c.createdAt));
+    .map((c) => deriveName(c.poem, c.createdAt, c.honorific));
 
   return (
     <div className="pot-chat">

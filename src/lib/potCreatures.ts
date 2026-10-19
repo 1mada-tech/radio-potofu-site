@@ -1,5 +1,5 @@
 import { pool } from "@/lib/db";
-import { POT_LIFESPAN_DAYS } from "@/lib/creature";
+import { POT_LIFESPAN_DAYS, deriveNameParts, pickAvailableHonorific } from "@/lib/creature";
 
 export type PotCreature = {
   id: number;
@@ -13,6 +13,10 @@ export type PotCreature = {
   entryNumber: number;
   // 鍋カード(住民票)のひとことメッセージ。発行(手書き)前はnull。
   note: string | null;
+  // 敬称(「くん」「先生」等)。投入時に一度だけ決めてここに固定する
+  // (同じ鍋にいる他のキャラと名前が重複しないようpickAvailableHonorificで
+  // 選ぶため、句のハッシュ値だけから毎回計算し直すことはしない)。
+  honorific: string;
 };
 
 type Row = {
@@ -23,6 +27,7 @@ type Row = {
   created_at: string;
   entry_number: string; // COUNT(*)はbigintで返るのでpgはstringにする
   note: string | null;
+  honorific: string;
 };
 
 function toCreature(row: Row): PotCreature {
@@ -34,6 +39,7 @@ function toCreature(row: Row): PotCreature {
     createdAt: row.created_at,
     entryNumber: Number(row.entry_number),
     note: row.note,
+    honorific: row.honorific,
   };
 }
 
@@ -44,7 +50,7 @@ const ENTRY_NUMBER_SELECT = `
 // まだ溶けていない(鍋の中で暮らしている)キャラ一覧。
 export async function getPotCreatures(): Promise<PotCreature[]> {
   const { rows } = await pool.query<Row>(
-    `SELECT c1.id, c1.author_name, c1.poet_name, c1.poem, c1.created_at, c1.note, ${ENTRY_NUMBER_SELECT}
+    `SELECT c1.id, c1.author_name, c1.poet_name, c1.poem, c1.created_at, c1.note, c1.honorific, ${ENTRY_NUMBER_SELECT}
      FROM pot_creatures c1
      WHERE c1.created_at >= now() - interval '${POT_LIFESPAN_DAYS} days'
      ORDER BY c1.created_at ASC`,
@@ -55,7 +61,7 @@ export async function getPotCreatures(): Promise<PotCreature[]> {
 // 寿命を迎えて鍋のダシになった(アーカイブ入りした)キャラ一覧。新しい順。
 export async function getMeltedCreatures(): Promise<PotCreature[]> {
   const { rows } = await pool.query<Row>(
-    `SELECT c1.id, c1.author_name, c1.poet_name, c1.poem, c1.created_at, c1.note, ${ENTRY_NUMBER_SELECT}
+    `SELECT c1.id, c1.author_name, c1.poet_name, c1.poem, c1.created_at, c1.note, c1.honorific, ${ENTRY_NUMBER_SELECT}
      FROM pot_creatures c1
      WHERE c1.created_at < now() - interval '${POT_LIFESPAN_DAYS} days'
      ORDER BY c1.created_at DESC`,
@@ -66,7 +72,7 @@ export async function getMeltedCreatures(): Promise<PotCreature[]> {
 // 記録ページ用。生死問わず全員を古い順で返す。
 export async function getAllPotCreatures(): Promise<PotCreature[]> {
   const { rows } = await pool.query<Row>(
-    `SELECT c1.id, c1.author_name, c1.poet_name, c1.poem, c1.created_at, c1.note, ${ENTRY_NUMBER_SELECT}
+    `SELECT c1.id, c1.author_name, c1.poet_name, c1.poem, c1.created_at, c1.note, c1.honorific, ${ENTRY_NUMBER_SELECT}
      FROM pot_creatures c1
      ORDER BY c1.created_at ASC`,
   );
@@ -88,14 +94,24 @@ export async function createPotCreature(params: {
   const poem = params.poem.trim().slice(0, 200);
   if (!poem) return null;
 
+  // 過去に鍋へ入った全員(今いる面々も、溶けて消えた子も)と名前(本体+
+  // 敬称)が重複しないよう、投入前に先客の名前一覧を取っておく。
+  const { rows: pastRows } = await pool.query<{ poem: string; created_at: string; honorific: string }>(
+    `SELECT poem, created_at, honorific FROM pot_creatures`,
+  );
+  const takenNames = pastRows.map(
+    (c) => deriveNameParts(c.poem, c.created_at).base + c.honorific,
+  );
+  const honorific = pickAvailableHonorific(poem, undefined, takenNames);
+
   const { rows } = await pool.query<Row>(
     `WITH inserted AS (
-       INSERT INTO pot_creatures (author_name, poet_name, poem) VALUES ($1, $2, $3)
-       RETURNING id, author_name, poet_name, poem, created_at, note
+       INSERT INTO pot_creatures (author_name, poet_name, poem, honorific) VALUES ($1, $2, $3, $4)
+       RETURNING id, author_name, poet_name, poem, created_at, note, honorific
      )
-     SELECT c1.id, c1.author_name, c1.poet_name, c1.poem, c1.created_at, c1.note, ${ENTRY_NUMBER_SELECT}
+     SELECT c1.id, c1.author_name, c1.poet_name, c1.poem, c1.created_at, c1.note, c1.honorific, ${ENTRY_NUMBER_SELECT}
      FROM inserted c1`,
-    [authorName, poetName, poem],
+    [authorName, poetName, poem, honorific],
   );
   return toCreature(rows[0]);
 }

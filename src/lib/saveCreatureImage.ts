@@ -17,6 +17,7 @@ function dataUrlToBlob(dataUrl: string): Blob {
 export type CreatureImageSource = {
   poem: string;
   createdAt?: string;
+  honorific?: string;
   authorName?: string | null;
   poetName?: string | null;
   entryNumber?: number;
@@ -38,7 +39,7 @@ export function renderCreatureImageDataUrl(source: CreatureImageSource): string 
 // 共有シートを使う。
 export function saveOrShareCreatureImage(source: CreatureImageSource, dataUrl?: string) {
   const resolvedDataUrl = dataUrl ?? renderCreatureImageDataUrl(source);
-  const name = deriveName(source.poem, source.createdAt);
+  const name = deriveName(source.poem, source.createdAt, source.honorific);
   const blob = dataUrlToBlob(resolvedDataUrl);
   const fileName = `${name}.png`;
   const file = new File([blob], fileName, { type: "image/png" });

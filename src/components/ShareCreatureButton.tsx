@@ -10,6 +10,7 @@ import ShareCardModal from "@/components/ShareCardModal";
 export default function ShareCreatureButton({
   poem,
   createdAt,
+  honorific,
   authorName,
   poetName,
   entryNumber,
@@ -18,6 +19,7 @@ export default function ShareCreatureButton({
 }: {
   poem: string;
   createdAt?: string;
+  honorific?: string;
   authorName?: string | null;
   poetName?: string | null;
   entryNumber?: number;
@@ -55,6 +57,7 @@ export default function ShareCreatureButton({
         <ShareCardModal
           poem={poem}
           createdAt={createdAt}
+          honorific={honorific}
           authorName={authorName}
           poetName={poetName}
           entryNumber={entryNumber}

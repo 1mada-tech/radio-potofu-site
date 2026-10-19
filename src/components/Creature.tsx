@@ -4,6 +4,7 @@ import CreatureFace from "@/components/CreatureFace";
 export default function Creature({
   poem,
   createdAt,
+  honorific,
   top,
   left,
   scale = 1,
@@ -14,6 +15,7 @@ export default function Creature({
 }: {
   poem: string;
   createdAt?: string;
+  honorific?: string;
   top: number;
   left: number;
   scale?: number;
@@ -22,7 +24,7 @@ export default function Creature({
   onHoverEnd?: () => void;
   onTap?: () => void;
 }) {
-  const name = deriveName(poem, createdAt);
+  const name = deriveName(poem, createdAt, honorific);
   const wiggleDelay = deriveWiggleDelay(poem);
 
   // 鍋の下の方(手前側、top%が大きい方)のキャラは、頭の上にラベルを出すと

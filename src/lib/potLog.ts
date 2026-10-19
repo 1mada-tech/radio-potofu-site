@@ -74,7 +74,7 @@ export function buildPotEvents(creatures: PotCreature[]): PotEvent[] {
   creatures.forEach((creature, i) => {
     const count = i + 1;
     const enteredAt = new Date(creature.createdAt).getTime();
-    const name = deriveName(creature.poem, creature.createdAt);
+    const name = deriveName(creature.poem, creature.createdAt, creature.honorific);
 
     events.push({
       id: `enter-${creature.id}`,
