@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import CreatureFace from "@/components/CreatureFace";
 import ShareCreatureButton from "@/components/ShareCreatureButton";
 import ShareCardModal from "@/components/ShareCardModal";
-import { deriveName, daysLeft } from "@/lib/creature";
+import { deriveName, daysLeft, elapsedDays, POT_LIFESPAN_DAYS } from "@/lib/creature";
 import { formatDate } from "@/lib/date";
 
 // 鍋の記録の各行末に出すミニ顔アイコン。PC ではCSSのhoverで
@@ -139,7 +139,9 @@ export default function PotLogFaceTooltip({
             ・ {formatDate(createdAt)}
           </p>
           <p className="pot__tooltip-lifespan">
-            {tooltipLifespanTemplate.replace("x日", `${daysLeft(createdAt)}日`)}
+            {elapsedDays(createdAt) >= POT_LIFESPAN_DAYS
+              ? "鍋に溶けこんでいます"
+              : tooltipLifespanTemplate.replace("x日", `${daysLeft(createdAt)}日`)}
           </p>
           <ShareCreatureButton
             poem={poem}
