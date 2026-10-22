@@ -3280,6 +3280,12 @@ a.episode-tag:hover {
   margin: 0 0 8px;
 }
 
+.pot-log__goal {
+  margin: 0 0 20px;
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+}
+
 .pot-log__caption {
   margin: 0 0 20px;
   font-size: 0.9rem;

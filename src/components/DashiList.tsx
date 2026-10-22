@@ -13,6 +13,7 @@ export default async function DashiList() {
   return (
     <section className="pot-log">
       <h2 className="pot-log__heading">鍋に溶けこんだキャラたち</h2>
+      <p className="pot-log__goal">鍋カード第１次目標発行数：151（ポケモン第１世代）</p>
       <ul className="dashi-list">
         {creatures.map((creature, index) => {
           const name = deriveName(creature.poem, creature.createdAt, creature.honorific);
