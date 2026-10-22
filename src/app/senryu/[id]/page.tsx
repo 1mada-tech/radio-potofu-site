@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getEssay } from "@/lib/microcms";
+import { getEssay, ESSAY_TYPE_SENRYU } from "@/lib/microcms";
 import { formatDateJa } from "@/lib/date";
 import { excerptFromHtml } from "@/lib/excerpt";
 import { pageMetadata } from "@/lib/pageMetadata";
@@ -12,7 +12,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const essay = await getEssay(id);
-  if (!essay) return {};
+  if (!essay || !essay.type.includes(ESSAY_TYPE_SENRYU)) return {};
   return pageMetadata({
     title: essay.title,
     description: excerptFromHtml(essay.body),
@@ -30,7 +30,7 @@ export default async function SenryuDetailPage({
   const { id } = await params;
   const { draftKey } = await searchParams;
   const essay = await getEssay(id, draftKey);
-  if (!essay) notFound();
+  if (!essay || !essay.type.includes(ESSAY_TYPE_SENRYU)) notFound();
 
   return (
     <article className="container page page--article">

@@ -13,7 +13,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const essay = await getEssay(id);
-  if (!essay) return {};
+  if (!essay || !essay.type.includes(ESSAY_TYPE_NOTE)) return {};
   return pageMetadata({
     title: essay.title,
     description: excerptFromHtml(essay.body),
@@ -34,7 +34,7 @@ export default async function ZatsubunDetailPage({
     getEssay(id, draftKey),
     getEssaysByType(ESSAY_TYPE_NOTE, 100),
   ]);
-  if (!essay) notFound();
+  if (!essay || !essay.type.includes(ESSAY_TYPE_NOTE)) notFound();
 
   return (
     <div className="container page note-detail-layout">
