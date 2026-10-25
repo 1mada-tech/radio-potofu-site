@@ -128,7 +128,7 @@ export default async function HomePage() {
           ページの主題を把握しづらい状態だったため追加する。ヒーローの
           デザイン(ロゴ画像+詩)はそのまま活かしたいので、視覚的には
           表示せず(sr-only)スクリーンリーダー・検索エンジン向けにのみ出す。 */}
-      <h1 className="sr-only">ラジオポトフ ― 現代川柳のポッドキャスト</h1>
+      <h1 className="sr-only">ラジオポトフ ― 現代川柳やアニメなどを語るポッドキャスト</h1>
 
       <div className="container hero-cta">
         <a

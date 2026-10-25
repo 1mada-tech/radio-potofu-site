@@ -1,7 +1,7 @@
 import { FEED_URL, type Episode } from "@/lib/podcast";
 
 const SITE_IMAGE = "https://www.radio-potofu.com/images/og-hero.jpg";
-const SITE_DESCRIPTION = "現代川柳のポッドキャスト「ラジオポトフ」公式サイト";
+const SITE_DESCRIPTION = "現代川柳やアニメなど幅広い話題を語るポッドキャスト「ラジオポトフ」公式サイト";
 
 // Google検索結果でポッドキャストとして認識されやすくするための構造化データ。
 // ホームページとエピソード一覧ページの両方で使うため共通化している。

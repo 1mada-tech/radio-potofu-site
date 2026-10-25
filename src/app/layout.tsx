@@ -38,7 +38,7 @@ const vt323 = VT323({
 
 const siteUrl = "https://www.radio-potofu.com";
 const siteTitle = "ラジオポトフ";
-const siteDescription = "現代川柳のポッドキャスト「ラジオポトフ」公式サイト";
+const siteDescription = "現代川柳やアニメなど幅広い話題を語るポッドキャスト「ラジオポトフ」公式サイト";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
