@@ -256,6 +256,85 @@ function drawPotSceneBG(
   ctx.globalAlpha = 1;
 }
 
+// 4点の光芒(スパークル)のシルエット。中心からつまんだような凹みの
+// ある4方向の棘で、キラキラした粒を表現する(第2世代の背景柄・
+// ヘッダーの世代マーク両方で使い回す)。
+function drawSparkleShape(ctx: CanvasRenderingContext2D, size: number) {
+  const r = size / 2;
+  ctx.beginPath();
+  ctx.moveTo(0, -r);
+  ctx.quadraticCurveTo(r * 0.15, -r * 0.15, r, 0);
+  ctx.quadraticCurveTo(r * 0.15, r * 0.15, 0, r);
+  ctx.quadraticCurveTo(-r * 0.15, r * 0.15, -r, 0);
+  ctx.quadraticCurveTo(-r * 0.15, -r * 0.15, 0, -r);
+  ctx.closePath();
+  ctx.fill();
+}
+
+// 案H(第2世代限定): キラキラした光の粒を散らす。
+function drawSparkleBG(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  color: string,
+  seed: number,
+) {
+  const rng = makeRng(seed);
+  const count = 16;
+  for (let i = 0; i < count; i++) {
+    const size = 14 + rng() * 34;
+    const px = x + rng() * w;
+    const py = y + rng() * h;
+    ctx.save();
+    ctx.globalAlpha = 0.18 + rng() * 0.22;
+    ctx.fillStyle = color;
+    ctx.translate(px, py);
+    ctx.rotate(rng() * Math.PI * 2);
+    drawSparkleShape(ctx, size);
+    ctx.restore();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// 案I(第2世代限定): 渦を巻くうずまき線。
+function drawSpiralBG(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  color: string,
+  seed: number,
+) {
+  const rng = makeRng(seed);
+  ctx.strokeStyle = color;
+  ctx.lineCap = "round";
+  const count = 3;
+  for (let s = 0; s < count; s++) {
+    const cx = x + rng() * w;
+    const cy = y + rng() * h;
+    const maxR = 70 + rng() * 110;
+    const turns = 2.2 + rng() * 1;
+    ctx.globalAlpha = 0.42 + rng() * 0.2;
+    ctx.lineWidth = 7;
+    ctx.beginPath();
+    const steps = 80;
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const angle = t * turns * Math.PI * 2;
+      const r = t * maxR;
+      const px = cx + Math.cos(angle) * r;
+      const py = cy + Math.sin(angle) * r;
+      if (i === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+}
+
 // 案C: スープの中の波紋。キャラの位置を中心に同心円を広げる。
 function drawRipplesBG(
   ctx: CanvasRenderingContext2D,
@@ -286,7 +365,14 @@ export type BgVariant =
   | "stripes"
   | "gingham"
   | "ingredients"
-  | "potscene";
+  | "potscene"
+  | "sparkle"
+  | "spiral";
+
+// 鍋カード第1次目標発行数(151匹、ポケモン第1世代になぞらえた区切り)。
+// これを超えた個体は「第2世代」として、枠のメタリック仕立てや専用の
+// 背景柄など見た目にも差をつける(DashiList.tsxのゴール表示と対になる数字)。
+const GENERATION_CUTOFF = 151;
 
 export function drawCreatureShareImage(
   canvas: HTMLCanvasElement,
@@ -316,6 +402,16 @@ export function drawCreatureShareImage(
   const name = deriveName(params.poem, params.createdAt, params.honorific);
   const accentColor = readableAccent(appearance.bodyColor);
 
+  // --- 第2世代判定(151匹を超えたら第2世代。カード番号=投入順で固定の
+  // 値なので、後から匹数が増えても過去カードの見た目は変わらない) ---
+  const isGen2 = (params.entryNumber ?? 0) > GENERATION_CUTOFF;
+  // ポケモン金銀のように、第2世代は句ごとに「ゴールド」か「シルバー」の
+  // どちらかに決定論的に振り分ける。
+  const metalRng = makeRng(hashString(`${params.poem}::metal`) || 1);
+  const isGold = metalRng() < 0.5;
+  const metalColor = isGold ? "#c9a227" : "#9aa0a6";
+  const metalHighlight = isGold ? "#fff3c4" : "#f2f4f5";
+
   // --- 背景(カード台紙) ---
   ctx.fillStyle = "#efe9da";
   ctx.fillRect(0, 0, W, H);
@@ -328,6 +424,41 @@ export function drawCreatureShareImage(
   pathRoundedRect(ctx, margin, margin, W - margin * 2, H - margin * 2, frameRadius);
   ctx.fill();
   ctx.restore();
+
+  // --- 第2世代だけ、枠に金/銀の光沢を斜めに重ねる ---
+  if (isGen2) {
+    ctx.save();
+    pathRoundedRect(ctx, margin, margin, W - margin * 2, H - margin * 2, frameRadius);
+    ctx.clip();
+    const sheen = ctx.createLinearGradient(margin, margin, W - margin, H - margin);
+    sheen.addColorStop(0, `${metalColor}00`);
+    sheen.addColorStop(0.28, `${metalColor}cc`);
+    sheen.addColorStop(0.42, `${metalHighlight}ff`);
+    sheen.addColorStop(0.5, `${metalHighlight}ff`);
+    sheen.addColorStop(0.58, `${metalColor}cc`);
+    sheen.addColorStop(0.72, `${metalColor}33`);
+    sheen.addColorStop(1, `${metalColor}00`);
+    ctx.fillStyle = sheen;
+    ctx.fillRect(margin, margin, W - margin * 2, H - margin * 2);
+    ctx.restore();
+
+    // 枠のフチにも金/銀のラインを一周させ、メタリックな質感をさらに強調する。
+    ctx.save();
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = metalColor;
+    ctx.globalAlpha = 0.85;
+    pathRoundedRect(
+      ctx,
+      margin + 3,
+      margin + 3,
+      W - margin * 2 - 6,
+      H - margin * 2 - 6,
+      frameRadius - 3,
+    );
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
 
   const cardPad = 16; // 外枠(属性カラー)の太さ
   const cardLeft = margin + cardPad;
@@ -350,6 +481,15 @@ export function drawCreatureShareImage(
     ctx.fillStyle = "#9a9080";
     ctx.fillText(cardNo, nameX, headerY);
     nameX += ctx.measureText(cardNo).width + 16;
+    // 第2世代の世代マーク(番号表記自体はそのままに、小さな光芒を添えるだけ)
+    if (isGen2) {
+      ctx.save();
+      ctx.translate(nameX + 10, headerY - 8);
+      ctx.fillStyle = metalColor;
+      drawSparkleShape(ctx, 20);
+      ctx.restore();
+      nameX += 36;
+    }
   }
   ctx.fillStyle = "#211a15";
   ctx.font = "700 46px 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif";
@@ -388,9 +528,13 @@ export function drawCreatureShareImage(
     "ingredients",
     "potscene",
   ];
+  // 第2世代限定の柄は、第1世代プールの末尾に追加するだけ(既存カードが
+  // 選ぶプールの長さは変わらないので、過去カードの柄は変化しない)。
+  const GEN2_ONLY_BG_VARIANTS: BgVariant[] = ["sparkle", "spiral"];
+  const activeBgPool = isGen2 ? [...BG_VARIANT_POOL, ...GEN2_ONLY_BG_VARIANTS] : BG_VARIANT_POOL;
   const bgPickRng = makeRng(hashString(`${params.poem}::bgpick`) || 1);
   const BG_VARIANT: BgVariant =
-    params.bgVariantOverride ?? BG_VARIANT_POOL[Math.floor(bgPickRng() * BG_VARIANT_POOL.length)];
+    params.bgVariantOverride ?? activeBgPool[Math.floor(bgPickRng() * activeBgPool.length)];
   ctx.save();
   pathRoundedRect(ctx, artX, artY, artWidth, artHeight, 24);
   ctx.clip();
@@ -425,6 +569,12 @@ export function drawCreatureShareImage(
       break;
     case "potscene":
       drawPotSceneBG(ctx, artX, artY, artWidth, artHeight, appearance.bodyColor, bgSeed);
+      break;
+    case "sparkle":
+      drawSparkleBG(ctx, artX, artY, artWidth, artHeight, appearance.bodyColor, bgSeed);
+      break;
+    case "spiral":
+      drawSpiralBG(ctx, artX, artY, artWidth, artHeight, appearance.bodyColor, bgSeed);
       break;
   }
   ctx.restore();
