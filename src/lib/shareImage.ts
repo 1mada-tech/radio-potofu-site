@@ -372,7 +372,7 @@ export type BgVariant =
 // 鍋カード第1次目標発行数(151匹、ポケモン第1世代になぞらえた区切り)。
 // これを超えた個体は「第2世代」として、枠のメタリック仕立てや専用の
 // 背景柄など見た目にも差をつける(DashiList.tsxのゴール表示と対になる数字)。
-const GENERATION_CUTOFF = 151;
+export const GENERATION_CUTOFF = 151;
 
 export function drawCreatureShareImage(
   canvas: HTMLCanvasElement,

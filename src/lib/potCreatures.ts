@@ -79,6 +79,15 @@ export async function getAllPotCreatures(): Promise<PotCreature[]> {
   return rows.map(toCreature);
 }
 
+// これまでに鍋へ投入された総数(生死問わず)。第1次/第2次目標発行数の
+// 達成判定や、世代(第1世代/第2世代)の切り替え表示に使う。
+export async function getTotalIssuedCount(): Promise<number> {
+  const { rows } = await pool.query<{ count: string }>(
+    `SELECT COUNT(*) FROM pot_creatures`,
+  );
+  return Number(rows[0].count);
+}
+
 // 僕(Claude)が鍋カードのひとことメッセージを手書きしたあと、DBに書き込むための更新。
 export async function setPotCreatureNote(id: number, note: string): Promise<void> {
   await pool.query(`UPDATE pot_creatures SET note = $1 WHERE id = $2`, [note, id]);
