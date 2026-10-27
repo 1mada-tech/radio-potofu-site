@@ -236,6 +236,8 @@ ul {
 .hero-cta {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
   padding: 24px;
 }
 

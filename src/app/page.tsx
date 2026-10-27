@@ -140,6 +140,10 @@ export default async function HomePage() {
           <span className="hero-cta__label">おたよりはこちらから</span>
           <span className="hero-cta__note">★Googleフォームに飛びます</span>
         </a>
+        <Link href="/pot" className="hero-cta__button">
+          <span className="hero-cta__label">川柳ポトフ鍋はこちら</span>
+          <span className="hero-cta__note">★あなたの川柳がキャラになります</span>
+        </Link>
       </div>
 
       <Hero image={siteSettings.heroImage} introText={siteSettings.introText} />
