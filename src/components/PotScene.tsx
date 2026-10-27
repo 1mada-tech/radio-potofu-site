@@ -202,6 +202,7 @@ export default function PotScene({
                 poem={creature.poem}
                 createdAt={creature.createdAt}
                 honorific={creature.honorific}
+                entryNumber={creature.entryNumber}
                 top={top}
                 left={left}
                 scale={creatureScale(creature.createdAt)}
@@ -237,7 +238,7 @@ export default function PotScene({
                 <CreatureFace poem={hovered.creature.poem} createdAt={hovered.creature.createdAt} />
               </span>
               <p className="pot__tooltip-name">
-                {deriveName(hovered.creature.poem, hovered.creature.createdAt, hovered.creature.honorific)}
+                {deriveName(hovered.creature.poem, hovered.creature.createdAt, hovered.creature.honorific, hovered.creature.entryNumber)}
               </p>
             </div>
             <p className="pot__tooltip-poem">{hovered.creature.poem}</p>
@@ -316,7 +317,7 @@ export default function PotScene({
                       transform: `scale(${scale})`,
                       zIndex: waiting.length - i,
                     }}
-                    aria-label={deriveName(creature.poem, creature.createdAt, creature.honorific)}
+                    aria-label={deriveName(creature.poem, creature.createdAt, creature.honorific, creature.entryNumber)}
                   >
                     <span className="pot__queue-face" aria-hidden="true">
                       <CreatureFace poem={creature.poem} createdAt={creature.createdAt} />

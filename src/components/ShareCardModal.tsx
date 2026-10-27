@@ -31,7 +31,7 @@ export default function ShareCardModal({
   const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(false);
-  const name = deriveName(poem, createdAt, honorific);
+  const name = deriveName(poem, createdAt, honorific, entryNumber);
 
   useEffect(() => {
     setDataUrl(

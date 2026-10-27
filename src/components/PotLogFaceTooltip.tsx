@@ -131,7 +131,7 @@ export default function PotLogFaceTooltip({
             <span className="pot__tooltip-face" aria-hidden="true">
               <CreatureFace poem={poem} createdAt={createdAt} />
             </span>
-            <p className="pot__tooltip-name">{deriveName(poem, createdAt, honorific)}</p>
+            <p className="pot__tooltip-name">{deriveName(poem, createdAt, honorific, entryNumber)}</p>
           </div>
           <p className="pot__tooltip-poem">{poem}</p>
           <p className="pot__tooltip-meta">

@@ -6,6 +6,12 @@
 // lib/potCreatures.tsではなくここに置く。
 export const POT_LIFESPAN_DAYS = 5;
 
+// 鍋カード第1次目標発行数(151匹、ポケモン第1世代になぞらえた数字)。
+// これを超えて投入されたキャラ(第2世代)は、カードの見た目(shareImage.ts)
+// だけでなく、名前の装飾ロジック(下のNAME_DESCRIPTOR関連)もここを境に
+// 切り替える。
+export const GENERATION_CUTOFF = 151;
+
 export function elapsedDays(createdAt: string): number {
   const elapsedMs = Date.now() - new Date(createdAt).getTime();
   return elapsedMs / (1000 * 60 * 60 * 24);
@@ -283,6 +289,80 @@ const LATIN_RUN = /[A-Za-zＡ-Ｚａ-ｚ]{2,}/g;
 // (カタカナ連続を優先する)元の抽選結果のままにする。
 const ENGLISH_NAME_PREFERENCE_AT = new Date("2026-10-14T20:00:00+09:00").getTime();
 
+// カタカナ/英単語をそのまま一語だけ名前にすると安易に感じる(例:
+// 「むかしむかし鬼のパンツは無地でした」→「パンツちゃん」)という指摘を受けて
+// 追加した飾り付けロジック。日付ではなく世代(GENERATION_CUTOFF)で区切る
+// ことにしたので、第2世代(entryNumber > GENERATION_CUTOFF)からのみ適用し、
+// 第1世代のキャラの名前は変わらないようにする。
+
+// 名詞/英単語の直後に「は/が/も」で始まる述語(例:「パンツは無地でした」の
+// 「無地」)があれば、それを名前の接頭辞として拾う。コピュラ(でした/らしい等)
+// は接頭辞自体には不要なので剥がす。
+const PREDICATE_COPULA_SUFFIXES = [
+  "でした", "だった", "らしかった", "なんです", "なのです", "らしいです",
+  "です", "だ", "らしい", "になった", "になる", "でしょう", "かもしれない",
+];
+
+function stripCopula(s: string): string {
+  let result = s;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    for (const suf of PREDICATE_COPULA_SUFFIXES) {
+      if (result.length > suf.length && result.endsWith(suf)) {
+        result = result.slice(0, -suf.length);
+        changed = true;
+        break;
+      }
+    }
+  }
+  return result;
+}
+
+function extractDescriptorAfter(trimmed: string, word: string): string | null {
+  const idx = trimmed.indexOf(word);
+  if (idx === -1) return null;
+  let rest = trimmed.slice(idx + word.length);
+  rest = rest.replace(TRAILING_PUNCTUATION, "");
+  const predicateParticles = ["は", "が", "も"];
+  const particle = predicateParticles.find((p) => rest.startsWith(p));
+  if (!particle) return null;
+  rest = stripCopula(rest.slice(particle.length));
+  rest = rest.replace(TRAILING_PUNCTUATION, "");
+  if (rest.length < 1 || rest.length > 4) return null;
+  return rest;
+}
+
+// 直前が「の」(名詞修飾)か全角/半角スペース(区切りがわりの空白)で
+// 切れている場合だけ、その直前の語の末尾数文字を接頭辞候補として拾う。
+// 動詞活用や「なら」等の途中で切ると不自然になるため、それ以外の
+// 境界では何も拾わない。
+function extractDescriptorBefore(trimmed: string, word: string): string | null {
+  const idx = trimmed.indexOf(word);
+  if (idx <= 0) return null;
+  const charBefore = trimmed[idx - 1];
+  const isCleanBoundary = charBefore === "の" || charBefore === "　" || charBefore === " ";
+  if (!isCleanBoundary) return null;
+  let before = trimmed.slice(0, idx - 1);
+  before = before.replace(/[\s　]+$/, "");
+  if (!before) return null;
+  // 直前の語を切り詰めると複合語の途中で割れて不自然になりやすい
+  // (「夜更かし」→「更かし」等)ため、4文字を超える場合はまるごと
+  // 使うのを諦める(途中半端に切るより、何も付けない方がまし)。
+  if (before.length > 4) return null;
+  return before;
+}
+
+// 5文字以上のカタカナ語/英単語は、そのまま出すと「安易」に見えやすいので
+// 半分だけ切り出す。「スーパー(マーケット)」「パソコン(パーソナルコンピュータ)」
+// のような実際の略語文化にならい、前半側を固定で使う(前半なら必ず元の
+// 単語の頭の音から始まるので、小さい「ゃゅょ」等が単独で浮く心配もない)。
+function splitLongWord(word: string): string {
+  if (word.length < 5) return word;
+  const mid = Math.ceil(word.length / 2);
+  return word.slice(0, mid);
+}
+
 // 敬称を追加する前からあった、元々のラインナップ。
 const ORIGINAL_HONORIFICS = ["くん", "ちゃん", "にゃん", "先生", "さん", "氏"];
 
@@ -367,6 +447,8 @@ function honorificCandidates(trimmedPoem: string, createdAt?: string): string[] 
 // なければ末尾の数文字をフォールバックとして使う。
 // さらに、くん/ちゃん/にゃん等の敬称を文字列ごとに決定論的に割り振る。
 // createdAtを渡すと、敬称追加より前に入ったキャラは元のラインナップから選ぶ。
+// entryNumberを渡すと、第2世代(GENERATION_CUTOFFより後)からのみ
+// 述語接頭辞付加・長い単語の分割(飾り付けロジック)を適用する。
 // honorificOverrideを渡すと、その敬称をそのまま使う(DBに保存済みの
 // 確定した敬称を使う場合。pickAvailableHonorificで選んだ結果など)。
 // (本体+敬称をそれぞれ別で使いたい箇所があるため分けて返す)
@@ -374,6 +456,7 @@ export function deriveNameParts(
   poem: string,
   createdAt?: string,
   honorificOverride?: string,
+  entryNumber?: number,
 ): { base: string; honorific: string } {
   const trimmed = poem.trim();
   if (!trimmed) return { base: "なまえなし", honorific: "" };
@@ -381,7 +464,10 @@ export function deriveNameParts(
   const isBeforeNameFallbackImproved =
     createdAt !== undefined && new Date(createdAt).getTime() < NAME_FALLBACK_IMPROVED_AT;
 
+  const isGen2 = entryNumber !== undefined && entryNumber > GENERATION_CUTOFF;
+
   let base = "";
+  let isKatakana = false;
   // 川柳に英単語が混ざっているのは作者がこだわって入れたものである
   // ことが多いので、カタカナの連続よりも優先して名前に使う。
   const isBeforeEnglishPreference =
@@ -397,7 +483,24 @@ export function deriveNameParts(
     const katakanaMatches = trimmed.match(KATAKANA_RUN);
     if (katakanaMatches) {
       const longest = katakanaMatches.reduce((a, b) => (b.length > a.length ? b : a));
-      if (longest.length >= 2) base = longest;
+      if (longest.length >= 2) { base = longest; isKatakana = true; }
+    }
+  }
+  // カタカナ/英単語をそのまま一語だけ出すと安易に見えるため飾る。
+  // 句の中に述語や隣接語(接頭辞)が見つかればそれを使い、長い単語
+  // (5文字以上、カタカナ/英単語とも)は見つかったかどうかに関わらず
+  // 前半だけに短縮する(「スーパー」「パソコン」のような実際の略語文化に
+  // ならう。短縮しないと長い単語をそのまま出すだけになり、それはそれで
+  // 安易に見えるため)。第2世代からのみ(第1世代の見た目/名前を変えないため)。
+  if (base && isGen2) {
+    const descriptor =
+      extractDescriptorAfter(trimmed, base) ??
+      (isKatakana && base.length >= 5 ? extractDescriptorBefore(trimmed, base) : null);
+    const piece = splitLongWord(base);
+    if (descriptor) {
+      base = `${descriptor}${piece}`;
+    } else if (piece !== base) {
+      base = piece;
     }
   }
   if (!base && isBeforeNameFallbackImproved) {
@@ -414,8 +517,13 @@ export function deriveNameParts(
   return { base, honorific };
 }
 
-export function deriveName(poem: string, createdAt?: string, honorificOverride?: string): string {
-  const { base, honorific } = deriveNameParts(poem, createdAt, honorificOverride);
+export function deriveName(
+  poem: string,
+  createdAt?: string,
+  honorificOverride?: string,
+  entryNumber?: number,
+): string {
+  const { base, honorific } = deriveNameParts(poem, createdAt, honorificOverride, entryNumber);
   return `${base}${honorific}`;
 }
 
@@ -428,9 +536,10 @@ export function pickAvailableHonorific(
   poem: string,
   createdAt: string | undefined,
   takenNames: string[],
+  entryNumber?: number,
 ): string {
   const trimmed = poem.trim();
-  const { base } = deriveNameParts(poem, createdAt);
+  const { base } = deriveNameParts(poem, createdAt, undefined, entryNumber);
   const candidates = honorificCandidates(trimmed, createdAt);
   const taken = new Set(takenNames);
   for (const honorific of candidates) {

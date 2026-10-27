@@ -28,7 +28,7 @@ export default async function DashiList() {
       <p className="pot-log__goal">{goalText}</p>
       <ul className="dashi-list">
         {creatures.map((creature, index) => {
-          const name = deriveName(creature.poem, creature.createdAt, creature.honorific);
+          const name = deriveName(creature.poem, creature.createdAt, creature.honorific, creature.entryNumber);
           return (
             <li key={creature.id} className="dashi-card">
               <span className="dashi-card__number" aria-hidden="true">

@@ -105,13 +105,15 @@ export async function createPotCreature(params: {
 
   // 過去に鍋へ入った全員(今いる面々も、溶けて消えた子も)と名前(本体+
   // 敬称)が重複しないよう、投入前に先客の名前一覧を取っておく。
+  // created_at昇順にしているのは、各行のentryNumber(投入順)を
+  // インデックスから求めるため(名前の装飾ロジックが世代で分岐するため必要)。
   const { rows: pastRows } = await pool.query<{ poem: string; created_at: string; honorific: string }>(
-    `SELECT poem, created_at, honorific FROM pot_creatures`,
+    `SELECT poem, created_at, honorific FROM pot_creatures ORDER BY created_at ASC`,
   );
   const takenNames = pastRows.map(
-    (c) => deriveNameParts(c.poem, c.created_at).base + c.honorific,
+    (c, i) => deriveNameParts(c.poem, c.created_at, undefined, i + 1).base + c.honorific,
   );
-  const honorific = pickAvailableHonorific(poem, undefined, takenNames);
+  const honorific = pickAvailableHonorific(poem, undefined, takenNames, pastRows.length + 1);
 
   const { rows } = await pool.query<Row>(
     `WITH inserted AS (

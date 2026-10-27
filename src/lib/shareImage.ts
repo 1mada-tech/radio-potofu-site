@@ -1,4 +1,6 @@
-import { deriveAppearance, deriveName, hashString, makeRng } from "@/lib/creature";
+import { deriveAppearance, deriveName, hashString, makeRng, GENERATION_CUTOFF } from "@/lib/creature";
+
+export { GENERATION_CUTOFF };
 import { pathRoundedRect, pathTopRoundedRect, readableAccent, wrapTextChars } from "@/lib/cardCanvas";
 import { drawCreatureFaceGlyph } from "@/lib/creatureFaceDraw";
 
@@ -369,11 +371,6 @@ export type BgVariant =
   | "sparkle"
   | "spiral";
 
-// 鍋カード第1次目標発行数(151匹、ポケモン第1世代になぞらえた区切り)。
-// これを超えた個体は「第2世代」として、枠のメタリック仕立てや専用の
-// 背景柄など見た目にも差をつける(DashiList.tsxのゴール表示と対になる数字)。
-export const GENERATION_CUTOFF = 151;
-
 export function drawCreatureShareImage(
   canvas: HTMLCanvasElement,
   params: {
@@ -399,7 +396,7 @@ export function drawCreatureShareImage(
   if (!ctx) return;
 
   const appearance = deriveAppearance(params.poem, params.createdAt);
-  const name = deriveName(params.poem, params.createdAt, params.honorific);
+  const name = deriveName(params.poem, params.createdAt, params.honorific, params.entryNumber);
   const accentColor = readableAccent(appearance.bodyColor);
 
   // --- 第2世代判定(151匹を超えたら第2世代。カード番号=投入順で固定の
