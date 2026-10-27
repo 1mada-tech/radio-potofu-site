@@ -32,7 +32,7 @@ export default async function DashiList() {
               <div className="dashi-card__meta">
                 {creature.poetName ? (
                   <span className="dashi-card__author">
-                    作: {creature.poetName}(投稿: {creature.authorName || "名無し"})
+                    作: {creature.poetName}(投稿: {creature.authorName || "なまえなし"})
                   </span>
                 ) : (
                   creature.authorName && (

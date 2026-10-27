@@ -19,7 +19,7 @@ export type PotContent = {
 const DEFAULT_CONTENT: PotContent = {
   caption:
     "投稿した現代川柳からキャラが生まれて、鍋の中で暮らしはじめます。名前は川柳の中のカタカナ言葉から、いなければ末尾の文字からつけられます。5日経つと、鍋のダシになって溶けてしまいます。",
-  formNamePlaceholder: "投稿者名（未入力の場合は「名無し」になります）",
+  formNamePlaceholder: "投稿者名（未入力の場合は「なまえなし」になります）",
   formPoetNamePlaceholder: "作者名（投稿者と別人の場合のみ入力してください）",
   formPoemPlaceholder: "ここに入力した川柳がキャラになり鍋に入ります",
   formSubmitLabel: "キャラを鍋に入れる",

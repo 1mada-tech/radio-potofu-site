@@ -243,8 +243,8 @@ export default function PotScene({
             <p className="pot__tooltip-poem">{hovered.creature.poem}</p>
             <p className="pot__tooltip-meta">
               {hovered.creature.poetName
-                ? `作: ${hovered.creature.poetName}(投稿: ${hovered.creature.authorName || "名無し"})`
-                : hovered.creature.authorName || "名無し"}{" "}
+                ? `作: ${hovered.creature.poetName}(投稿: ${hovered.creature.authorName || "なまえなし"})`
+                : hovered.creature.authorName || "なまえなし"}{" "}
               ・ {formatDate(hovered.creature.createdAt)}
             </p>
             <p className="pot__tooltip-lifespan">

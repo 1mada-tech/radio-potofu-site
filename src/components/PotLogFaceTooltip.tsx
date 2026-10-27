@@ -135,7 +135,7 @@ export default function PotLogFaceTooltip({
           </div>
           <p className="pot__tooltip-poem">{poem}</p>
           <p className="pot__tooltip-meta">
-            {poetName ? `作: ${poetName}(投稿: ${authorName || "名無し"})` : authorName || "名無し"}{" "}
+            {poetName ? `作: ${poetName}(投稿: ${authorName || "なまえなし"})` : authorName || "なまえなし"}{" "}
             ・ {formatDate(createdAt)}
           </p>
           <p className="pot__tooltip-lifespan">

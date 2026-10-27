@@ -143,7 +143,7 @@ function ThemePostItem({ post, onDone }: { post: ThemePost; onDone: () => void }
   return (
     <li className="theme-post">
       <div className="theme-post__head">
-        <span className="theme-post__author">{post.authorName || "名無し"}</span>
+        <span className="theme-post__author">{post.authorName || "なまえなし"}</span>
         <span className="theme-post__date">{formatDate(post.createdAt)}</span>
         <StatusSelect post={post} onDone={onDone} />
       </div>
@@ -172,7 +172,7 @@ function ThemePostItem({ post, onDone }: { post: ThemePost; onDone: () => void }
           {post.replies.map((reply) => (
             <li key={reply.id} className="theme-reply">
               <div className="theme-post__head">
-                <span className="theme-post__author">{reply.authorName || "名無し"}</span>
+                <span className="theme-post__author">{reply.authorName || "なまえなし"}</span>
                 <span className="theme-post__date">{formatDate(reply.createdAt)}</span>
               </div>
               <p className="theme-post__body">{reply.body}</p>
