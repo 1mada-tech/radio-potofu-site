@@ -52,8 +52,8 @@ export async function getHistoryCaption(): Promise<string | null> {
 // Spotify for Podcasters等の再生数は非公開の数字で自動取得できないため、
 // 配信者からスクリーンショットを受け取るたびに、ここを手で書き換える。
 // (2026-10-19時点: 61,781)
-const PLAY_COUNT_LAST_UPDATED = "2026-10-25";
-const PLAY_COUNT = 61824;
+const PLAY_COUNT_LAST_UPDATED = "2026-10-29";
+const PLAY_COUNT = 61849;
 
 export function getPlayCount(): { count: number; lastUpdated: string } {
   return { count: PLAY_COUNT, lastUpdated: PLAY_COUNT_LAST_UPDATED };
