@@ -52,8 +52,8 @@ export default async function PotPage() {
           <span className="hero-cta__note">★ラジオポトフ本編を聴く</span>
         </Link>
         <Link href="/senryu" className="hero-cta__button">
-          <span className="hero-cta__label">現代川柳はこちら</span>
-          <span className="hero-cta__note">★鍋のもとになる句を読む</span>
+          <span className="hero-cta__label">現代川柳あれこれ</span>
+          <span className="hero-cta__note">★現代川柳についての投稿</span>
         </Link>
       </div>
     </div>
