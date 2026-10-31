@@ -47,9 +47,9 @@ export default async function PotPage() {
       />
       <DashiList />
       <div className="hero-cta">
-        <Link href="/episodes" className="hero-cta__button">
-          <span className="hero-cta__label">これまでの配信</span>
-          <span className="hero-cta__note">★ラジオポトフ本編を聴く</span>
+        <Link href="/episodes?tag=現代川柳" className="hero-cta__button">
+          <span className="hero-cta__label">これまでの現代川柳回</span>
+          <span className="hero-cta__note">★現代川柳の話をした回の一覧です</span>
         </Link>
         <Link href="/senryu" className="hero-cta__button">
           <span className="hero-cta__label">現代川柳あれこれ</span>
