@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getPotCreatures, getAllPotCreatures } from "@/lib/potCreatures";
 import { getPotContent } from "@/lib/potContent";
 import PotScene from "@/components/PotScene";
@@ -45,6 +46,16 @@ export default async function PotPage() {
         tooltipLifespanTemplate={content.tooltipLifespanTemplate}
       />
       <DashiList />
+      <div className="hero-cta">
+        <Link href="/episodes" className="hero-cta__button">
+          <span className="hero-cta__label">これまでの配信</span>
+          <span className="hero-cta__note">★ラジオポトフ本編を聴く</span>
+        </Link>
+        <Link href="/senryu" className="hero-cta__button">
+          <span className="hero-cta__label">現代川柳はこちら</span>
+          <span className="hero-cta__note">★鍋のもとになる句を読む</span>
+        </Link>
+      </div>
     </div>
   );
 }
