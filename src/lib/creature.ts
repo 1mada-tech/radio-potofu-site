@@ -289,6 +289,13 @@ const LATIN_RUN = /[A-Za-zＡ-Ｚａ-ｚ]{2,}/g;
 // (カタカナ連続を優先する)元の抽選結果のままにする。
 const ENGLISH_NAME_PREFERENCE_AT = new Date("2026-10-14T20:00:00+09:00").getTime();
 
+// カタカナ・英単語が句に含まれない場合に、末尾の数文字を機械的に
+// 切り出すより先に試す、漢字の連続(名詞らしき部分)。
+const KANJI_RUN = /[一-鿿]{2,}/g;
+// この日時より前に鍋に入ったキャラは、漢字連続を拾うルール追加前の
+// (末尾文字フォールバックのみの)元の抽選結果のままにする。
+const KANJI_FALLBACK_AT = new Date("2026-11-10T00:00:00+09:00").getTime();
+
 // カタカナ/英単語をそのまま一語だけ名前にすると安易に感じる(例:
 // 「むかしむかし鬼のパンツは無地でした」→「パンツちゃん」)という指摘を受けて
 // 追加した飾り付けロジック。日付ではなく世代(GENERATION_CUTOFF)で区切る
@@ -501,6 +508,20 @@ export function deriveNameParts(
       base = `${descriptor}${piece}`;
     } else if (piece !== base) {
       base = piece;
+    }
+  }
+  // カタカナ/英単語がない句は、末尾文字を機械的に切り出す前に、
+  // 漢字の連続(名詞らしき部分)が拾えないか試す。「昆虫の云うことばかり
+  // 聞いている」→「聞いている」の末尾切り出しだと動詞の活用部分だけに
+  // なって名前として不自然なため、句中で一番長い漢字連続(この例では
+  // 「昆虫」)を優先する。これより前に投入済みのキャラの名前は変えない。
+  const isBeforeKanjiFallback =
+    createdAt !== undefined && new Date(createdAt).getTime() < KANJI_FALLBACK_AT;
+  if (!base && !isBeforeKanjiFallback) {
+    const kanjiMatches = trimmed.match(KANJI_RUN);
+    if (kanjiMatches) {
+      const longest = kanjiMatches.reduce((a, b) => (b.length > a.length ? b : a));
+      if (longest.length >= 2) base = longest.length > 4 ? longest.slice(0, 4) : longest;
     }
   }
   if (!base && isBeforeNameFallbackImproved) {
