@@ -2337,12 +2337,27 @@ a.episode-tag:hover {
 }
 
 .pot-scene {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
   gap: 24px;
-  margin-top: 36px;
+  margin-top: 52px;
+}
+
+/* 現状報告スクショ用の現在時刻表示。鍋の邪魔にならないよう控えめに右上へ。 */
+.pot-scene__timestamp {
+  position: absolute;
+  top: -28px;
+  right: 0;
+  margin: 0;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  color: var(--ink-soft, #6f665a);
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  letter-spacing: 0.02em;
 }
 
 .pot {
@@ -2507,7 +2522,12 @@ a.episode-tag:hover {
 
 @media (max-width: 560px) {
   .pot-scene {
-    margin-top: 40px;
+    margin-top: 56px;
+  }
+
+  .pot-scene__timestamp {
+    top: -48px;
+    right: 8px;
   }
 
   .pot {

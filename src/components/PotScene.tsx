@@ -16,7 +16,7 @@ import {
   CREATURE_LEFT_DIAMETER,
   COMFORTABLE_COUNT,
 } from "@/lib/creature";
-import { formatDate } from "@/lib/date";
+import { formatDate, formatDateTime } from "@/lib/date";
 import type { PotCreature } from "@/lib/potCreatures";
 
 // 経過日数(丸め)に応じて1日ごとに一段階ずつ縮んでいく。
@@ -67,6 +67,15 @@ export default function PotScene({
   creatures: PotCreature[];
   tooltipLifespanTemplate: string;
 }) {
+  // SNS投稿用のスクショに時刻が写るよう、現状報告として見える位置に
+  // 現在時刻を表示する(1分ごとに更新)。
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    setNow(new Date());
+    const timer = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   // ホバーが外れてツールチップ(hoveredId)自体は閉じても、プレビューは
   // 出したままにしたいので、鍋カード内容ごとここに保持しておく
@@ -143,6 +152,7 @@ export default function PotScene({
 
   return (
     <div className="pot-scene">
+      {now && <p className="pot-scene__timestamp">{formatDateTime(now.toISOString())}</p>}
       <div className="pot" ref={potRef}>
         <span className="pot__steam pot__steam--1" aria-hidden="true" />
         <span className="pot__steam pot__steam--2" aria-hidden="true" />
