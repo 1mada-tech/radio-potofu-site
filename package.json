@@ -12,6 +12,7 @@
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "csv-parse": "^7.0.2",
+    "googleapis": "^190.0.0",
     "microcms-js-sdk": "^3.1.0",
     "next": "^15.1.0",
     "pg": "^8.23.0",

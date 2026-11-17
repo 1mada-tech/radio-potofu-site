@@ -8,3 +8,4 @@ node_modules
 .vercel
 .env*
 .episode-topics-staging.md
+.search-console-key.json
