@@ -1385,6 +1385,87 @@ a.episode-tag:hover {
   text-overflow: ellipsis;
 }
 
+.encounter-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.encounter-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  background: var(--color-bg-alt);
+  border-left: 3px solid var(--color-accent);
+}
+
+.encounter-card__faces {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* dashi-card__face-inner(40px箱に66pxの顔を縮めて収める)と同じ考え方。 */
+.encounter-card__face-wrap {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  flex: none;
+}
+
+.encounter-card__face-inner {
+  display: block;
+  position: relative;
+  top: 9px;
+  left: 5px;
+  width: 66px;
+  height: 66px;
+  transform: scale(0.465);
+  transform-origin: top left;
+}
+
+.encounter-card__cross {
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
+.encounter-card__names {
+  margin: 0;
+  font-weight: 700;
+  color: var(--color-ink);
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.encounter-card__scene {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--color-accent);
+}
+
+.encounter-card__note {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-ink-soft);
+  line-height: 1.5;
+}
+
+.encounter-card__meta {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.64rem;
+  color: var(--color-ink-soft);
+}
+
 .dashi-card__author::before {
   content: "投稿: ";
 }
@@ -2334,6 +2415,131 @@ a.episode-tag:hover {
   font-size: 0.78rem;
   line-height: 1.6;
   color: var(--color-ink-soft);
+}
+
+.encounter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 480px;
+  padding: 16px;
+  background: var(--color-bg-alt);
+}
+
+.encounter-form__step-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.encounter-form__step-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.encounter-form__random {
+  font-family: inherit;
+  font-size: 0.74rem;
+  padding: 4px 10px;
+  background: var(--color-bg);
+  color: var(--color-ink-soft);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+}
+
+.encounter-form__random:hover {
+  color: var(--color-ink);
+  border-color: var(--color-accent);
+}
+
+.encounter-form__pickers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.encounter-form__select {
+  flex: 1;
+  min-width: 160px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+.encounter-form__cross {
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+}
+
+@media (max-width: 480px) {
+  .encounter-form__pickers {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .encounter-form__cross {
+    align-self: center;
+  }
+}
+
+.encounter-form__scenes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.encounter-form__scene {
+  font-family: inherit;
+  font-size: 0.78rem;
+  padding: 6px 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.encounter-form__scene--active {
+  background: var(--color-ink);
+  color: #fff;
+  border-color: var(--color-ink);
+}
+
+.encounter-form__submit {
+  align-self: center;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 10px 24px;
+  background: var(--color-ink);
+  color: #fff;
+  border: 1px solid var(--color-ink);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.encounter-form__submit:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.encounter-form__submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.encounter-form__message {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-ink-soft);
+  text-align: center;
 }
 
 .pot-scene {

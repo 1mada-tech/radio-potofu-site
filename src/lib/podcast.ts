@@ -1,5 +1,6 @@
 import Parser from "rss-parser";
 import { parse } from "csv-parse/sync";
+import { unstable_cache } from "next/cache";
 import { EPISODE_AUTO_TOPICS } from "@/lib/episodeTopics";
 
 // SpotifyのApple Podcasts掲載情報(id1608810819)から取得した実際のRSSフィードURL。
@@ -112,9 +113,10 @@ async function fetchEpisodeExtrasByNumber(): Promise<Map<number, EpisodeExtras>>
   return map;
 }
 
-async function fetchAllEpisodes(): Promise<Episode[]> {
+async function fetchAllEpisodesUncached(): Promise<Episode[]> {
   // フィードが2MB超でNext.jsのフェッチキャッシュ上限に収まらないため、
-  // ここではキャッシュせず、呼び出し側ページの revalidate でページ単位にキャッシュする。
+  // ここでは生のfetchをキャッシュしない。代わりに、パース後の軽い配列だけを
+  // unstable_cacheでキャッシュする(下のfetchAllEpisodes参照)。
   const [feedRes, appleUrlsByDate, extrasByNumber] = await Promise.all([
     fetch(FEED_URL, { cache: "no-store" }),
     fetchAppleUrlsByDate(),
@@ -145,6 +147,13 @@ async function fetchAllEpisodes(): Promise<Episode[]> {
     })
     .sort((a, b) => (a.publishDate < b.publishDate ? 1 : -1));
 }
+
+// fetch(...,{cache:"no-store"})はページ全体を強制的に動的レンダリングにしてしまう
+// (呼び出し側ページのrevalidate設定が効かなくなる)ため、パース後の軽い配列だけを
+// unstable_cacheで包んで時間ベースでキャッシュする。
+const fetchAllEpisodes = unstable_cache(fetchAllEpisodesUncached, ["podcast-episodes"], {
+  revalidate: 60,
+});
 
 export async function getEpisodes(limit = 100, offset = 0, tagFilter?: string) {
   try {

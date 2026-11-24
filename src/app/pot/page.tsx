@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPotCreatures, getAllPotCreatures } from "@/lib/potCreatures";
+import { getEncounterCandidates } from "@/lib/potEncounters";
 import { getPotContent } from "@/lib/potContent";
 import PotScene from "@/components/PotScene";
 import PotForm from "@/components/PotForm";
 import PotLog from "@/components/PotLog";
 import PotChat from "@/components/PotChat";
 import DashiList from "@/components/DashiList";
+import EncounterRequestForm from "@/components/EncounterRequestForm";
+import EncounterGallery from "@/components/EncounterGallery";
 import { pageMetadata } from "@/lib/pageMetadata";
 
 export const metadata: Metadata = pageMetadata({
@@ -15,13 +18,14 @@ export const metadata: Metadata = pageMetadata({
   path: "/pot",
   image: "/images/og-pot.jpg",
 });
-export const revalidate = 0;
+export const revalidate = 20;
 
 export default async function PotPage() {
-  const [creatures, allCreatures, content] = await Promise.all([
+  const [creatures, allCreatures, content, encounterCandidates] = await Promise.all([
     getPotCreatures(),
     getAllPotCreatures(),
     getPotContent(),
+    getEncounterCandidates(),
   ]);
 
   return (
@@ -38,7 +42,16 @@ export default async function PotPage() {
         submitLabel={content.formSubmitLabel}
       />
       <PotScene creatures={creatures} tooltipLifespanTemplate={content.tooltipLifespanTemplate} />
-      <PotChat creatures={creatures} />
+      {encounterCandidates.length >= 2 && (
+        <section className="pot-log">
+          <h2 className="pot-log__heading">キャラたちを出会わせてみる</h2>
+          <p className="pot-log__caption">
+            鍋カード(住民票)が発行された2匹を選んで、場面を決めると、わたしがその出会いを描きます。
+          </p>
+          <EncounterRequestForm candidates={encounterCandidates} />
+        </section>
+      )}
+      <EncounterGallery />
       <PotLog
         creatures={allCreatures}
         heading={content.logHeading}
@@ -46,6 +59,7 @@ export default async function PotPage() {
         tooltipLifespanTemplate={content.tooltipLifespanTemplate}
       />
       <DashiList />
+      <PotChat creatures={creatures} />
       <div className="hero-cta">
         <Link href="/episodes?tag=現代川柳" className="hero-cta__button">
           <span className="hero-cta__label">これまでの現代川柳回</span>

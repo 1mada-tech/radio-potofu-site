@@ -10,7 +10,7 @@ export const metadata: Metadata = pageMetadata({
   path: "/themes",
   image: "/images/og-themes.jpg",
 });
-export const revalidate = 0;
+export const revalidate = 20;
 
 const THEMES_CAPTION_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1J_fSVe7sqRQaeelc2A9ocQhAbxXqB6OHpv0BxW6CbEk/export?format=csv&gid=204925422";
