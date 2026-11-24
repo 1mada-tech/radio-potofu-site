@@ -149,7 +149,7 @@ export async function getEncounterCandidates(): Promise<EncounterCreatureRef[]> 
     `SELECT c1.id, c1.poem, c1.created_at, c1.honorific, ${entryNumberFor("c1")} AS entry_number
      FROM pot_creatures c1
      WHERE c1.note IS NOT NULL
-     ORDER BY c1.created_at ASC`,
+     ORDER BY c1.created_at DESC`,
   );
   return rows.map((r) => ({
     id: r.id,
