@@ -13,6 +13,7 @@ export default function ShareEncounterModal({
   creatureB,
   encounterNote,
   metAt,
+  entryNumber,
   onClose,
 }: {
   scene: SceneVariant;
@@ -20,6 +21,7 @@ export default function ShareEncounterModal({
   creatureB: EncounterCreatureInput;
   encounterNote: string;
   metAt?: string;
+  entryNumber?: number;
   onClose: () => void;
 }) {
   const [dataUrl, setDataUrl] = useState<string | null>(null);
@@ -29,8 +31,8 @@ export default function ShareEncounterModal({
   const nameB = deriveName(creatureB.poem, creatureB.createdAt, creatureB.honorific, creatureB.entryNumber);
 
   useEffect(() => {
-    setDataUrl(renderEncounterImageDataUrl({ scene, creatureA, creatureB, encounterNote, metAt }));
-  }, [scene, creatureA, creatureB, encounterNote, metAt]);
+    setDataUrl(renderEncounterImageDataUrl({ scene, creatureA, creatureB, encounterNote, metAt, entryNumber }));
+  }, [scene, creatureA, creatureB, encounterNote, metAt, entryNumber]);
 
   useEffect(() => {
     function handleKey(event: KeyboardEvent) {
@@ -44,7 +46,10 @@ export default function ShareEncounterModal({
     setSaving(true);
     setError(false);
     try {
-      saveOrShareEncounterImage({ scene, creatureA, creatureB, encounterNote, metAt }, dataUrl ?? undefined);
+      saveOrShareEncounterImage(
+        { scene, creatureA, creatureB, encounterNote, metAt, entryNumber },
+        dataUrl ?? undefined,
+      );
     } catch {
       setError(true);
     } finally {

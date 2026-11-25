@@ -15,6 +15,8 @@ export type PotEncounter = {
   note: string | null;
   requestedAt: string;
   metAt: string | null;
+  // 遭遇の通し番号(申請順、1始まり)。キャラの投入順entryNumberと同じ考え方。
+  entryNumber: number;
   creatureA: EncounterCreatureRef;
   creatureB: EncounterCreatureRef;
 };
@@ -25,6 +27,7 @@ const entryNumberFor = (alias: string) =>
 const ENCOUNTER_SELECT = `
   SELECT
     e.id, e.scene, e.note, e.requested_at, e.met_at,
+    (SELECT COUNT(*) FROM pot_encounters e2 WHERE e2.requested_at <= e.requested_at) AS entry_number,
     ca.id AS a_id, ca.poem AS a_poem, ca.created_at AS a_created_at, ca.honorific AS a_honorific,
     ${entryNumberFor("ca")} AS a_entry_number,
     cb.id AS b_id, cb.poem AS b_poem, cb.created_at AS b_created_at, cb.honorific AS b_honorific,
@@ -40,6 +43,7 @@ type Row = {
   note: string | null;
   requested_at: string;
   met_at: string | null;
+  entry_number: string;
   a_id: number;
   a_poem: string;
   a_created_at: string;
@@ -59,6 +63,7 @@ function toEncounter(row: Row): PotEncounter {
     note: row.note,
     requestedAt: row.requested_at,
     metAt: row.met_at,
+    entryNumber: Number(row.entry_number),
     creatureA: {
       id: row.a_id,
       poem: row.a_poem,

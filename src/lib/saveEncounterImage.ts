@@ -18,6 +18,7 @@ export type EncounterImageSource = {
   creatureB: EncounterCreatureInput;
   encounterNote: string;
   metAt?: string;
+  entryNumber?: number;
 };
 
 export function renderEncounterImageDataUrl(source: EncounterImageSource): string {

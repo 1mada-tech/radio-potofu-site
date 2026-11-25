@@ -3,12 +3,19 @@ import { pathRoundedRect, pathTopRoundedRect, readableAccent, wrapTextChars } fr
 import { drawCreatureFaceGlyph } from "@/lib/creatureFaceDraw";
 import { SHARE_IMAGE_WIDTH, SHARE_IMAGE_HEIGHT } from "@/lib/shareImage";
 
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 // ナベカ「遭遇シーン」のシェアカード描画ロジック。既存の鍋カード(shareImage.ts)の
 // 骨格(ポケカ風の枠+ヘッダー+イラストウィンドウ+ステータス+ひとこと+フッター)を
 // 流用しつつ、以下を変える:
 // - ヘッダーは2匹分の番号・名前を「×」でつなぐ
 // - イラストウィンドウには2匹を並べて立たせ、背景を「場面」ごとに変える
-// - 「元の川柳」欄は削除(2句あるため単純に引用できない)
+// - ヘッダー下には場面名の代わりに2句(元の川柳、A→Bの順)を小さく添える
 // - ステータス欄は「出会った日」の1カラムのみ
 // - ひとことメッセージは遭遇シーンの文章(手書き)
 
@@ -457,10 +464,16 @@ export function drawEncounterShareImage(
     creatureB: EncounterCreatureInput;
     encounterNote: string;
     metAt?: string;
+    // 遭遇の通し番号(申請順)。ソロカードの「No.XXX」と同じ見せ方で
+    // ヘッダーの見出しに添える。
+    entryNumber?: number;
   },
 ) {
   const W = SHARE_IMAGE_WIDTH;
-  const H = SHARE_IMAGE_HEIGHT;
+  // 場面名の1行分だった場所に、代わりに元の川柳+名前を2行(A左寄せ・B右寄せ、
+  // 背景帯つき)入れるため、ソロカードより縦に長くする(他の要素は下にスライド
+  // するだけで詰まらないよう、イラストウィンドウを削るのではなくカード全体を伸ばす)。
+  const H = SHARE_IMAGE_HEIGHT + 145;
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext("2d");
@@ -498,34 +511,169 @@ export function drawEncounterShareImage(
   const cardLeft = margin + cardPad;
   const cardRight = W - margin - cardPad;
   const cardWidth = cardRight - cardLeft;
+  const innerTop = margin + cardPad;
+  const innerHeight = H - margin * 2 - cardPad * 2;
   ctx.save();
   ctx.fillStyle = "#fbf8f1";
-  pathRoundedRect(ctx, cardLeft, margin + cardPad, cardWidth, H - margin * 2 - cardPad * 2, frameRadius - 10);
+  pathRoundedRect(ctx, cardLeft, innerTop, cardWidth, innerHeight, frameRadius - 10);
   ctx.fill();
+  // 何もない真っ白な台紙にならないよう、2匹の体色を淡く対角に染める
+  // (左上=A, 右下=B。ベタ塗りの句ピルと呼応させる)
+  ctx.clip();
+  const bgWash = ctx.createLinearGradient(cardLeft, innerTop, cardRight, innerTop + innerHeight);
+  bgWash.addColorStop(0, hexToRgba(appearanceA.bodyColor, 0.16));
+  bgWash.addColorStop(0.5, hexToRgba(appearanceA.bodyColor, 0.04));
+  bgWash.addColorStop(0.5, hexToRgba(appearanceB.bodyColor, 0.04));
+  bgWash.addColorStop(1, hexToRgba(appearanceB.bodyColor, 0.16));
+  ctx.fillStyle = bgWash;
+  ctx.fillRect(cardLeft, innerTop, cardWidth, innerHeight);
   ctx.restore();
 
   // --- ヘッダー(場面ごとの詩的なひと言。キャラ名はキャラ下ラベルに一本化したので
-  // ここでは名前を繰り返さない) ---
+  // ここでは名前を繰り返さない。ソロカードと同じく、通し番号があれば見出しの
+  // 頭に小さく添える) ---
   const headerY = margin + cardPad + 50;
+  const headlineFont = "700 44px 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif";
+  const headlineText = SCENE_HEADLINES[params.scene];
   ctx.save();
-  ctx.textAlign = "center";
-  ctx.font = "700 36px 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif";
-  ctx.fillStyle = "#211a15";
-  ctx.fillText(SCENE_HEADLINES[params.scene], W / 2, headerY);
+  ctx.textAlign = "left";
+  if (params.entryNumber !== undefined) {
+    const cardNoFont = "700 24px 'Noto Sans JP', sans-serif";
+    const cardNo = `出会いNo.${String(params.entryNumber).padStart(3, "0")}`;
+    ctx.font = cardNoFont;
+    const cardNoWidth = ctx.measureText(cardNo).width;
+    const gap = 16;
+    ctx.font = headlineFont;
+    const headlineWidth = ctx.measureText(headlineText).width;
+    const totalWidth = cardNoWidth + gap + headlineWidth;
+    const startX = W / 2 - totalWidth / 2;
+    ctx.font = cardNoFont;
+    ctx.fillStyle = "#9a9080";
+    ctx.fillText(cardNo, startX, headerY);
+    ctx.font = headlineFont;
+    ctx.fillStyle = "#211a15";
+    ctx.fillText(headlineText, startX + cardNoWidth + gap, headerY);
+  } else {
+    ctx.textAlign = "center";
+    ctx.font = headlineFont;
+    ctx.fillStyle = "#211a15";
+    ctx.fillText(headlineText, W / 2, headerY);
+  }
   ctx.restore();
 
-  // --- 場面名(ヘッダーの詩的な言い回しに対して、場面の正式名を小さく添える) ---
-  const metCreditY = headerY + 30;
-  ctx.save();
-  ctx.textAlign = "center";
-  ctx.font = "400 22px 'Noto Sans JP', sans-serif";
-  ctx.fillStyle = "#6f665a";
-  ctx.fillText(SCENE_LABELS[params.scene], W / 2, metCreditY);
-  ctx.restore();
+  // --- 元の川柳+名前(ヘッダーの詩的な言い回しに対して、2匹分の名前と句を添える。
+  // タイトルで場面は説明済みのため場面の正式名はここでは繰り返さない。どちらが
+  // どちらの句か分かりやすいよう、イラスト欄での立ち位置(A=左/B=右)と揃えて
+  // 改行する。
+  //
+  // 「句から名が生まれた」感は、2つの図形を継ぎ目つきで貼り合わせる(帯の重ね、
+  // 矢印の三角)のではなく、1本の帯そのものの色を句側の落ち着いた色から
+  // キャラの体色へなだらかに移ろわせることで表す。句の文字の下は色が定まって
+  // おらず、名前の文字のところで初めてキャラの色に色づく、という「名付けの
+  // 瞬間に色が生まれる」グラデーションにした。 ---
+  const poemNameFont = "700 30px 'Noto Sans JP', sans-serif";
+  const poemFont = "italic 400 26px 'Noto Sans JP', sans-serif";
+  const poemPadX = 40;
+  const poemMaxWidth = cardWidth - poemPadX * 2 - 140;
+  const pillPadX = 26;
+  const innerGap = 32;
+  const pillPadY = 14;
+  const pillHeight = 30 + pillPadY * 2;
+  const poemRowGap = 18;
+  const poemRowStep = pillHeight + poemRowGap;
+  const poemFirstRowY = headerY + 64;
+  const poemBgColor = "#e7dcc3";
+  const poemTextColor = "#3a2e22";
+
+  // キャラの体色が乗る側の文字色。淡い体色(肌色系など)は白文字だとコントラスト
+  // 不足になるため、明度を見て濃い文字色に切り替える。
+  function nameTextColor(hex: string): string {
+    const r = parseInt(hex.slice(1, 3), 16) / 255;
+    const g = parseInt(hex.slice(3, 5), 16) / 255;
+    const b = parseInt(hex.slice(5, 7), 16) / 255;
+    const lin = (v: number) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+    const L = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+    return L > 0.45 ? "#2a2117" : "#ffffff";
+  }
+
+  function drawPoemBlock(
+    c: CanvasRenderingContext2D,
+    name: string,
+    poem: string,
+    bodyColor: string,
+    align: "left" | "right",
+    rowY: number,
+    order: "poem-first" | "name-first",
+  ) {
+    const nameColor = nameTextColor(bodyColor);
+    c.font = poemFont;
+    const poemLine = wrapTextChars(c, poem, poemMaxWidth, 1)[0] ?? "";
+    const poemWidth = c.measureText(poemLine).width;
+    c.font = poemNameFont;
+    const nameWidth = c.measureText(name).width;
+
+    const totalWidth = pillPadX * 2 + poemWidth + innerGap + nameWidth;
+    const startX = align === "left" ? cardLeft + poemPadX : cardRight - poemPadX - totalWidth;
+    const pillLeft = startX;
+    const pillTop = rowY - pillHeight / 2;
+
+    const poemTextX = order === "poem-first" ? pillLeft + pillPadX : pillLeft + pillPadX + nameWidth + innerGap;
+    const nameTextX = order === "poem-first" ? pillLeft + pillPadX + poemWidth + innerGap : pillLeft + pillPadX;
+
+    // 左側テキストの終わりと右側テキストの始まりの間だけ、色がなだらかに移ろう
+    const leftTextEnd = order === "poem-first" ? poemTextX + poemWidth : nameTextX + nameWidth;
+    const rightTextStart = order === "poem-first" ? nameTextX : poemTextX;
+    const fadeFrom = leftTextEnd + innerGap * 0.2;
+    const fadeTo = rightTextStart - innerGap * 0.2;
+    const leftColor = order === "poem-first" ? poemBgColor : bodyColor;
+    const rightColor = order === "poem-first" ? bodyColor : poemBgColor;
+
+    c.save();
+    const grad = c.createLinearGradient(pillLeft, 0, pillLeft + totalWidth, 0);
+    const toFrac = (x: number) => Math.min(1, Math.max(0, (x - pillLeft) / totalWidth));
+    grad.addColorStop(0, leftColor);
+    grad.addColorStop(toFrac(fadeFrom), leftColor);
+    grad.addColorStop(toFrac(fadeTo), rightColor);
+    grad.addColorStop(1, rightColor);
+    c.fillStyle = grad;
+    pathRoundedRect(c, pillLeft, pillTop, totalWidth, pillHeight, pillHeight / 2);
+    c.fill();
+    c.restore();
+
+    c.save();
+    c.textAlign = "left";
+    c.textBaseline = "middle";
+    c.font = poemFont;
+    c.fillStyle = poemTextColor;
+    c.fillText(poemLine, poemTextX, rowY);
+    c.font = poemNameFont;
+    c.fillStyle = nameColor;
+    c.fillText(name, nameTextX, rowY);
+    c.restore();
+  }
+
+  drawPoemBlock(
+    ctx,
+    nameA,
+    params.creatureA.poem,
+    appearanceA.bodyColor,
+    "left",
+    poemFirstRowY,
+    "poem-first",
+  );
+  drawPoemBlock(
+    ctx,
+    nameB,
+    params.creatureB.poem,
+    appearanceB.bodyColor,
+    "right",
+    poemFirstRowY + poemRowStep,
+    "poem-first",
+  );
 
   // --- イラストウィンドウ(場面の背景+2匹を並べて立たせる) ---
   const artX = cardLeft + 28;
-  const artY = headerY + 56;
+  const artY = poemFirstRowY + poemRowStep + pillHeight / 2 + 30;
   const artWidth = cardWidth - 56;
   const artHeight = 534;
   ctx.save();
@@ -600,7 +748,7 @@ export function drawEncounterShareImage(
   ctx.font = "400 36px 'Noto Sans JP', sans-serif";
   ctx.fillStyle = "#4a4136";
   ctx.textAlign = "left";
-  const noteLines = wrapTextChars(ctx, params.encounterNote, artWidth, 3);
+  const noteLines = wrapTextChars(ctx, params.encounterNote, artWidth, 6);
   const noteTop = statsTop + statsHeight + 32;
   noteLines.forEach((l, i) => {
     ctx.fillText(l, artLeftX, noteTop + i * 47);

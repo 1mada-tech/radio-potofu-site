@@ -59,6 +59,7 @@ export default async function EncounterGallery() {
                 creatureB={encounter.creatureB}
                 encounterNote={encounter.note ?? ""}
                 metAt={encounter.metAt ?? undefined}
+                entryNumber={encounter.entryNumber}
               />
             </li>
           );

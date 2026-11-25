@@ -10,12 +10,14 @@ export default function ShareEncounterButton({
   creatureB,
   encounterNote,
   metAt,
+  entryNumber,
 }: {
   scene: SceneVariant;
   creatureA: EncounterCreatureInput;
   creatureB: EncounterCreatureInput;
   encounterNote: string;
   metAt?: string;
+  entryNumber?: number;
 }) {
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -31,6 +33,7 @@ export default function ShareEncounterButton({
           creatureB={creatureB}
           encounterNote={encounterNote}
           metAt={metAt}
+          entryNumber={entryNumber}
           onClose={() => setPreviewOpen(false)}
         />
       )}
