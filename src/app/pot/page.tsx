@@ -46,9 +46,9 @@ export default async function PotPage() {
         <section className="pot-log">
           <h2 className="pot-log__heading">キャラたちを出会わせてみる</h2>
           <p className="pot-log__caption">
-            鍋カード(住民票)が発行済みの2匹と、出会いの場面を選んでください。
+            鍋カード（住民票）が発行済の２匹と、その２匹が出会う場面を選んでください。
             <br />
-            申請から通常24時間以内に出会いの「場面カード」が発行されます。
+            申請から通常24時間以内に「出会いカード」が発行されます。
           </p>
           <EncounterRequestForm candidates={encounterCandidates} />
         </section>

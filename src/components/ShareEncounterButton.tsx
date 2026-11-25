@@ -24,7 +24,7 @@ export default function ShareEncounterButton({
   return (
     <>
       <button type="button" className="share-creature-button" onClick={() => setPreviewOpen(true)}>
-        遭遇シーンカードを見る
+        出会いカードを見る
       </button>
       {previewOpen && (
         <ShareEncounterModal
