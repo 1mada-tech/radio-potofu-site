@@ -22,11 +22,11 @@ function hexToRgba(hex: string, alpha: number): string {
 export type SceneVariant = "waterfall" | "stars" | "nightmarket" | "rain" | "meadow";
 
 export const SCENE_LABELS: Record<SceneVariant, string> = {
-  waterfall: "滝を見に行く",
-  stars: "星を見る",
-  nightmarket: "夜店を冒険する",
-  rain: "雨宿りする",
-  meadow: "原っぱでひなたぼっこする",
+  waterfall: "滝見物",
+  stars: "天体観測",
+  nightmarket: "夜店を探検",
+  rain: "雨宿り",
+  meadow: "ひなたぼっこ",
 };
 
 // ヘッダーに使う、場面ごとの詩的なひと言(「ふたりは○○した」で統一)。
