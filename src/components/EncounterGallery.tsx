@@ -46,7 +46,11 @@ export default async function EncounterGallery() {
               <p className="encounter-card__names">
                 {nameA} × {nameB}
               </p>
-              <p className="encounter-card__scene">{SCENE_LABELS[encounter.scene]}</p>
+              <p className="encounter-card__scene">
+                {encounter.entryNumber !== undefined &&
+                  `出会いNo.${String(encounter.entryNumber).padStart(3, "0")} ・ `}
+                {SCENE_LABELS[encounter.scene]}
+              </p>
               <p className="encounter-card__note">{encounter.note}</p>
               <div className="encounter-card__meta">
                 <span className="encounter-card__date">
